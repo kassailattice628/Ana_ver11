@@ -1,7 +1,7 @@
 function Plot_next(~, ~, data, set_n, params)
 global recobj
-global n
 global hfig
+global n
 
 n = update_n(set_n, data);
 

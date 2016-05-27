@@ -1,4 +1,6 @@
 %function NBA11_Analysis
+global hfig
+global n
 % open iRecHS2Data
 %% 
 if exist('DataSave', 'var') == 0
@@ -25,8 +27,7 @@ else
 end
 %%
 % open GUI
-global hfig
-global n
+
 hfig = GUI_NBA(DataSave, ParamsSave, recobj, sobj, fname); 
 n = 0;
 Plot_next([], [], DataSave, 0, ParamsSave)

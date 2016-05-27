@@ -1,12 +1,12 @@
-function h = GUI_NBA2(data, params, recobj, sobj, fname)
+function h = GUI_NBA(data, params, recobj, sobj, fname)
 %open fig
 h.fig1 = figure('position', [10, 20, 1000, 800], 'Name', ['NBA ver:', num2str(recobj.NBAver)], 'NumberTitle', 'off', 'Menubar', 'none', 'Resize', 'off');
-
+area_alpha = 0.1;
 %% Eye Position %%
 % Vertical & Horizontal eye position
 h.axes1_1 = axes('Units', 'Pixels', 'Position', [70, 590, 600, 100]);
 h.area1_1 = area([NaN, NaN], [NaN, NaN], 'FaceColor', 'k', 'LineStyle', 'none', 'ShowBaseLine', 'off');
-alpha(0.2);
+alpha(area_alpha);
 hold on
 h.plot1_1 = plot(NaN, NaN);
 hold off
@@ -18,7 +18,7 @@ ylabel(h.axes1_1, 'Down <--> UP')
 %%
 h.axes1_2 = axes('Units', 'Pixels', 'Position', [70, 470, 600, 100]);
 h.area1_2 = area([NaN, NaN], [NaN, NaN], 'FaceColor', 'k', 'LineStyle', 'none', 'ShowBaseLine', 'off');
-alpha(0.2);
+alpha(area_alpha);
 hold on
 h.plot1_2 = plot(NaN, NaN);
 hold off
@@ -31,7 +31,7 @@ ylabel(h.axes1_2, 'Tempo <--> Nasal');
 % Vertical & Horizontal eye velocity
 h.axes2 = axes('Units', 'Pixels', 'Position', [70, 330, 600, 100]);
 h.area2 = area([NaN, NaN], [NaN, NaN], 'FaceColor', 'k', 'LineStyle', 'none', 'ShowBaseLine', 'off');
-alpha(0.2);
+alpha(0.1);
 hold on
 patch_x = 1:size(data,1)-1;
 h.plot2 = patch(patch_x, patch_x, patch_x,...
@@ -44,7 +44,7 @@ ylabel(h.axes2, 'Pix/sec');
 %% plot Rotary Velocity%%
 h.axes3 = axes('Units', 'Pixels', 'Position', [70, 190, 600, 100]);
 h.area3 = area([NaN, NaN], [NaN, NaN], 'FaceColor', 'k', 'LineStyle', 'none', 'ShowBaseLine', 'off');
-alpha(0.2);
+alpha(area_alpha);
 hold on
 h.plot3 = plot(NaN, NaN, 'LineWidth', 2);
 hold off
@@ -55,7 +55,7 @@ ylabel(h.axes3, 'cm/sec')
 %% plot Photo Sensor
 h.axes4 = axes('Units', 'Pixels', 'Position', [70, 50, 600, 100]);
 h.area4 = area([NaN, NaN], [NaN, NaN], 'FaceColor', 'k', 'LineStyle', 'none', 'ShowBaseLine', 'off');
-alpha(0.2)
+alpha(area_alpha)
 hold on
 h.plot4 = plot(NaN, NaN);
 h.line4 = line([NaN, NaN], [NaN, NaN],'Color','r');
