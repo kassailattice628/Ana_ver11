@@ -77,18 +77,21 @@ set(h.axes5, 'XLim', [-range_axes5, range_axes5], 'YLim', [-range_axes5, range_a
 title('Position XY', 'FontSize', 14)
 
 %% Controler
-h.slider2 = uicontrol('style', 'slider', 'Position', [675, 330, 20, 100],...
+uicontrol('Style', 'text', 'String', 'Filter', 'Position',[640, 430, 80, 20]) 
+h.slider2 = uicontrol('Style', 'slider', 'Position', [675, 330, 20, 100],...
     'Min', 1, 'Max', 200, 'Value', 100, 'Callback', {@Plot_next, data, 0, params});
-h.slider4 = uicontrol('style', 'slider', 'Position', [675, 50, 20, 100],...
+
+uicontrol('Style', 'text', 'String', 'Threshold', 'Position',[640, 150, 80, 20]) 
+h.slider4 = uicontrol('Style', 'slider', 'Position', [675, 50, 20, 100],...
     'Min', 0.001, 'Max', 0.2, 'Value', 0.025, 'Callback', {@Plot_next, data, 0, params});
 
-uicontrol('style', 'pushbutton', 'string', 'New File', 'position', [10, 750, 100, 30], 'Callback', 'Select_Open_MAT', 'FontSize', 14);
-h.file_name = uicontrol('style', 'text', 'string', fname, 'position', [115, 745, 150, 30], 'FontSize', 14);
-uicontrol('style', 'text', 'string', ['Stim Pattern: ' sobj.pattern], 'position', [270, 745, 200, 30], 'FontSize', 14);
+uicontrol('Style', 'pushbutton', 'String', 'New File', 'position', [10, 750, 100, 30], 'Callback', 'Select_Open_MAT', 'FontSize', 14);
+h.file_name = uicontrol('Style', 'text', 'String', fname, 'position', [115, 745, 150, 30], 'FontSize', 14);
+uicontrol('Style', 'text', 'String', ['Stim Pattern: ' sobj.pattern], 'position', [270, 745, 200, 30], 'FontSize', 14);
 
-h.set_n = uicontrol('style', 'edit', 'string', 1, 'position', [120, 710, 50, 30], 'Callback', {@Plot_next, data, 0, params}, 'FontSize', 14, 'BackGroundColor', 'w');
-uicontrol('style', 'pushbutton', 'string', '+', 'position', [10, 710, 50, 30], 'Callback', {@Plot_next, data, 1, params}, 'FontSize', 14);
-uicontrol('style', 'pushbutton', 'string', 'Å|', 'position', [65, 710, 50, 30], 'Callback', {@Plot_next, data, -1, params}, 'FontSize', 14);
+h.set_n = uicontrol('Style', 'edit', 'String', 1, 'position', [120, 710, 50, 30], 'Callback', {@Plot_next, data, 0, params}, 'FontSize', 14, 'BackGroundColor', 'w');
+uicontrol('Style', 'pushbutton', 'String', '+', 'position', [10, 710, 50, 30], 'Callback', {@Plot_next, data, 1, params}, 'FontSize', 14);
+uicontrol('Style', 'pushbutton', 'String', 'Å|', 'position', [65, 710, 50, 30], 'Callback', {@Plot_next, data, -1, params}, 'FontSize', 14);
 
 %%
 set(h.fig1, 'KeyPressFcn', {@callback_keypress, h, data});
