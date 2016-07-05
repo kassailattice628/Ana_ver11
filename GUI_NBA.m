@@ -89,9 +89,11 @@ uicontrol('Style', 'pushbutton', 'String', 'New File', 'position', [10, 750, 100
 h.file_name = uicontrol('Style', 'text', 'String', fname, 'position', [115, 745, 150, 30], 'FontSize', 14);
 uicontrol('Style', 'text', 'String', ['Stim Pattern: ' sobj.pattern], 'position', [270, 745, 200, 30], 'FontSize', 14);
 
-h.set_n = uicontrol('Style', 'edit', 'String', 1, 'position', [120, 710, 50, 30], 'Callback', {@Plot_next, data, 0, params}, 'FontSize', 14, 'BackGroundColor', 'w');
+%% trial select
 uicontrol('Style', 'pushbutton', 'String', '+', 'position', [10, 710, 50, 30], 'Callback', {@Plot_next, data, 1, params}, 'FontSize', 14);
 uicontrol('Style', 'pushbutton', 'String', 'Å|', 'position', [65, 710, 50, 30], 'Callback', {@Plot_next, data, -1, params}, 'FontSize', 14);
+uicontrol('Style', 'text', 'String', 'Trial#: ', 'position', [120, 725, 50, 30], 'FontSize', 14);
+h.set_n = uicontrol('Style', 'edit', 'String', 1, 'position', [120, 710, 50, 25], 'Callback', {@Plot_next, data, 0, params}, 'FontSize', 14, 'BackGroundColor', 'w');
 
 %%
 set(h.fig1, 'KeyPressFcn', {@callback_keypress, h, data});
