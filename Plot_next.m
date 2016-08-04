@@ -4,6 +4,7 @@ global hfig
 global n
 
 n = update_n(set_n, data);
+disp(size(data))
 
 recTime = linspace(params{1,n}.AIStartTime, params{1,n}.AIEndTime, size(data,1));
 
@@ -114,6 +115,7 @@ refreshdata(hfig.fig1, 'caller')
                 N = n + 1;
             else
                 N = n;
+                disp('No more trials.')
             end
             set(hfig.set_n, 'string', num2str(N))
         elseif set_n == -1
@@ -121,6 +123,7 @@ refreshdata(hfig.fig1, 'caller')
                 N = n - 1;
             else
                 N = n;
+                disp('First trials.')
             end
             set(hfig.set_n, 'string', num2str(N))
         else
