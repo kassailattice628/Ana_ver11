@@ -4,7 +4,7 @@ global hfig
 global n
 
 n = update_n(set_n, data);
-disp(size(data))
+%disp(size(data))
 
 recTime = linspace(params{1,n}.AIStartTime, params{1,n}.AIEndTime, size(data,1));
 
