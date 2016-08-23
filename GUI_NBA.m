@@ -12,7 +12,7 @@ h.plot1_1 = plot(NaN, NaN);
 hold off
 
 set(h.axes1_1, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLimMode', 'Auto');
-title('EYE-Position', 'FontSize', 14)
+title('EYE-Pos (Vertical)', 'FontSize', 14)
 ylabel(h.axes1_1, 'Down <--> UP')
 
 %%
@@ -24,7 +24,7 @@ h.plot1_2 = plot(NaN, NaN);
 hold off
 
 set(h.axes1_2, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLimMode', 'Auto');
-title('EYE-Position', 'FontSize', 14)
+title('EYE-Pos (Horizontal)', 'FontSize', 14)
 ylabel(h.axes1_2, 'Tempo <--> Nasal');
 
 %% plot Eye velocity %%
@@ -63,8 +63,8 @@ hold off
 
 set(h.axes4, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'YLim', [-0.01, 0.25]);
 
-ylabel(h.axes4, 'V')
-title('Photo Sensor', 'FontSize', 14)
+ylabel(h.axes4, 'Diode (V)')
+title('Visual Stimulus', 'FontSize', 14)
 xlabel('Time (s)');
 
 %% plot eye position X-Y
