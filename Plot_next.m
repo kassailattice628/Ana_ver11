@@ -1,12 +1,17 @@
 function Plot_next(~, ~, data, set_n, params)
+%%
+global sobj
 global recobj
 global hfig
 global n
+%%
 
 n = update_n(set_n, data);
 %disp(size(data))
 
 recTime = linspace(params{1,n}.AIStartTime, params{1,n}.AIEndTime, size(data,1));
+
+update_info_text(sobj);
 
 % eye position
 update_plot(hfig.plot1_1, recTime, -data(:, 1, n));
@@ -33,6 +38,77 @@ update_area(get(hfig.slider4, 'value'), params)
 set(hfig.line4, 'XData', [recTime(1), recTime(end)], 'YData',[get(hfig.slider4, 'value'), get(hfig.slider4, 'value')])
 % plot
 refreshdata(hfig.fig1, 'caller')
+
+%% %%%%%%%%subfunctions%%%%%%%%%% %%
+%%
+    function update_info_text(sobj)
+        if isfield(params{1,n}, 'stim1')
+            stim =  params{1,n}.stim1;
+            pos = num2str(stim.center_position);
+            sz = num2str(stim.size_deg);
+            switch sobj.pattern
+                case {'Uni', 'Size_rand'}
+                    stim1_info_txt = ['Pos:', pos, ', Size:', sz, 'deg'];
+                    
+                case {'1P_Conc'}
+                    dist_deg = num2str(stim.dist_deg);
+                    angle_deg = num2str(stim.angle_deg);
+                    stim1_info_txt = ['Center:', pos, ', Size:', sz, 'deg',...
+                        ', dist:', dist_deg, ', ang:', angle_deg];
+                    
+                case {'2P_Conc'}
+                    dist_deg = num2str(stim.dist_deg);
+                    angle_deg = num2str(stim.angle_deg);
+                    
+                    stim2 =  params{1,n}.stim2;
+                    sz2 = num2str(stim2.size_deg);
+                    stim1_info_txt = ['Stim1::Pos', pos, ', Size:', sz, 'deg'];
+                    stim2_info_txt = ['Stim2::Dist:', dist_deg, ', Ang:', angle_deg,...
+                        ', Size:', sz2, 'deg'];
+                    set(hfig.stim2_info, 'String', stim2_info_txt);
+       
+                case {'B/W'}
+                    dist_deg = num2str(stim.dist_deg);
+                    angle_deg = num2str(stim.angle_deg);
+                    stim1_info_txt = ['Center:', pos, ', Size:', sz, 'deg',...
+                        ', dist:', dist_deg, ', ang:', angle_deg,...
+                        ', StimLumi:', stim.lumi, ', BGLumi:'];
+                    
+                case {'Looming'}
+                    spd = stim.LoomingSpd_deg_s;
+                    maxsz = stim.LoomingMaxSize_deg;
+                    stim1_info_txt = ['Pos:', pos, 'MaxSize:', maxsz,...
+                        ', Spd:', spd, 'deg/s', ', StimLumi:', stim.lumi,...
+                        ', BGLumi'];
+                    
+                case {'Sin', 'Rect', 'Gabor'}
+                     sf = stim.gratingSF_cyc_deg;
+                     spd = stim.gratingSpd_Hz;
+                     angle = stim.gratingAngle_deg;
+                     stim1_info_txt = ['Pos:', pos, 'Size:', sz,...
+                        ', SF:', sf, 'cyc/deg', ', Spd:', spd, 'Hz',...
+                        ', Angle:', angle, 'deg'];
+                    
+                case {'Images'}
+                    ImgNum = stim.Image_index;
+                    stim1_info_txt = ['Pos:', pos, 'Size:', sz,...
+                        ', Image#:', ImgNum];
+                    
+                case {'Mosaic'}
+                    pos_seed = stim.RandPosition_seed;
+                    sz_seed = stim.RandSize_seed;
+                    
+                case {'FineMap'}
+                    
+            end
+            set(hfig.stim1_info, 'String', stim1_info_txt);
+        
+        else
+            set(hfig.stim1_info, 'String', 'Prestim');
+        end
+        
+    end
+
 
 %%
     function update_area(threshold, params)

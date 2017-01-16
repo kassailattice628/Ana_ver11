@@ -1,7 +1,12 @@
 %function NBA11_Analysis
+clearvars
+close all
+
 global hfig
 global n
-% open iRecHS2Data
+global imgobj
+
+addpath('FigOnOFF');
 %% 
 if exist('DataSave', 'var') == 0
     %select file
@@ -27,7 +32,13 @@ else
 end
 %%
 % open GUI
-
-hfig = GUI_NBA(DataSave, ParamsSave, recobj, sobj, fname); 
+hfig = GUI_NBA_Analysis(DataSave, ParamsSave, recobj, sobj, fname); 
 n = 0;
 Plot_next([], [], DataSave, 0, ParamsSave)
+
+%%
+imgobj.nROI = 0;
+imgobj.selectROI = 1;
+imgobj.dFF =[];
+imgobj.maxROIs =  1;
+imgobj.FVsampt = 0.574616;

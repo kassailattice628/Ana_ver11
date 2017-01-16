@@ -23,7 +23,7 @@ if exist('DataSave', 'var')
     set(hfig.file_name, 'string', fname)
     %}
     % update plot
-    hfig = GUI_NBA(DataSave, ParamsSave, recobj, sobj, fname); 
+    hfig = GUI_NBA_Analysis(DataSave, ParamsSave, recobj, sobj, fname); 
     n = 0;
     Plot_next([], [], DataSave, 0, ParamsSave)
 else
