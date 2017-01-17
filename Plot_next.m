@@ -39,6 +39,13 @@ set(hfig.line4, 'XData', [recTime(1), recTime(end)], 'YData',[get(hfig.slider4, 
 % plot
 refreshdata(hfig.fig1, 'caller')
 
+
+% Update Table info
+ if isfield(hfig, 'params_table')
+     [rnames, values]= Get_stim_param_values(params, recobj, sobj);
+     set(hfig.params_table_contents, 'Data', values, 'RowName', rnames);
+ end
+
 %% %%%%%%%%subfunctions%%%%%%%%%% %%
 %%
     function update_info_text(sobj)

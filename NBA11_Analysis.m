@@ -1,4 +1,5 @@
 %function NBA11_Analysis
+clearvars -global
 clearvars
 close all
 

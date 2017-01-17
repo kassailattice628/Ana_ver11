@@ -3,9 +3,10 @@ global hfig
 global imgobj
 
 %%
+h_name = 'two_photon';
 hfig.two_photon = figure('Position', [10, 20, 1100, 500], 'Name', 'Two-photon Traces',...
     'NumberTitle', 'off', 'Menubar', 'none', 'Resize', 'off',...
-    'DeleteFcn', {@Close_subwindow, hfig_handle});
+    'DeleteFcn', {@Close_subwindow, hfig_handle, h_name});
 
 p_roi =  uipanel('Title', 'ROI traces', 'FontSize', 12, 'Position', [0.01 0.89, 0.95, 0.1]);
 %% Load DATA
@@ -34,11 +35,11 @@ hfig.two_photon_deselect_roi_n = uicontrol('Parent', p_roi, 'Style', 'edit', 'St
     'Callback', @Plot_dFF_selectROIs, 'FontSize', 14, 'BackGroundColor', 'w');
 
 %% plot1:: Single ROI
-hfig.two_photon_axes1 = axes('Units', 'Pixels', 'Position', [70, 280, 600, 120]);
+hfig.two_photon_axes1 = axes('Units', 'Pixels', 'Position', [70, 290, 600, 120]);
 %
 area_Y =  [-1, 5, 5, -1];
 hold on;
-% get sto,i;is to,omg
+% get stim timing
 for i =  r.prestim+1 : r.cycleCount
     %ON_Time 補正必要
     ON = p{1,i}.AIStartTime + p{1,i}.stim1.On_time;
@@ -50,21 +51,29 @@ end
 hfig.two_photon_plot1 = plot(NaN, NaN);
 hold off
 
-set(hfig.two_photon_axes1, 'XLimMode', 'manual', 'XLim', [0, imgobj.FVt(end)], 'xticklabel', [],...
+set(hfig.two_photon_axes1, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [],...
     'YLimMode', 'manual', 'YLim', [-0.5, 3.5]);
 title('Single ROI', 'FontSize', 14)
 ylabel(hfig.two_photon_axes1, 'dF/F0')
 
 %% plot2:: Multiple ROIs
-hfig.two_photon_axes2 = axes('Units', 'Pixels', 'Position', [70, 30, 600, 200]);
-hfig.two_photon_area2 = area([NaN, NaN], [NaN, NaN], 'FaceColor', 'k', 'LineStyle', 'none', 'ShowBaseLine', 'off');
-alpha(0.1);
+hfig.two_photon_axes2 = axes('Units', 'Pixels', 'Position', [70, 50, 600, 200]);
 hold on
-hfig.two_photon_plot2 = plot(NaN, NaN);
+for i =  r.prestim+1 : r.cycleCount
+    %ON_Time 補正必要
+    ON = p{1,i}.AIStartTime + p{1,i}.stim1.On_time;
+    OFF = p{1,i}.AIStartTime + p{1,i}.stim1.Off_time;
+    area_X = [ON, ON, OFF, OFF];
+    fill(area_X, area_Y, [0.8 0.8 0.8], 'EdgeColor', 'none');
+end
+%hfig.two_photon_plot2 = plot(NaN, NaN, 'k');
 hold off
 
-title(' Select ROIs', 'FontSize', 14)
+set(hfig.two_photon_axes2, 'XLimMode', 'manual', 'XLim', [-inf, inf],...
+    'YLimMode', 'manual', 'YLim', [-0.5, 3.5]);
+title('Select ROIs', 'FontSize', 14)
 ylabel(hfig.two_photon_axes2, 'dF/F0')
+xlabel(hfig.two_photon_axes2, 'Time (sec)');
 end
 
 %%
