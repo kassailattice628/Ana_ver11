@@ -80,33 +80,36 @@ end
 %%
 function Load2P(~,~)
 global imgobj
+global mainvar
 %%
 if exist('dFF', 'var') == 0
     %select file
-    [fname, dirname] = uigetfile('*.xls');
-    imgobj.dFF = dlmread([dirname, fname], '\t', 1, 1);
-    [FVflames, imgobj.maxROIs] = size(imgobj.dFF);
-    imgobj.FVt = 0:imgobj.FVsampt:imgobj.FVsampt*(FVflames-1);
-    while isempty(imgobj.dFF)
-        errordlg('dFF  is missing!')
-        % select another file
-       imgobj.dFF = dlmread([dirname, fname], '\t', 1, 1);
+    [fname, dirname] = uigetfile([mainvar.dirname, '*.xls']);
+    if dirname == 0 %cancel select file
+        %skip open file
+    else
+        imgobj.dFF = dlmread([dirname, fname], '\t', 1, 1);
         [FVflames, imgobj.maxROIs] = size(imgobj.dFF);
         imgobj.FVt = 0:imgobj.FVsampt:imgobj.FVsampt*(FVflames-1);
     end
 else
     % 2P.xls is alread loaded the base workspace.
     if isempty(imgobj.dFF)
-        while isempty(imgobj.dFF)
-            errordlg('dFF is missing!')
-            % select another file
-           imgobj.dFF = dlmread([dirname, fname], '\t', 1, 1);
-            [FVflames, imgobj.maxROIs] = size(imgobj.dFF);
-            imgobj.FVt = 0:imgobj.FVsampt:imgobj.FVsampt*(FVflames-1);
-        end
+        errordlg('dFF  is missing!')
+        % select another file
+        [fname, dirname] = uigetfile([mainvar.dirname, '*.xls']);
+        imgobj.dFF = dlmread([dirname, fname], '\t', 1, 1);
+        [FVflames, imgobj.maxROIs] = size(imgobj.dFF);
+        imgobj.FVt = 0:imgobj.FVsampt:imgobj.FVsampt*(FVflames-1);
     end
 end
-%%
-Plot_dFF_next([], [], 0)
-Plot_dFF_selectROIs([], [])
+
+if isempty(imgobj.dFF)
+    errordlg('dFF  is missing!')
+    %skip open file
+else
+    Plot_dFF_next([], [], 0)
+    Plot_dFF_selectROIs([], [])
+end
+
 end

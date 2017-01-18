@@ -6,19 +6,20 @@ close all
 global hfig
 global n
 global imgobj
+global mainvar
 
 addpath('FigOnOFF');
 %% 
 if exist('DataSave', 'var') == 0
     %select file
-    [fname, dirname] = uigetfile('*.mat');
-    load([dirname, fname]);
+    [mainvar.fname, mainvar.dirname] = uigetfile('*.mat');
+    load([mainvar.dirname, mainvar.fname]);
     
     while isempty(DataSave)
         errordlg('DataSave is missing!')
         % select another file
-        [fname, dirname] = uigetfile([dirame, '*.mat']);
-        load([dirname, fname]);
+        [mainvar.fname, mainvar.dirname] = uigetfile([dirame, '*.mat']);
+        load([mainvar.dirname, mainvar.fname]);
     end
 else
     % DataSave is alread in the base workspace.
@@ -26,14 +27,14 @@ else
         while isempty(DataSave)
             errordlg('DataSave is missing!')
             % select another file
-            [fname, dirname] = uigetfile([dirname, '*.mat']);
-            load([dirname, fname]);
+            [mainvar.fname, mainvar.dirname] = uigetfile([mainvar.dirname, '*.mat']);
+            load([mainvar.dirname, mainvar.fname]);
         end
     end
 end
 %%
 % open GUI
-hfig = GUI_NBA_Analysis(DataSave, ParamsSave, recobj, sobj, fname); 
+hfig = GUI_NBA_Analysis(DataSave, ParamsSave, recobj, sobj, mainvar.fname); 
 n = 0;
 Plot_next([], [], DataSave, 0, ParamsSave)
 

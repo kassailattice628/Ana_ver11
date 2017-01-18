@@ -1,30 +1,20 @@
+function Select_Open_MAT(~,~)
 % select a new file and opne plot window
-%%
 global hfig
 global n
-%%
-delete(hfig.fig1)
-clear DataSave
-clear ParamsSave
-clear n
-clear recobj
-clear sobj
+global mainvar
 
+%%
+delete(hfig.fig1);
+clearvars -global recobj sobj DataSave ParamsSave
 
 %%
 
-[fname, dirname] = uigetfile([dirname, '*.mat']);
-load([dirname, fname]);
+[mainvar.fname, mainvar.dirname] = uigetfile([mainvar.dirname, '*.mat']);
+load([mainvar.dirname, mainvar.fname]);
 
 if exist('DataSave', 'var')
-    % open GUI
-    %{
-    set(hfig.fig1, 'Name', ['NBA ver:', num2str(recobj.NBAver)]);
-    set(hfig.set_n, 'string', 1)
-    set(hfig.file_name, 'string', fname)
-    %}
-    % update plot
-    hfig = GUI_NBA_Analysis(DataSave, ParamsSave, recobj, sobj, fname); 
+    hfig = GUI_NBA_Analysis(DataSave, ParamsSave, recobj, sobj, mainvar.fname); 
     n = 0;
     Plot_next([], [], DataSave, 0, ParamsSave)
 else

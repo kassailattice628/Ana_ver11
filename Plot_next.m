@@ -4,6 +4,7 @@ global sobj
 global recobj
 global hfig
 global n
+%global imgobj
 %%
 
 n = update_n(set_n, data);
@@ -36,9 +37,32 @@ update_plot(hfig.plot5, data2_offset, -data1_offset);
 % STIM timing
 update_area(get(hfig.slider4, 'value'), params)
 set(hfig.line4, 'XData', [recTime(1), recTime(end)], 'YData',[get(hfig.slider4, 'value'), get(hfig.slider4, 'value')])
-% plot
-refreshdata(hfig.fig1, 'caller')
 
+
+%{
+%% Update ROI Trace
+if isfield(imgobj, 'dFF')  && isempty(imgobj.dFF) == 0
+    %imgobj.dFF にデータがある場合は 切り出して plot に表示
+    index = find(imgobj.FVt >= recTime(1) &...
+        imgobj.FVt <= recTime(1) + recobj.rect/1000 + recobj.interval);
+    hold on
+    for i = 1:length(hfig.plot6)
+        set(hfig.plot6(i), 'XData', NaN, 'YData', NaN);
+    end
+    clear hfig.plot6
+    
+    hfig.plot6 = zeros(length(imgobj.selectROI), 1);
+    for i = 1:length(imgobj.selectROI)
+        hfig.plot6(i) =  plot(imgobj.FVt(index), imgobj.dFF(index, imgobj.selectROI(i)));
+        set(hfig.plot6(i), 'Parent', hfig.axes6);
+    end 
+    hold off
+    % update_plot(hfig.plot6, imgobj.FVt(index), imgobj.dFF(index, imgobj.selectROI));
+end
+%}
+    
+%% Update plots
+refreshdata(hfig.fig1, 'caller')
 
 % Update Table info
  if isfield(hfig, 'params_table')
@@ -102,9 +126,9 @@ refreshdata(hfig.fig1, 'caller')
                         ', Image#:', ImgNum];
                     
                 case {'Mosaic'}
-                    pos_seed = stim.RandPosition_seed;
-                    sz_seed = stim.RandSize_seed;
-                    
+                    %pos_seed = stim.RandPosition_seed;
+                    %sz_seed = stim.RandSize_seed;
+                    stim1_info_txt = ['Pos:', pos, 'Size:', sz];
                 case {'FineMap'}
                     
             end
@@ -129,12 +153,14 @@ refreshdata(hfig.fig1, 'caller')
                 set_area(hfig.area2, recTime(1:end-1), ind_stim_on, ind_stim_off, [0, 150]);
                 set_area(hfig.area3, recTime(1:end-1), ind_stim_on, ind_stim_off, [-0.02, 2]);
                 set_area(hfig.area4, recTime, ind_stim_on, ind_stim_off, [-0.01, 0.25]);
+                %set_area(hfig.area6, recTime, ind_stim_on, ind_stim_off, [-0.01, 2]);
             else
                 set(hfig.area1_1,'XData', [NaN, NaN], 'YData', [NaN, NaN]);
                 set(hfig.area1_2,'XData', [NaN, NaN], 'YData', [NaN, NaN]);
                 set(hfig.area2,'XData', [NaN, NaN], 'YData', [NaN, NaN]);
                 set(hfig.area3,'XData', [NaN, NaN], 'YData', [NaN, NaN]);
                 set(hfig.area4,'XData', [NaN, NaN], 'YData', [NaN, NaN]);
+                %set(hfig.area6,'XData', [NaN, NaN], 'YData', [NaN, NaN]);
             end
         else
             set(hfig.area1_1,'XData', [NaN, NaN], 'YData', [NaN, NaN]);
@@ -142,6 +168,7 @@ refreshdata(hfig.fig1, 'caller')
             set(hfig.area2,'XData', [NaN, NaN], 'YData', [NaN, NaN]);
             set(hfig.area3,'XData', [NaN, NaN], 'YData', [NaN, NaN]);
             set(hfig.area4,'XData', [NaN, NaN], 'YData', [NaN, NaN]);
+            %set(hfig.area6,'XData', [NaN, NaN], 'YData', [NaN, NaN]);
         end
     end
 

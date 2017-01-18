@@ -1,7 +1,10 @@
 function h = GUI_NBA_Analysis(data, params, recobj, sobj, fname)
+
 %open fig
 h.fig1 = figure('Position', [10, 20, 1000, 800], 'Name', ['Analayse DATA for NBA ver:', num2str(recobj.NBAver)],...
-    'NumberTitle', 'off', 'Menubar', 'none', 'Resize', 'off');
+    'NumberTitle', 'off', 'Menubar', 'none', 'Resize', 'off',...
+    'DeleteFcn', @Close_NBA11_Analysys);
+
 area_alpha = 0.1;
 
 %% Eye Position %%
@@ -74,9 +77,7 @@ hold on
 h.plot4 = plot(NaN, NaN);
 h.line4 = line([NaN, NaN], [NaN, NaN],'Color','r');
 hold off
-
 set(h.axes4, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'YLim', [-0.01, 0.25]);
-
 ylabel(h.axes4, 'Diode (V)')
 title('Visual Stimulus', 'FontSize', 14)
 xlabel('Time (s)');
@@ -91,17 +92,19 @@ set(h.axes5, 'XLim', [-range_axes5, range_axes5], 'YLim', [-range_axes5, range_a
 title('Position XY', 'FontSize', 14)
 
 %% plot ROI Traces
+%{
 axes6_h_base =  axes4_h_base - axes_height - axes_space -20;
 h.axes6 = axes('Units', 'Pixels', 'Position', [axes_left, axes6_h_base, axes_width, axes_height]);
 h.area6 = area([NaN, NaN], [NaN, NaN], 'FaceColor', 'k', 'LineStyle', 'none', 'ShowBaseLine', 'off');
 alpha(area_alpha);
 hold on
-h.plot6 = plot(NaN, NaN, 'LineWidth', 2);
+h.plot6 = plot(NaN, NaN);
 hold off
-set(h.axes6, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', []);
+set(h.axes6, 'XLimMode', 'manual', 'XLim', [-inf, inf]);
 title('ROI Traces', 'FontSize', 14)
 ylabel(h.axes6, 'dF/F %')
-
+xlabel(h.axes6, 'Time (s)');
+%}
 %% Controler
 slider2_height = axes2_h_base + axes_height;
 uicontrol('Style', 'text', 'String', 'Filter', 'Position',[640, slider2_height, 80, 20])
@@ -115,7 +118,8 @@ h.slider4 = uicontrol('Style', 'slider', 'Position', [675, axes4_h_base, 20, axe
 
 
 %% Select NBA DATA file
-uicontrol('Style', 'pushbutton', 'String', 'New File', 'Position', [10, 760, 100, 30], 'Callback', 'Select_Open_MAT', 'FontSize', 14);
+uicontrol('Style', 'pushbutton', 'String', 'New File', 'Position', [10, 760, 100, 30],...
+    'Callback', @Select_Open_MAT, 'FontSize', 14);
 %Select_Open_MAT は function ではなくて script M ファイルとして呼んで workspace の変数を編集
 
 %% Data Infomation
@@ -171,4 +175,10 @@ else
         %hfig = rmfield(hfig, 'params_table');
     end
 end
+end
+
+%%
+function Close_NBA11_Analysys(~,~)
+close all
+
 end
