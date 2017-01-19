@@ -7,16 +7,18 @@ global imgobj
 selectedROI = str2num(get(hfig.two_photon_select_roi_n,'String'));
 if isempty(get(hfig.two_photon_select_roi_n,'String'))
     selectedROI = 1:imgobj.maxROIs;
+elseif selectedROI == 0
+    selectedROI = [];
 end
 
 deselectROI = str2num(get(hfig.two_photon_deselect_roi_n,'String'));
 if isempty(get(hfig.two_photon_deselect_roi_n,'String'))
     deselectROI =[];
 end
-
-%%
+% select ‚©‚ç deselect ”²‚­
 imgobj.selectROI = setdiff(selectedROI, deselectROI);
 
+%%
 hold on
 if isfield(hfig, 'two_photon_plot2')
     for i = 1:length(hfig.two_photon_plot2)

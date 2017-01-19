@@ -247,4 +247,6 @@ refreshdata(hfig.fig1, 'caller')
     end
 
 
+%%
+% end of Plot_next
 end
