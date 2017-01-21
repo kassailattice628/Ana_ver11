@@ -10,7 +10,7 @@ imgobj.nROI = update_n(set_n);
 
 % Single
 update_plot(hfig.two_photon_plot1, imgobj.FVt, imgobj.dFF, imgobj.nROI);
-% plot
+% Update plot
 refreshdata(hfig.two_photon, 'caller')
 
 %% %%%%%%%%subfunctions%%%%%%%%%% %%
@@ -40,6 +40,8 @@ refreshdata(hfig.two_photon, 'caller')
 %%
     function update_plot(h_plot, x, y, n)
         set(h_plot, 'XData', x, 'YData', y(:,n));
+        
+        set(hfig.two_photon_axes1, 'YLim', [min(y(:,n))*1.2, max(y(:,n))*1.2]);
     end
 
 

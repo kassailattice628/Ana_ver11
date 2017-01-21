@@ -3,6 +3,7 @@ function Select_Open_MAT(~,~)
 global hfig
 global n
 global mainvar
+global DataSave
 
 %%
 delete(hfig.fig1);
@@ -14,6 +15,7 @@ clearvars -global recobj sobj DataSave ParamsSave
 load([mainvar.dirname, mainvar.fname]);
 
 if exist('DataSave', 'var')
+    DataSave(:,3,:) =  DataSave(:,3,:)* 1000;
     hfig = GUI_NBA_Analysis(DataSave, ParamsSave, recobj, sobj, mainvar.fname); 
     n = 0;
     Plot_next([], [], DataSave, 0, ParamsSave)
