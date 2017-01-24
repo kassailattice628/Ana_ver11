@@ -55,7 +55,6 @@ hold off
 set(h.axes2, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [0, 150]);
 title('Radial-Velocity', 'FontSize', 14);
 ylabel(h.axes2, 'Pix/sec');
-
 %% plot Rotary Velocity%%
 axes3_h_base =  axes2_h_base - axes_height - axes_space;
 h.axes3 = axes('Units', 'Pixels', 'Position', [axes_left, axes3_h_base, axes_width, axes_height]);
@@ -66,7 +65,7 @@ h.plot3 = plot(NaN, NaN, 'LineWidth', 2);
 hold off
 set(h.axes3, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-0.02, 2]);
 title('Locomotion Velocity (Rotary)', 'FontSize', 14)
-ylabel(h.axes3, 'cm/sec')
+ylabel(h.axes3, 'cm/sec');
 
 %% plot Photo Sensor
 axes4_h_base =  axes3_h_base - axes1_height - axes_space;
@@ -122,7 +121,6 @@ h.slider4 = uicontrol('Style', 'slider', 'Position', [675, axes4_h_base, 20, axe
 %% Select NBA DATA file
 uicontrol('Style', 'pushbutton', 'String', 'New File', 'Position', [10, 760, 100, 30],...
     'Callback', @Select_Open_MAT, 'FontSize', 14);
-%Select_Open_MAT は function ではなくて script M ファイルとして呼んで workspace の変数を編集
 
 %% Data Infomation
 h.file_name = uicontrol('Style', 'text', 'String', fname, 'Position', [115, 755, 150, 30], 'FontSize', 14);
@@ -133,7 +131,7 @@ h.stim2_info = uicontrol('Style', 'text', 'String', '', 'Position', [470, 725, 5
 
 %% trial select
 %main[10, 20, 1000, 800]
-h.p_trial =  uipanel('Title', 'Stim Trial', 'FontSize', 12, 'Position', [0.01 0.88, 0.5, 0.065]);
+h.p_trial =  uipanel('Title', 'Stim Trial', 'FontSize', 12, 'Position', [0.01 0.88, 0.6, 0.065]);
 
 uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', '+', 'Position', [10, 5, 50, 30], 'Callback', {@Plot_next, data, 1, params}, 'FontSize', 14);
 uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', '－', 'Position', [65, 5, 50, 30], 'Callback', {@Plot_next, data, -1, params}, 'FontSize', 14);
@@ -146,6 +144,10 @@ h.set_threshold = uicontrol('Parent', h.p_trial, 'Style', 'edit', 'String',...
     'Callback', {@Set_threshold, h, data, params}, 'FontSize', 14, 'BackGroundColor', 'w');
 h.apply_threshold = uicontrol('Parent', h.p_trial, 'Style', 'togglebutton',...
     'String', 'Apply All', 'Position', [340, 5, 90, 30], 'Callback', {@Apply_threshold_to_all, h.set_threshold, data}, 'FontSize', 14);
+
+uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', 'Get F0#', 'Position', [435, 5, 80, 30], 'FontSize', 14,...
+    'Callback', @GetF0);
+
 
 %% Load two-photon traces
 uicontrol('Style', 'togglebutton', 'String', 'Two-photon', 'Position', [800, 760, 100, 30],...
@@ -170,7 +172,25 @@ set(h.fig1, 'KeyPressFcn', @callback_keypress);
 end
 
 %% subfunction
+
 function Close_NBA11_Analysys(~,~)
 close all
 
+%clear valuables
+
+end
+
+
+function GetF0(~,~)
+global ParamsSave
+global recobj
+global imgobj
+
+if isfield(ParamsSave{1,recobj.prestim + 1}.stim1, 'corON')
+    numF0 = floor(ParamsSave{1,recobj.prestim + 1}.stim1.corON / imgobj.FVsampt) - 1;
+    
+    msgbox(['The number of frames for prestimulus is :: ', num2str(numF0)] );
+else
+    warndlg('Onset of the first stimulus timing is not defined !!!')
+end
 end

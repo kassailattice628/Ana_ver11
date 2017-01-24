@@ -114,8 +114,8 @@ uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Apply dFF', 'Posi
     h_Offset, h_OffsetFrame, h_Norm});
 
 %%
-uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Average by Stim', 'Position', [5, 205, 200, 30],...
-    'Callback', @Average_dFF_by_stim, 'FontSize', 14)
+uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Average by Stim', 'Position', [5, 205, 200, 30], 'FontSize', 14,...
+    'Callback', @Average_dFF_by_stim)
 
 %%
     function Open_file(d,f)
@@ -163,14 +163,6 @@ global imgobj
         lowcutfreq = str2double(get(h_freq, 'string'));
         [dFF_mod, ~, ~] = filtbutter(2, lowcutfreq, 'high', 1/imgobj.FVsampt, dFF_mod);
     end
-    %%Offset
-    if get(h3, 'value')
-        F0frames = str2double(get(h_frames, 'string'));
-        dFF_base= mean(imgobj.dFF(1:F0frames,:));
-        for i = 1:size(imgobj.dFF,2)
-            dFF_mod(:,i) = dFF_mod(:,i) - dFF_base(i);
-        end
-    end
     %%Normalize
     if get(h4, 'value')
         MaxdFF = max(dFF_mod);
@@ -178,7 +170,16 @@ global imgobj
             dFF_mod(:,i) = dFF_mod(:,i)/abs(MaxdFF(i));
         end
     end
+    %%Offset
+    if get(h3, 'value')
+        F0frames = str2double(get(h_frames, 'string'));
+        dFF_base= mean(dFF_mod(1:F0frames,:),1);
+        for i = 1:size(imgobj.dFF,2)
+            dFF_mod(:,i) = dFF_mod(:,i) - dFF_base(i);
+        end
+    end
     
+    %%if
     imgobj.dFF = dFF_mod;
     Plot_dFF_next([],[],0);
 end
