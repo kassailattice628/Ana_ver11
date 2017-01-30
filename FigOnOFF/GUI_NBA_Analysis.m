@@ -175,7 +175,7 @@ end
 
 function Close_NBA11_Analysys(~,~)
 close all
-
+clear DataSave
 %clear valuables
 
 end

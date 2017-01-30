@@ -13,7 +13,9 @@ n = Update_n(set_n);
 %    params{1,n}.AIEndTime - params{1,1}.AIStartTime, size(data,1));
 
 recTime = params{1,n}.AIStartTime:1/recobj.sampf:params{1,n}.AIEndTime+1/recobj.sampf;
-
+if length(recTime) ~= size(data,1)
+    recTime = recTime(1:size(data,1));
+end
 Update_info_text;
 
 % eye position
@@ -136,8 +138,11 @@ end
                 case {'Mosaic'}
                     %pos_seed = stim.RandPosition_seed;
                     %sz_seed = stim.RandSize_seed;
-                    stim1_info_txt = ['Pos:', pos, 'Size:', sz];
+                    stim1_info_txt = ['Pos:', pos, ', Size:', sz];
                 case {'FineMap'}
+                    pos = num2str(stim.center_position);
+                    fine_pos =  num2str(stim.center_position_FineMap);
+                    stim1_info_txt = ['Center:', pos, ', Center Fine Map:', fine_pos, ', Size:', sz];
                     
             end
             set(hfig.stim1_info, 'String', stim1_info_txt);
