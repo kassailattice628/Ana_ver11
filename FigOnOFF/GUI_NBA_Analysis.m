@@ -92,6 +92,17 @@ range_axes5 = 0.04;
 set(h.axes5, 'XLim', [-range_axes5, range_axes5], 'YLim', [-range_axes5, range_axes5]);
 title('Position XY', 'FontSize', 14)
 
+uicontrol('Style', 'text', 'String', 'V:', 'Position', [720, 430, 30, 25], 'FontSize', 14);
+h.offsetV = uicontrol('Style', 'edit', 'String', 0, 'Position', [750, 435, 60, 25], 'FontSize', 14,...
+    'Callback', {@Plot_next, data, 0, params});
+
+uicontrol('Style', 'text', 'String', 'H:', 'Position', [815, 430, 30, 25], 'FontSize', 14);
+h.offsetH = uicontrol('Style', 'edit', 'String', 0, 'Position', [845, 435, 60, 25], 'FontSize', 14,...
+    'Callback', {@Plot_next, data, 0, params});
+
+h.sfhit_eye_pos = uicontrol('Style', 'pushbutton', 'String', 'Shift', 'Position', [915, 433, 50, 30],...
+    'FontSize', 14, 'Callback', {@Plot_next, data, 0, params});
+
 %% plot ROI Traces
 %{
 axes6_h_base =  axes4_h_base - axes_height - axes_space -20;
@@ -125,8 +136,8 @@ uicontrol('Style', 'pushbutton', 'String', 'New File', 'Position', [10, 760, 100
 %% Data Infomation
 h.file_name = uicontrol('Style', 'text', 'String', fname, 'Position', [115, 755, 150, 30], 'FontSize', 14);
 uicontrol('Style', 'text', 'String', ['Stim Pattern: ' sobj.pattern], 'Position', [270, 755, 200, 30], 'FontSize', 14, 'HorizontalAlignment', 'Left');
-h.stim1_info = uicontrol('Style', 'text', 'String', '', 'Position', [470, 755, 500, 30], 'FontSize', 14, 'HorizontalAlignment', 'Left');
-h.stim2_info = uicontrol('Style', 'text', 'String', '', 'Position', [470, 725, 500, 30], 'FontSize', 14, 'HorizontalAlignment', 'Left');
+h.stim1_info = uicontrol('Style', 'text', 'String', '', 'Position', [470, 770, 500, 25], 'FontSize', 14, 'HorizontalAlignment', 'Left');
+h.stim2_info = uicontrol('Style', 'text', 'String', '', 'Position', [470, 750, 500, 25], 'FontSize', 14, 'HorizontalAlignment', 'Left');
 
 
 %% trial select
@@ -150,10 +161,10 @@ uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', 'Get F0#', 'Posi
 
 
 %% Load two-photon traces
-uicontrol('Style', 'togglebutton', 'String', 'Two-photon', 'Position', [800, 760, 100, 30],...
+uicontrol('Style', 'togglebutton', 'String', 'Two-photon', 'Position', [890, 760, 100, 30],...
     'Callback', {@Open_subwindow, params, recobj, sobj, 'two_photon'}, 'FontSize', 14);
 
-h.button_table = uicontrol('Style', 'togglebutton', 'String', 'All Params','Position', [800, 725, 100, 30],...
+h.button_table = uicontrol('Style', 'togglebutton', 'String', 'All Params','Position', [890, 725, 100, 30],...
     'Callback', {@Open_subwindow, params, recobj, sobj, 'params_table'}, 'FontSize', 14);
 
 %% Use KeyPress

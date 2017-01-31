@@ -95,7 +95,7 @@ end
                     dist_deg = num2str(stim.dist_deg);
                     angle_deg = num2str(stim.angle_deg);
                     stim1_info_txt = ['Center:', pos, ', Size:', sz, 'deg',...
-                        ', dist:', dist_deg, ', ang:', angle_deg];
+                        ', dist:', dist_deg, 'deg', ', Ang:', angle_deg, 'deg'];
                     
                 case {'2P_Conc'}
                     dist_deg = num2str(stim.dist_deg);
@@ -104,7 +104,7 @@ end
                     stim2 =  params{1,n}.stim2;
                     sz2 = num2str(stim2.size_deg);
                     stim1_info_txt = ['Stim1::Pos', pos, ', Size:', sz, 'deg'];
-                    stim2_info_txt = ['Stim2::Dist:', dist_deg, ', Ang:', angle_deg,...
+                    stim2_info_txt = ['Stim2::Dist:', dist_deg, ', Ang:', angle_deg, 'deg',...
                         ', Size:', sz2, 'deg'];
                     set(hfig.stim2_info, 'String', stim2_info_txt);
                     
@@ -112,37 +112,40 @@ end
                     dist_deg = num2str(stim.dist_deg);
                     angle_deg = num2str(stim.angle_deg);
                     stim1_info_txt = ['Center:', pos, ', Size:', sz, 'deg',...
-                        ', dist:', dist_deg, ', ang:', angle_deg,...
-                        ', StimLumi:', stim.lumi, ', BGLumi:'];
+                        ', Dist:', dist_deg, 'deg', ', Ang:', angle_deg, 'deg',...
+                        ', Lumi:', num2str(stim.color)];
                     
                 case {'Looming'}
-                    spd = stim.LoomingSpd_deg_s;
-                    maxsz = stim.LoomingMaxSize_deg;
-                    stim1_info_txt = ['Pos:', pos, 'MaxSize:', maxsz,...
+                    spd = num2str(stim.LoomingSpd_deg_s);
+                    maxsz = num2str(stim.LoomingMaxSize_deg);
+                    stim1_info_txt = ['Pos:', pos, 'MaxSize:', maxsz, 'deg',...
                         ', Spd:', spd, 'deg/s', ', StimLumi:', stim.lumi,...
-                        ', BGLumi'];
+                        ', BGLumi:'];
                     
                 case {'Sin', 'Rect', 'Gabor'}
-                    sf = stim.gratingSF_cyc_deg;
-                    spd = stim.gratingSpd_Hz;
-                    angle = stim.gratingAngle_deg;
-                    stim1_info_txt = ['Pos:', pos, 'Size:', sz,...
-                        ', SF:', sf, 'cyc/deg', ', Spd:', spd, 'Hz',...
-                        ', Angle:', angle, 'deg'];
+                    sf = num2str(stim.gratingSF_cyc_deg);
+                    spd = num2str(stim.gratingSpd_Hz);
+                    angle = num2str(stim.gratingAngle_deg);
+                    stim1_info_txt = ['Pos:', pos, ', Size:', sz, 'deg',...
+                        ', SF:', sf, 'cpd', ', Spd:', spd, 'Hz',...
+                        ', Ang:', angle, 'deg'];
                     
                 case {'Images'}
                     ImgNum = stim.Image_index;
-                    stim1_info_txt = ['Pos:', pos, 'Size:', sz,...
+                    stim1_info_txt = ['Pos:', pos, ', Size:', sz, 'deg',...
                         ', Image#:', ImgNum];
                     
                 case {'Mosaic'}
-                    %pos_seed = stim.RandPosition_seed;
-                    %sz_seed = stim.RandSize_seed;
-                    stim1_info_txt = ['Pos:', pos, ', Size:', sz];
+                    stim1_info_txt = ['Pos:', pos, ', Size:', sz, 'deg',...
+                        ', Density:', num2str(sobj.dots_density), '%'];
+                    
                 case {'FineMap'}
                     pos = num2str(stim.center_position);
                     fine_pos =  num2str(stim.center_position_FineMap);
-                    stim1_info_txt = ['Center:', pos, ', Center Fine Map:', fine_pos, ', Size:', sz];
+                    stim1_info_txt = ['Center:', pos, ', Size:', sz, 'deg'];
+                    stim2_info_txt = ['Center Fine Map:', fine_pos,...
+                        ', Div:', num2str(sobj.div_zoom), ', Dist: ', num2str(sobj.dist), 'deg'];
+                    set(hfig.stim2_info, 'String', stim2_info_txt);
                     
             end
             set(hfig.stim1_info, 'String', stim1_info_txt);
@@ -218,10 +221,20 @@ end
         b = ones(1,a)/a;
         
         data1_filt = filter(b, a ,data(:, 1, n) - data(1, 1, n));
-        data2_filt = filter(b, a ,data(:, 2, n) - data(1, 2, n));
+        off1 =  str2double(get(hfig.offsetV, 'String'));
+        if off1 == 0
+            data1_offset = data1_filt - data1_filt(1);
+        else
+            data1_offset = data1_filt - off1;
+        end
         
-        data1_offset = data1_filt - data1_filt(1);
-        data2_offset = data2_filt - data2_filt(1);
+        data2_filt = filter(b, a ,data(:, 2, n) - data(1, 2, n));
+        off2 =  str2double(get(hfig.offsetH, 'String'));
+        if off2 == 0
+            data2_offset = data2_filt - data2_filt(1);
+        else
+            data2_offset = data2_filt - off2;
+        end
         
         data1_diff = diff(data1_offset);
         data2_diff = diff(data2_offset);
