@@ -115,7 +115,7 @@ uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Apply dFF', 'Posi
 
 %%
 uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Average by Stim', 'Position', [5, 205, 200, 30], 'FontSize', 14,...
-    'Callback', @Average_dFF_by_stim)
+    'Callback',  {@Average_dFF_by_stim, h_Norm})
 
 %%
     function Open_file(d,f)
@@ -134,15 +134,17 @@ area_Y =  [-1, 10, 10, -1];
 hold on
 % get stim timing
 for i =  r.prestim+1 : r.cycleCount
-    if isfield(p{1,i}.stim1, 'corON')
-        ON = p{1,i}.stim1.corON;
-        OFF = p{1,i}.stim1.corOFF;
-    else
-        ON = p{1,i}.AIStartTime + p{1,i}.stim1.On_time + p{1,i}.stim1.centerY_pix/1024/75;
-        OFF = p{1,i}.AIStartTime + p{1,i}.stim1.Off_time + p{1,i}.stim1.centerY_pix/1024/75;
+    if i <= size(p,2)
+        if isfield(p{1,i}.stim1, 'corON')
+            ON = p{1,i}.stim1.corON;
+            OFF = p{1,i}.stim1.corOFF;
+        else
+            ON = p{1,i}.AIStartTime + p{1,i}.stim1.On_time + p{1,i}.stim1.centerY_pix/1024/75;
+            OFF = p{1,i}.AIStartTime + p{1,i}.stim1.Off_time + p{1,i}.stim1.centerY_pix/1024/75;
+        end
+        area_X = [ON, ON, OFF, OFF];
+        fill(area_X, area_Y, [0.8 0.8 0.8], 'EdgeColor', 'none');
     end
-    area_X = [ON, ON, OFF, OFF];
-    fill(area_X, area_Y, [0.8 0.8 0.8], 'EdgeColor', 'none');
 end
 hold off
 

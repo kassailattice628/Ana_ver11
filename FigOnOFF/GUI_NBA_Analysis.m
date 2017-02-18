@@ -1,5 +1,5 @@
 function h = GUI_NBA_Analysis(data, params, recobj, sobj, fname)
-
+global imgobj
 %open fig
 h.fig1 = figure('Position', [10, 20, 1000, 800], 'Name', ['Analayse DATA for NBA ver:', num2str(recobj.NBAver)],...
     'NumberTitle', 'off', 'Menubar', 'none', 'Resize', 'off',...
@@ -25,8 +25,8 @@ h.plot1_1 = plot(NaN, NaN);
 hold off
 
 set(h.axes1_1, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLimMode', 'manual');
-title('EYE-Pos (Vertical)', 'FontSize', 14)
-ylabel(h.axes1_1, 'D <--> U')
+title('EYE-Pos (Horizontal)', 'FontSize', 14)
+ylabel(h.axes1_1, 'T <--> N')
 
 %%
 axes1_2_h_base = axes1_1_h_base - axes1_height - axes_space;
@@ -38,8 +38,8 @@ h.plot1_2 = plot(NaN, NaN);
 hold off
 
 set(h.axes1_2, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLimMode', 'manual');
-title('EYE-Pos (Horizontal)', 'FontSize', 14)
-ylabel(h.axes1_2, 'T <--> N');
+title('EYE-Pos (Vertical)', 'FontSize', 14)
+ylabel(h.axes1_2, 'D <--> U');
 
 %% plot Eye velocity %%
 % Vertical & Horizontal eye velocity
@@ -142,7 +142,7 @@ h.stim2_info = uicontrol('Style', 'text', 'String', '', 'Position', [470, 750, 5
 
 %% trial select
 %main[10, 20, 1000, 800]
-h.p_trial =  uipanel('Title', 'Stim Trial', 'FontSize', 12, 'Position', [0.01 0.88, 0.6, 0.065]);
+h.p_trial =  uipanel('Title', 'Stim Trial', 'FontSize', 12, 'Position', [0.01 0.88, 0.7, 0.065]);
 
 uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', '+', 'Position', [10, 5, 50, 30], 'Callback', {@Plot_next, data, 1, params}, 'FontSize', 14);
 uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', 'Å|', 'Position', [65, 5, 50, 30], 'Callback', {@Plot_next, data, -1, params}, 'FontSize', 14);
@@ -158,6 +158,10 @@ h.apply_threshold = uicontrol('Parent', h.p_trial, 'Style', 'togglebutton',...
 
 uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', 'Get F0#', 'Position', [435, 5, 80, 30], 'FontSize', 14,...
     'Callback', @GetF0);
+
+uicontrol('Parent', h.p_trial, 'Style', 'text', 'String', 'FVsampt=', 'Position', [515, 2, 80, 25], 'FontSize', 14);
+h.FVsampt = uicontrol('Parent', h.p_trial, 'Style', 'edit', 'String', imgobj.FVsampt,...
+    'Position', [595, 5, 100, 30], 'FontSize', 14, 'Callback', @Update_FVsampt);
 
 
 %% Load two-photon traces
@@ -179,6 +183,10 @@ set(h.fig1, 'KeyPressFcn', @callback_keypress);
     end
 
 %%
+
+    function Update_FVsampt(hobj,~)
+        imgobj.FVsampt = str2double(get(hobj, 'string'));
+    end
 % end of GUI_Analysis
 end
 

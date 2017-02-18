@@ -34,11 +34,6 @@ else
 end
 %%
 DataSave(:,3,:) =  DataSave(:,3,:)* 1000;
-%%
-% open GUI
-hfig = GUI_NBA_Analysis(DataSave, ParamsSave, recobj, sobj, mainvar.fname); 
-n = 0;
-Plot_next([], [], DataSave, 0, ParamsSave)
 
 %%
 imgobj.nROI = 0;
@@ -46,3 +41,9 @@ imgobj.selectROI = 1;
 imgobj.dFF =[];
 imgobj.maxROIs =  1;
 imgobj.FVsampt = 0.574616;
+
+%%
+% open GUI
+hfig = GUI_NBA_Analysis(DataSave, ParamsSave, recobj, sobj, mainvar.fname); 
+n = 0;
+Plot_next([], [], DataSave, 0, ParamsSave)

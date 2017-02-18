@@ -1,4 +1,4 @@
-function Average_dFF_by_stim(~,~)
+function Average_dFF_by_stim(~,~, h)
 global sobj
 global imgobj
 global recobj
@@ -43,20 +43,33 @@ switch sobj.pattern
         postt = 8;
         postp = ceil(postt/imgobj.FVsampt);
         
-        figure;
+        figure('Position', [100, 20, 250, 800], 'Menubar', 'none', 'Resize', 'off');
+        ax=cell(1, stim_list_num);
+        ymax = zeros(1, stim_list_num);
         for i =  1:stim_list_num
             i_stim = find(stim==stim_list(i));
             ave_dFF = zeros(prep+postp+1, length(imgobj.selectROI), length(i_stim));
-            subplot(stim_list_num, 1, i)
+            
+            ax{i} = subplot(stim_list_num, 1, i);
             for i2 = 1:length(i_stim)
                 ave_dFF(:,:,i2)= imgobj.dFF(range(i_stim(i2))-prep:range(i_stim(i2))+postp, imgobj.selectROI);
                 hold on
                 plot(ave_dFF(:,:,i2),'k');
             end
             mean_dFF = mean(ave_dFF,3);
+            ymax(i) = max(max(max(ave_dFF)));
             plot(mean_dFF, 'r');
             hold off
         end
+        
+        for i = 1:stim_list_num
+            if get(h, 'value') == 1
+                ylim(ax{i}, [-0.1, 1]);
+            else
+                ylim(ax{i}, [-0.2, max(ymax)*1.2]);
+            end
+        end
+        
             
             
     case '1P_Conc'
@@ -72,5 +85,8 @@ switch sobj.pattern
     case 'Mosaic'
         %by ...?
         
-figure;
+        
+        
+        
+        
 end

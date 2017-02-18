@@ -36,7 +36,7 @@ Update_plot(hfig.plot4, recTime, data(:, 3, n));
 
 % position XY
 data1_offset(end) = NaN;
-Update_plot(hfig.plot5, data2_offset, -data1_offset);
+Update_plot(hfig.plot5, -data1_offset, data2_offset);
 
 % STIM timing
 threshold  =  get(hfig.slider4, 'value');
