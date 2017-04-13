@@ -13,6 +13,7 @@ addpath('FigOnOFF');
 if exist('DataSave', 'var') == 0
     %select file
     [mainvar.fname, mainvar.dirname] = uigetfile('*.mat');
+
     load([mainvar.dirname, mainvar.fname]);
     
     while isempty(DataSave)

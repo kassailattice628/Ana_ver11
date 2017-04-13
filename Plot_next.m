@@ -19,7 +19,9 @@ end
 Update_info_text;
 
 % eye position
-Update_plot(hfig.plot1_1, recTime, -data(:, 1, n));
+% data(:,1,n) +direction => nasal, -direction => temporal
+% data(:,2,n) + 
+Update_plot(hfig.plot1_1, recTime, data(:, 1, n));
 Update_plot(hfig.plot1_2, recTime, data(:, 2, n));
 
 % velocity
@@ -36,7 +38,7 @@ Update_plot(hfig.plot4, recTime, data(:, 3, n));
 
 % position XY
 data1_offset(end) = NaN;
-Update_plot(hfig.plot5, -data1_offset, data2_offset);
+Update_plot(hfig.plot5, data1_offset, data2_offset);
 
 % STIM timing
 threshold  =  get(hfig.slider4, 'value');
@@ -45,8 +47,10 @@ set(hfig.line4, 'XData', [recTime(1), recTime(end)], 'YData',[threshold,threshol
 
 %%
 % Adjust Y range
-set(hfig.axes1_1, 'YLim', [min(-data(:, 1, n)), max(-data(:, 1, n))]);
-set(hfig.axes1_2, 'YLim', [min(data(:, 2, n)), max(data(:, 2, n))]);
+%set(hfig.axes1_1, 'YLim', [min(data(:, 1, n)), max(data(:, 1, n))]);
+set(hfig.axes1_1, 'YLim', [-5, 7]);
+%set(hfig.axes1_2, 'YLim', [min(data(:, 2, n)), max(data(:, 2, n))]);
+set(hfig.axes1_2, 'YLim', [-5, 5]);
 set(hfig.axes4, 'YLim', [min(data(:, 3, n))*0.9, max(data(:, 3, n))*1.1]);
 %set(hfig.slider4, 'Min', min(data(:, 3, n))*1.1, 'Max', max(data(:, 3, n))*1.1);
 %{
@@ -90,14 +94,13 @@ end
             switch sobj.pattern
                 case {'Uni', 'Size_rand'}
                     stim1_info_txt = ['Pos:', pos, ', Size:', sz, 'deg'];
-                    
-                case {'1P_Conc'}
-                    dist_deg = num2str(stim.dist_deg);
-                    angle_deg = num2str(stim.angle_deg);
-                    stim1_info_txt = ['Center:', pos, ', Size:', sz, 'deg',...
-                        ', dist:', dist_deg, 'deg', ', Ang:', angle_deg, 'deg'];
-                    
-                case {'2P_Conc'}
+                    if strcmp(sobj.mode, 'Concentric')
+                        dist_deg = num2str(stim.dist_deg);
+                        angle_deg = num2str(stim.angle_deg);
+                        stim1_info_txt = ['Center:', pos, ', Size:', sz, 'deg',...
+                            ', dist:', dist_deg, 'deg', ', Ang:', angle_deg, 'deg'];
+                    end
+                case {'2P'}
                     dist_deg = num2str(stim.dist_deg);
                     angle_deg = num2str(stim.angle_deg);
                     
@@ -118,9 +121,8 @@ end
                 case {'Looming'}
                     spd = num2str(stim.LoomingSpd_deg_s);
                     maxsz = num2str(stim.LoomingMaxSize_deg);
-                    stim1_info_txt = ['Pos:', pos, 'MaxSize:', maxsz, 'deg',...
-                        ', Spd:', spd, 'deg/s', ', StimLumi:', stim.lumi,...
-                        ', BGLumi:'];
+                    stim1_info_txt = ['Pos:', pos, ', MaxSize:', maxsz, 'deg',...
+                        ', Spd:', spd, 'deg/s'];
                     
                 case {'Sin', 'Rect', 'Gabor'}
                     sf = num2str(stim.gratingSF_cyc_deg);
@@ -129,6 +131,12 @@ end
                     stim1_info_txt = ['Pos:', pos, ', Size:', sz, 'deg',...
                         ', SF:', sf, 'cpd', ', Spd:', spd, 'Hz',...
                         ', Ang:', angle, 'deg'];
+                
+                case {'MoveBar'}
+                    angle=num2str(stim.MovebarDir_angle_deg);
+                    spd = num2str(stim.MovebarSpd_deg_s);
+                    stim1_info_txt = ['Width:', sz, 'deg', ', Spd:', spd,...
+                        'deg/s', ', Ang:', angle, 'deg'];
                     
                 case {'Images'}
                     ImgNum = stim.Image_index;

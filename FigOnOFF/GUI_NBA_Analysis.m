@@ -90,7 +90,7 @@ h.plot5 = patch(data(:,1,1), data(:,2,1), 1:size(data(:,1,1),1),...
 
 range_axes5 = 0.04;
 set(h.axes5, 'XLim', [-range_axes5, range_axes5], 'YLim', [-range_axes5, range_axes5]);
-title('Position XY', 'FontSize', 14)
+title('Position (Nasa<->Temporal)', 'FontSize', 14)
 
 uicontrol('Style', 'text', 'String', 'V:', 'Position', [720, 430, 30, 25], 'FontSize', 14);
 h.offsetV = uicontrol('Style', 'edit', 'String', 0, 'Position', [750, 435, 60, 25], 'FontSize', 14,...
