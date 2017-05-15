@@ -39,10 +39,14 @@ hfig.two_photon_deselect_roi_n = uicontrol('Parent', p_roi, 'Style', 'edit', 'St
 %% plot1:: Single ROI
 hfig.two_photon_axes1 = axes('Units', 'Pixels', 'Position', [70, 290, 600, 120]);
 
+Get_Plot_stim_timing(r, p);
+
+hold on
 hfig.two_photon_plot1 = plot(NaN, NaN);
 set(hfig.two_photon_plot1, 'Parent', hfig.two_photon_axes1);
+hold off
 
-Get_Plot_stim_timing(r, p);
+
 
 set(hfig.two_photon_axes1, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [],...
     'YLimMode', 'manual', 'YLim', [-0.5, 3.5]);
@@ -50,6 +54,7 @@ title('Single ROI', 'FontSize', 14)
 ylabel(hfig.two_photon_axes1, 'dF/F0')
 %% plot2:: Multiple ROIs
 hfig.two_photon_axes2 = axes('Units', 'Pixels', 'Position', [70, 50, 600, 200]);
+Get_Plot_stim_timing(r, p);
 
 set(hfig.two_photon_axes2, 'XLimMode', 'manual', 'XLim', [-inf, inf],...
     'YLimMode', 'manual', 'YLim', [-0.5, 3.5]);
@@ -57,7 +62,7 @@ title('Select ROIs', 'FontSize', 14)
 ylabel(hfig.two_photon_axes2, 'dF/F0')
 xlabel(hfig.two_photon_axes2, 'Time (sec)');
 
-Get_Plot_stim_timing(r, p);
+
 
 %%Load2P([], []);
 end
@@ -115,7 +120,7 @@ uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Apply dFF', 'Posi
 
 %%
 uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Average by Stim', 'Position', [5, 205, 200, 30], 'FontSize', 14,...
-    'Callback',  {@Average_dFF_by_stim, h_Norm})
+    'Callback',  {@Average_dFF_by_stim})
 
 %%
     function Open_file(d,f)
@@ -139,6 +144,7 @@ for i =  r.prestim+1 : r.cycleCount
             ON = p{1,i}.stim1.corON;
             OFF = p{1,i}.stim1.corOFF;
         else
+            % corrected by signal from photo diode.
             ON = p{1,i}.AIStartTime + p{1,i}.stim1.On_time + p{1,i}.stim1.centerY_pix/1024/75;
             OFF = p{1,i}.AIStartTime + p{1,i}.stim1.Off_time + p{1,i}.stim1.centerY_pix/1024/75;
         end

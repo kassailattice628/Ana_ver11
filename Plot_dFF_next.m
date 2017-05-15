@@ -40,8 +40,11 @@ refreshdata(hfig.two_photon, 'caller')
 %%
     function update_plot(h_plot, x, y, n)
         set(h_plot, 'XData', x, 'YData', y(:,n));
-        
-        set(hfig.two_photon_axes1, 'YLim', [min(y(:,n))*1.2, max(y(:,n))*1.2]);
+        if ~isnan(y(1,n))
+            set(hfig.two_photon_axes1, 'YLim', [min(y(:,n))*1.2, max(y(:,n))*1.2]);
+        else
+            disp(['ROI#', num2str(n), ' does not contain data.']);
+        end
     end
 
 

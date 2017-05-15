@@ -1,4 +1,9 @@
 # Change_log
+## 11.0.4... todo
+stim average は selectROI は 複数にして imagesc にする．それとは別に
+stim タイプごとの subplot を n で見てるやつで表示
+
+
 ## 11.0.3
 Rec11 で保存した mat データの読み込み．
 Two-photon のタイムラプス画像から抜き出した dFF データ（.xls: 行=フレーム，列=ROI)．
