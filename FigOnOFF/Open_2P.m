@@ -74,8 +74,9 @@ global mainvar
 global hfig
 %%
 if isfield(imgobj, 'dFF') == 0
-    %select file
-    [fname, dirname] = uigetfile([mainvar.dirname, '*.xls']);
+    [fname, dirname] = uigetfile({'*.csv; *.mat','Data Files'; '*.*','All Files' },...
+        'Select Data(.csv, .mat)', mainvar.dirname);
+    
     if dirname == 0 %cancel select file
         %skip open file
     else
@@ -83,9 +84,10 @@ if isfield(imgobj, 'dFF') == 0
     end
 else
     % 2P.xls is alread loaded the base workspace.
-        % select another file
-        [fname, dirname] = uigetfile([mainvar.dirname, '*.xls']);
-        Open_file(dirname, fname);
+    % select another file
+    [fname, dirname] = uigetfile({'*.csv; *.mat','Data Files'; '*.*','All Files' },...
+        'Select Data(.csv, .mat)', mainvar.dirname);
+    Open_file(dirname, fname);
 end
 
 if isempty(imgobj.dFF)
@@ -119,13 +121,23 @@ uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Apply dFF', 'Posi
     h_Offset, h_OffsetFrame, h_Norm});
 
 %%
-uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Average by Stim', 'Position', [5, 205, 200, 30], 'FontSize', 14,...
+uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Average by Stim', 'Position', [5, 220, 200, 30], 'FontSize', 14,...
     'Callback',  {@Average_dFF_by_stim})
+
+uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Col ROIs', 'Position', [5, 185, 200, 30], 'FontSize', 14,...
+    'Callback', {@Col_ROIs})
 
 %%
     function Open_file(d,f)
-                imgobj.dFF = dlmread([d, f], '\t', 1, 1);
-                imgobj.dFF_raw =  imgobj.dFF;
+        disp(d)
+        disp(f)
+        [~,~,f_ext] = fileparts(f);
+        if strcmp(f_ext, '.xls')
+            imgobj.dFF = dlmread([d, f], '\t', 1, 1);
+        else strcmp(f_ext, '.csv')
+            imgobj.dFF = csvread([d,f], 1, 1);
+        end
+        imgobj.dFF_raw =  imgobj.dFF;
         [FVflames, imgobj.maxROIs] = size(imgobj.dFF);
         imgobj.FVt = 0:imgobj.FVsampt:imgobj.FVsampt*(FVflames-1);
     end
@@ -160,36 +172,36 @@ end
 function Applay_change_dFF(~,~, h1, h2, h_freq, h3, h_frames, h4)
 global imgobj
 
-    %%Detrend
-    if get(h1, 'value')
-        dFF_mod = detrend(imgobj.dFF_raw);
-    else
-        dFF_mod = imgobj.dFF_raw;
+%%Detrend
+if get(h1, 'value')
+    dFF_mod = detrend(imgobj.dFF_raw);
+else
+    dFF_mod = imgobj.dFF_raw;
+end
+%%LowCutFilter
+if get(h2, 'value')
+    lowcutfreq = str2double(get(h_freq, 'string'));
+    [dFF_mod, ~, ~] = filtbutter(2, lowcutfreq, 'high', 1/imgobj.FVsampt, dFF_mod);
+end
+%%Normalize
+if get(h4, 'value')
+    MaxdFF = max(dFF_mod);
+    for i = 1:size(imgobj.dFF,2)
+        dFF_mod(:,i) = dFF_mod(:,i)/abs(MaxdFF(i));
     end
-    %%LowCutFilter
-    if get(h2, 'value')
-        lowcutfreq = str2double(get(h_freq, 'string'));
-        [dFF_mod, ~, ~] = filtbutter(2, lowcutfreq, 'high', 1/imgobj.FVsampt, dFF_mod);
+end
+%%Offset
+if get(h3, 'value')
+    F0frames = str2double(get(h_frames, 'string'));
+    dFF_base= mean(dFF_mod(1:F0frames,:),1);
+    for i = 1:size(imgobj.dFF,2)
+        dFF_mod(:,i) = dFF_mod(:,i) - dFF_base(i);
     end
-    %%Normalize
-    if get(h4, 'value')
-        MaxdFF = max(dFF_mod);
-        for i = 1:size(imgobj.dFF,2)
-            dFF_mod(:,i) = dFF_mod(:,i)/abs(MaxdFF(i));
-        end
-    end
-    %%Offset
-    if get(h3, 'value')
-        F0frames = str2double(get(h_frames, 'string'));
-        dFF_base= mean(dFF_mod(1:F0frames,:),1);
-        for i = 1:size(imgobj.dFF,2)
-            dFF_mod(:,i) = dFF_mod(:,i) - dFF_base(i);
-        end
-    end
-    
-    %%if
-    imgobj.dFF = dFF_mod;
-    Plot_dFF_next([],[],0);
+end
+
+%%if
+imgobj.dFF = dFF_mod;
+Plot_dFF_next([],[],0);
 end
 %% Use KeyPress
 function callback_keypress(~, eventdata)

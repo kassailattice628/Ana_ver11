@@ -12,14 +12,14 @@ addpath('FigOnOFF');
 %% 
 if exist('DataSave', 'var') == 0
     %select file
-    [mainvar.fname, mainvar.dirname] = uigetfile('*.mat');
+    [mainvar.fname, mainvar.dirname] = uigetfile({'*.mat'});
 
     load([mainvar.dirname, mainvar.fname]);
     
     while isempty(DataSave)
         errordlg('DataSave is missing!')
         % select another file
-        [mainvar.fname, mainvar.dirname] = uigetfile([dirame, '*.mat']);
+        [mainvar.fname, mainvar.dirname] = uigetfile({[dirame, '*.mat']});
         load([mainvar.dirname, mainvar.fname]);
     end
 else
@@ -28,7 +28,7 @@ else
         while isempty(DataSave)
             errordlg('DataSave is missing!')
             % select another file
-            [mainvar.fname, mainvar.dirname] = uigetfile([mainvar.dirname, '*.mat']);
+            [mainvar.fname, mainvar.dirname] = uigetfile({[mainvar.dirname, '*.mat']});
             load([mainvar.dirname, mainvar.fname]);
         end
     end
