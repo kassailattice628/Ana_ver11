@@ -1,18 +1,18 @@
 %Read Tif and Convert to Mat binary files
 
-%use "read_file" for reading tif"
+% use "read_file" for reading tif"
 addpath('/Users/lattice/Dropbox/NoRMCorre/');
-
-%%%%%%%%%% file info %%%%%%%%%%
-[fname, dirname] = uigetfile({'*.tif;*.tiff', 'Tif files'});
-[~, fname, ext] = fileparts(fname);
-[i1, i2] = regexp(fname, '\d*');
-fsuf = fname(1:i1(1)-1);
-psuf = fname(i2(1)+1:end);
+% file info
+[dirname, fname, ext, fsuf, psuf] = Get_File_Name;
+% [fname, dirname] = uigetfile({'*.tif;*.tiff', 'Tif files'});
+% [~, fname, ext] = fileparts(fname);
+% [i1, i2] = regexp(fname, '\d*');
+% fsuf = fname(1:i1(1)-1);
+% psuf = fname(i2(1)+1:end);
 
 %%%%%%%%%% Moify Here %%%%%%%%%
-n_img = 1:11; % a vector of file number to be processed
-%fsuf = 'SC';
+n_img = [2:12]; % a vector of file number to be processed
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 for n = n_img
@@ -28,8 +28,9 @@ for n = n_img
         continue
     end
     
-    F = read_file(name);
-    F = double(F);
+    F = read_file(name); 
+    F = single(F); %16 bit is enought.
+    %F = double(F);
     
     % save as mat binary
     if ~exist([dirname, '1_mat'], 'dir')

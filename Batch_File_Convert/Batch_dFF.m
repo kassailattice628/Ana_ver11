@@ -5,31 +5,35 @@
 % Calc (F-F0)/F0
 % Save multi-tif image
 
-%use "read_file" for reading tif"
+% use "read_file" for reading tif"
 addpath('/Users/lattice/Dropbox/NoRMCorre/');
+% file info
+[dirname, fname, ext, fsuf, psuf] = Get_File_Name;
 
-%%%%%%%%%% file info %%%%%%%%%%
-[fname, dirname] = uigetfile({'*.tif;*.tiff;*.mat', 'img or mat files'});
-[~, ~, ext] = fileparts(fname);
-
-% modify info
-n_img = 1:18; % a vector of file number to be processed
-
-f0_frames = [13, 13, 51, 51, 16, 16, 51, 76, 58, 51, 16, 51, 51, 48, 104, 51, 62, 51];
-fsuf = 'SC';
-
+%%%%%%%%%% modify info %%%%%%%%%%
+% a vector of file number to be processed, and thouse f0 frame numbers.
+n_img = 1:13;
+f0_frames = [55, 62, 55, 55, 20, 62, 62, 62, 62, 41, 40, 55, 69];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-nn = 0;
+% dFF are save as MAT or TIFF
+i_save = input('Save dFF as Tiff? [Y/N] >> ', 's');
+
+
 %% Batch for multiple files %%
+nn = 0;
 for n = n_img
+    clear F
+    clear F0
+    clear dFF
+    
     nn = nn + 1; %counter
     
     fn = num2str(n);
-    name = [dirname, fsuf, fn, '.tif'];
+    name = [dirname, fsuf, fn, psuf, ext];
     disp(['Reading File:: ', name])
     % check file
     if ~exist(name, 'file')
-        errordlg([name, 'is NOT FOUND!!'])
+        errordlg([name, ' is NOT FOUND!!'])
         continue
     end
     % check file type
@@ -47,15 +51,27 @@ for n = n_img
     for n3 = 1:size(F,3)
         dFF(:,:,n3) = (F(:,:, n3) - F0)./F0;
     end
+    dFF = single(dFF);
     
-    % Save as tif %
+    
+    % Create new directry
     if ~exist([dirname, 'dFF'], 'dir')
         mkdir([dirname,'dFF'])
     end
     
-    out_name = [dirname,'dFF/', fsuf, fn, '.tif'];
-    disp(['Saving Tiff File as ', out_name]);
-    options.append = true;
-    saveastiff(single(dFF), out_name, options);
+    % File Save
+    switch i_save
+        case {'Y', 'y', 'Yes', 'YES'}
+            % Save as tif %
+            out_name = [dirname, 'dFF/', fsuf, fn, psuf, '_dFF.tif'];
+            disp(['Saving Tiff File as ', out_name]);
+            options.append = true;
+            saveastiff(dFF, out_name, options);
+        otherwise
+            out_name = [dirname, 'dFF/', fsuf, fn, psuf, '_dFF.mat'];
+            disp(['Saving MAT File as ', out_name]);
+            save(out_name, 'dFF');
+    end
+    
     disp('Save Finished!!');
 end
