@@ -100,6 +100,14 @@ end
                         stim1_info_txt = ['Center:', pos, ', Size:', sz, 'deg',...
                             ', dist:', dist_deg, 'deg', ', Ang:', angle_deg, 'deg'];
                     end
+                %%%%%% for old version %%%%%%%
+                case {'1P_Conc'}
+                    dist_deg = num2str(stim.dist_deg);
+                    angle_deg = num2str(stim.angle_deg);
+                    stim1_info_txt = ['Stim1::Dist:', dist_deg, ', Ang:', angle_deg, 'deg',...
+                        ', Size:', sz, 'deg'];
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                
                 case {'2P', '2P_Conc'}
                     dist_deg = num2str(stim.dist_deg);
                     angle_deg = num2str(stim.angle_deg);
