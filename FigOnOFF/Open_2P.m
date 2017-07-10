@@ -12,7 +12,7 @@ hfig.two_photon = figure('Position', [10, 20, 1100, 500], 'Name', 'Two-photon Tr
 %% panel1
 p_roi =  uipanel('Title', 'ROI traces', 'FontSize', 12, 'Position', [0.01 0.89, 0.95, 0.1]);
 % Load DATA
-uicontrol('Parent', p_roi, 'Style', 'pushbutton', 'String', 'Load Xls', 'Position', [10, 5, 100, 30],...
+uicontrol('Parent', p_roi, 'Style', 'pushbutton', 'String', 'Load dFF', 'Position', [10, 5, 100, 30],...
     'Callback', {@Load2P}, 'FontSize', 14);
 
 uicontrol('Parent', p_roi, 'Style', 'edit', 'String', imgobj.FVsampt, 'Position', [120, 7, 100, 25],...
@@ -22,7 +22,7 @@ uicontrol('Parent', p_roi, 'Style', 'text', 'String', 's/Flame', 'Position', [22
 % ROI select
 uicontrol('Parent', p_roi, 'Style', 'pushbutton', 'String', '+', 'Position', [285, 5, 50, 30],...
     'Callback', {@Plot_dFF_next, 1}, 'FontSize', 14);
-uicontrol('Parent', p_roi, 'Style', 'pushbutton', 'String', 'Å|', 'Position', [340, 5, 50, 30],...
+uicontrol('Parent', p_roi, 'Style', 'pushbutton', 'String', '-', 'Position', [340, 5, 50, 30],...
     'Callback', {@Plot_dFF_next, -1}, 'FontSize', 14);
 uicontrol('Parent', p_roi, 'Style', 'text', 'String', '#:', 'Position', [400, 2, 20, 25], 'FontSize', 14);
 hfig.two_photon_set_roi_n = uicontrol('Parent', p_roi, 'Style', 'edit', 'String', 1, 'Position', [420, 7, 50, 25],...
@@ -134,8 +134,11 @@ uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Col ROIs', 'Posit
         [~,~,f_ext] = fileparts(f);
         if strcmp(f_ext, '.xls')
             imgobj.dFF = dlmread([d, f], '\t', 1, 1);
-        else strcmp(f_ext, '.csv')
+        elseif strcmp(f_ext, '.csv')
             imgobj.dFF = csvread([d,f], 1, 1);
+        elseif strcmp(f_ext, '.mat')
+            load([d,f], 'dFF_mat');
+            imgobj.dFF = dFF_mat;
         end
         imgobj.dFF_raw =  imgobj.dFF;
         [FVflames, imgobj.maxROIs] = size(imgobj.dFF);

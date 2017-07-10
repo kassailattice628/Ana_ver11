@@ -145,7 +145,7 @@ h.stim2_info = uicontrol('Style', 'text', 'String', '', 'Position', [470, 750, 5
 h.p_trial =  uipanel('Title', 'Stim Trial', 'FontSize', 12, 'Position', [0.01 0.88, 0.7, 0.065]);
 
 uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', '+', 'Position', [10, 5, 50, 30], 'Callback', {@Plot_next, data, 1, params}, 'FontSize', 14);
-uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', 'Å|', 'Position', [65, 5, 50, 30], 'Callback', {@Plot_next, data, -1, params}, 'FontSize', 14);
+uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', '-', 'Position', [65, 5, 50, 30], 'Callback', {@Plot_next, data, -1, params}, 'FontSize', 14);
 uicontrol('Parent', h.p_trial, 'Style', 'text', 'String', '#: ', 'Position', [120, 2, 20, 25], 'FontSize', 14);
 h.set_n = uicontrol('Parent', h.p_trial, 'Style', 'edit', 'String', 1, 'Position', [140, 7, 50, 25], 'Callback', {@Plot_next, data, 0, params}, 'FontSize', 14, 'BackGroundColor', 'w');
 

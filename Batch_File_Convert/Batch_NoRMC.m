@@ -12,10 +12,16 @@ clear;
 gcp;
 
 % use "read_file" for reading tif"
-addpath('/Users/lattice/Dropbox/NoRMCorre/');
-% file info
-[dirname, fname, ext, fsuf, psuf] = Get_File_Name;
+addpath(genpath('/Users/lattice/Dropbox/TwoPhoton_Analysis/NoRMCorre/'));
 
+% file info
+if exist('dirname', 'var')
+    [dirname, fname, ext, fsuf, psuf] = Get_File_Name(dirname);
+else
+    [dirname, fname, ext, fsuf, psuf] = Get_File_Name([]);
+end
+
+files = subdir(fullfile(dirname,['*', ext]));
 %%%%%%% define f ile name %%%%%%%%%%%% Modify This Part %%%%%%%%%%%%%%%%%%%%
 f_nums = [6 8];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -25,7 +31,8 @@ f_nums = [6 8];
 for n = f_nums
     
     fn = num2str(n);
-    name = [dirname, fsuf, fn, psuf, ext];
+    name = files(n).name;
+    %name = [dirname, fsuf, fn, psuf, ext];
     
     disp(['Reading Tif File:: ', name]);
     if ~exist(name, 'file')
@@ -49,7 +56,7 @@ for n = f_nums
     % Set params
     options_nonrigid = NoRMCorreSetParms...
         ('d1',size(F,1),'d2',size(F,2),...
-        'grid_size',[32,32],...  % size of non-overlapping regions (default: [d1,d2,d3])
+        'grid_size',[27,27],...  % size of non-overlapping regions (default: [d1,d2,d3])
         'overlap_pre', 5,... % size of overlapping region (default: [32,32,16])
         'us_fac',20,... % upsampling factor for subpixel registration (default: 20)
         'mot_uf',4,... % degree of patches upsampling (default: [4,4,1])
