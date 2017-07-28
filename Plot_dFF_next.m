@@ -7,7 +7,6 @@ global hfig
 imgobj.nROI = update_n(set_n);
 
 %update_info_text(sobj);
-
 % Single
 update_plot(hfig.two_photon_plot1, imgobj.FVt, imgobj.dFF, imgobj.nROI);
 % Update plot

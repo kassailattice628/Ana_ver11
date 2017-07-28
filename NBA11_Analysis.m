@@ -34,17 +34,32 @@ else
     end
 end
 %%
-DataSave(:,3,:) =  DataSave(:,3,:)* 1000;
+if ~isfield(imgobj, 'dFF')
+    DataSave(:,3,:) =  DataSave(:,3,:)* 1000;
+end
 
 %%
 imgobj.nROI = 0;
 imgobj.selectROI = 1;
-imgobj.dFF =[];
 imgobj.maxROIs =  1;
-imgobj.FVsampt = 0.574616;
+
+if ~isfield(imgobj, 'dFF')
+    imgobj.dFF =[];
+end
+
+if ~isfield(imgobj, 'FVsampt')
+    imgobj.FVsampt = 0.574616;
+end
+
 
 %%
 % open GUI
 hfig = GUI_NBA_Analysis(DataSave, ParamsSave, recobj, sobj, mainvar.fname); 
 n = 0;
-Plot_next([], [], DataSave, 0, ParamsSave)
+Plot_next([], [], DataSave, 0, ParamsSave, recobj)
+
+
+%% %%%%%%%%%
+if ~isempty(imgobj.dFF)
+    Open_2P(hfig.roi_traces, ParamsSave, recobj);
+end

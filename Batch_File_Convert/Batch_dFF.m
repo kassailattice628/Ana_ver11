@@ -12,8 +12,8 @@ addpath('/Users/lattice/Dropbox/NoRMCorre/');
 
 %%%%%%%%%% modify info %%%%%%%%%%
 % a vector of file number to be processed, and thouse f0 frame numbers.
-n_img = 1:13;
-f0_frames = [55, 62, 55, 55, 20, 62, 62, 62, 62, 41, 40, 55, 69];
+n_img = 6;
+f0_frames = 27;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % dFF are save as MAT or TIFF
 i_save = input('Save dFF as Tiff? [Y/N] >> ', 's');

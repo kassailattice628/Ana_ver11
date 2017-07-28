@@ -46,13 +46,11 @@ hfig.two_photon_plot1 = plot(NaN, NaN);
 set(hfig.two_photon_plot1, 'Parent', hfig.two_photon_axes1);
 hold off
 
-
-
 set(hfig.two_photon_axes1, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [],...
     'YLimMode', 'manual', 'YLim', [-0.5, 3.5]);
 title('Single ROI', 'FontSize', 14)
 ylabel(hfig.two_photon_axes1, 'dF/F0')
-%% plot2:: Multiple ROIs
+%% plot2:: Multiple ROIs (selected)
 hfig.two_photon_axes2 = axes('Units', 'Pixels', 'Position', [70, 50, 600, 200]);
 Get_Plot_stim_timing(r, p);
 
@@ -63,16 +61,37 @@ ylabel(hfig.two_photon_axes2, 'dF/F0')
 xlabel(hfig.two_photon_axes2, 'Time (sec)');
 
 
-
-%%Load2P([], []);
+%% %%%%%%
+if ~isempty(imgobj.dFF)
+    [FVflames, imgobj.maxROIs] = size(imgobj.dFF);
+    imgobj.FVt = 0:imgobj.FVsampt:imgobj.FVsampt*(FVflames-1);
+    Plot_dFF_next([], [], 0)
+    Plot_dFF_selectROIs([], [])
+    OpenPanel2(hfig, imgobj)
 end
 
+
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% subfunctions
 function Load2P(~,~)
 global imgobj
 global mainvar
 global hfig
 %%
+if isfield(imgobj, 'dFF')
+    imgobj = rmfield(imgobj, 'dFF');
+    imgobj = rmfield(imgobj, 'dFF_s_ave');
+end
+imgobj.nROI = 0;
+imgobj.selectROI = 1;
+imgobj.maxROIs =  1;
+
+%%
+
 if isfield(imgobj, 'dFF') == 0
     [fname, dirname] = uigetfile({'*.csv; *.mat','Data Files'; '*.*','All Files' },...
         'Select Data(.csv, .mat)', mainvar.dirname);
@@ -98,39 +117,10 @@ else
     Plot_dFF_selectROIs([], [])
 end
 
+OpenPanel2(hfig, imgobj)
 
-%% GUI
-%% panel2
-p_funcs = uipanel('Parent', hfig.two_photon, 'Title', 'Ctr', 'FontSize', 12, 'Position', [0.63 0.05 0.36 0.83]);
-h_Detrend = uicontrol('Parent', p_funcs, 'Style', 'togglebutton', 'String', 'Detrend', 'Position', [5, 360, 100, 30], 'FontSize', 14);
-
-h_LowCut =  uicontrol('Parent', p_funcs, 'Style', 'togglebutton', 'String', 'Low-Cut', 'Position', [115, 360, 100, 30], 'FontSize', 14);
-LowCutFrq = 0.005;
-h_LowCutFrq = uicontrol('Parent', p_funcs, 'Style', 'edit', 'String', LowCutFrq, 'Position', [225, 362, 80, 25],'FontSize', 14);
-uicontrol('Parent', p_funcs, 'Style', 'text', 'String', 'Hz', 'Position', [305, 355, 30, 25], 'FontSize', 14);
-
-h_Offset = uicontrol('Parent', p_funcs, 'Style', 'togglebutton', 'String', 'Offset', 'Position', [5, 325, 100, 30], 'FontSize', 14);
-uicontrol('Parent', p_funcs, 'Style', 'text', 'String', 'F0 = 1:', 'Position', [115, 322, 60, 25], 'FontSize', 14);
-OffsetFrame = 1;
-h_OffsetFrame = uicontrol('Parent', p_funcs, 'Style', 'edit', 'String', OffsetFrame, 'Position', [175, 327, 50, 25], 'FontSize', 14);
-
-h_Norm = uicontrol('Parent', p_funcs, 'Style', 'togglebutton', 'String', 'Normalize', 'Position', [5, 290, 100, 30], 'FontSize', 14);
-
-uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Apply dFF', 'Position', [5, 255, 200, 30], 'FontSize', 14,...
-    'Callback', {@Applay_change_dFF, h_Detrend, h_LowCut, h_LowCutFrq,...
-    h_Offset, h_OffsetFrame, h_Norm});
-
-%%
-uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Average by Stim', 'Position', [5, 220, 200, 30], 'FontSize', 14,...
-    'Callback',  {@Average_dFF_by_stim})
-
-uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Col ROIs', 'Position', [5, 185, 200, 30], 'FontSize', 14,...
-    'Callback', {@Col_ROIs})
-
-%%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function Open_file(d,f)
-        disp(d)
-        disp(f)
         [~,~,f_ext] = fileparts(f);
         if strcmp(f_ext, '.xls')
             imgobj.dFF = dlmread([d, f], '\t', 1, 1);
@@ -144,9 +134,12 @@ uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Col ROIs', 'Posit
         [FVflames, imgobj.maxROIs] = size(imgobj.dFF);
         imgobj.FVt = 0:imgobj.FVsampt:imgobj.FVsampt*(FVflames-1);
     end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %%
+
+
 end
 
-%% %%%%%subfunctions%%%%% %%
+%% %%%%% subfunctions%%%%% %%
 %% plot stim timing
 function Get_Plot_stim_timing(r, p)
 area_Y =  [-1, 10, 10, -1];
@@ -164,48 +157,125 @@ for i =  r.prestim+1 : r.cycleCount
             OFF = p{1,i}.AIStartTime + p{1,i}.stim1.Off_time + p{1,i}.stim1.centerY_pix/1024/75;
         end
         area_X = [ON, ON, OFF, OFF];
-        fill(area_X, area_Y, [0.8 0.8 0.8], 'EdgeColor', 'none');
+        fill(area_X, area_Y, [0.9 0.9 0.9], 'EdgeColor', 'none');
     end
 end
 hold off
 
 end
 
-%% Detrend
-function Applay_change_dFF(~,~, h1, h2, h_freq, h3, h_frames, h4)
-global imgobj
 
+%% panel2
+function OpenPanel2(hfig, imgobj)
+p_funcs = uipanel('Parent', hfig.two_photon, 'Title', 'Ctr', 'FontSize', 12, 'Position', [0.63 0.05 0.36 0.83]);
+h_Detrend = uicontrol('Parent', p_funcs, 'Style', 'togglebutton', 'String', 'Detrend', 'Position', [5, 360, 100, 30], 'FontSize', 14);
+
+h_LowCut =  uicontrol('Parent', p_funcs, 'Style', 'togglebutton', 'String', 'Low-Cut', 'Position', [115, 360, 100, 30], 'FontSize', 14);
+LowCutFrq = 0.005;
+h_LowCutFrq = uicontrol('Parent', p_funcs, 'Style', 'edit', 'String', LowCutFrq, 'Position', [225, 362, 80, 25],'FontSize', 14);
+uicontrol('Parent', p_funcs, 'Style', 'text', 'String', 'Hz', 'Position', [305, 355, 30, 25], 'FontSize', 14);
+
+h_Offset = uicontrol('Parent', p_funcs, 'Style', 'togglebutton', 'String', 'Offset', 'Position', [5, 325, 100, 30], 'FontSize', 14);
+uicontrol('Parent', p_funcs, 'Style', 'text', 'String', 'F0 = 1:', 'Position', [115, 322, 60, 25], 'FontSize', 14);
+if isfield(imgobj, 'f0')
+    OffsetFrame = imgobj.f0;
+else
+    OffsetFrame = 1;
+end
+h_OffsetFrame = uicontrol('Parent', p_funcs, 'Style', 'edit', 'String', OffsetFrame, 'Position', [175, 327, 50, 25], 'FontSize', 14);
+
+h_Norm = uicontrol('Parent', p_funcs, 'Style', 'togglebutton', 'String', 'Normalize', 'Position', [5, 290, 100, 30], 'FontSize', 14);
+
+uicontrol('Parent', p_funcs, 'Style', 'text', 'String', 'C_min:', 'Position', [115, 287, 60, 25], 'FontSize', 14);
+h_Cmin = uicontrol('Parent', p_funcs, 'Style', 'edit', 'String', -1, 'Position', [175, 292, 50, 25], 'FontSize', 14);
+uicontrol('Parent', p_funcs, 'Style', 'text', 'String', 'C_max:', 'Position', [230, 287, 60, 25], 'FontSize', 14);
+h_Cmax = uicontrol('Parent', p_funcs, 'Style', 'edit', 'String', 1, 'Position', [290, 292, 50, 25], 'FontSize', 14);
+
+uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Apply Mod to dFF', 'Position', [5, 255, 200, 30], 'FontSize', 14,...
+    'Callback', {@Apply_change_dFF, h_Detrend, h_LowCut, h_LowCutFrq,...
+    h_Offset, h_OffsetFrame, h_Norm});
+
+%%
+uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Average by Stim', 'Position', [5, 220, 200, 30], 'FontSize', 14,...
+    'Callback',  {@Average_dFF_by_stim, h_Cmin, h_Cmax})
+
+uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show All ROIs', 'Position', [210, 220, 140, 30], 'FontSize', 14,...
+    'Callback',  {@Plot_All_Ave_dFF_by_stim, h_Cmin, h_Cmax})
+
+uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Col ROIs', 'Position', [5, 185, 200, 30], 'FontSize', 14,...
+    'Callback', {@Col_ROIs})
+
+
+%% update params
+uicontrol('Parent', p_funcs, 'Style', 'text', 'String', 'Add to name:', 'Position', [5, 3, 95, 25], 'FontSize', 14);
+h_save_name = uicontrol('Parent', p_funcs, 'Style', 'edit', 'String', '_', 'Position', [100, 7, 50, 25], 'FontSize', 14);
+uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Update Params', 'Position', [155, 5, 150, 30], 'FontSize', 14,...
+    'Callback', {@Update_Params, h_save_name})
+
+end
+
+
+%% modify trace
+function Apply_change_dFF(~,~, h1, h2, h_freq, h3, h_frames, h4)
+global imgobj
+%delete dFF field
+%imgobj = rmfield(imgobj, 'dFF');
 %%Detrend
 if get(h1, 'value')
     dFF_mod = detrend(imgobj.dFF_raw);
 else
     dFF_mod = imgobj.dFF_raw;
 end
+
 %%LowCutFilter
 if get(h2, 'value')
     lowcutfreq = str2double(get(h_freq, 'string'));
     [dFF_mod, ~, ~] = filtbutter(2, lowcutfreq, 'high', 1/imgobj.FVsampt, dFF_mod);
 end
-%%Normalize
-if get(h4, 'value')
-    MaxdFF = max(dFF_mod);
-    for i = 1:size(imgobj.dFF,2)
-        dFF_mod(:,i) = dFF_mod(:,i)/abs(MaxdFF(i));
-    end
-end
+
+
 %%Offset
 if get(h3, 'value')
     F0frames = str2double(get(h_frames, 'string'));
+    imgobj.f0 = F0frames; % update f0 info
     dFF_base= mean(dFF_mod(1:F0frames,:),1);
-    for i = 1:size(imgobj.dFF,2)
+    for i = 1:imgobj.maxROIs
         dFF_mod(:,i) = dFF_mod(:,i) - dFF_base(i);
     end
 end
 
+%%Normalize
+if get(h4, 'value')
+    MaxdFF = max(dFF_mod);
+    disp(size(dFF_mod))
+    for i = 1:imgobj.maxROIs
+        
+        dFF_mod(:,i) = dFF_mod(:,i)/abs(MaxdFF(i));
+        
+    end
+end
 %%if
 imgobj.dFF = dFF_mod;
 Plot_dFF_next([],[],0);
 end
+
+%% Update parameters
+function Update_Params(~,  ~, h)
+global DataSave
+global imgobj
+global mainvar
+global ParamsSave
+global recobj
+global sobj
+
+suf = get(h, 'string');
+[~, name,ext] = fileparts(mainvar.fname);
+save_name = [mainvar.dirname, name, suf, ext];
+%update parameters
+save(save_name, 'DataSave', 'imgobj', 'mainvar', 'ParamsSave', 'recobj', 'sobj');
+
+end
+
 %% Use KeyPress
 function callback_keypress(~, eventdata)
 switch eventdata.Key

@@ -1,33 +1,52 @@
-function Plot_next(~, ~, data, set_n, params)
+function Plot_next(~, ~, data, set_n, p, r)
 %%
 global sobj
-global recobj
 global hfig
 global n
+global ParamsSave
 %global imgobj
 %%
-
+zoom out
 n = Update_n(set_n);
 
-%recTime = linspace(params{1,n}.AIStartTime - params{1,1}.AIStartTime,...
-%    params{1,n}.AIEndTime - params{1,1}.AIStartTime, size(data,1));
-
-recTime = params{1,n}.AIStartTime:1/recobj.sampf:params{1,n}.AIEndTime+1/recobj.sampf;
+recTime = p{1,n}.AIStartTime:1/r.sampf:p{1,n}.AIEndTime+1/r.sampf;
 if length(recTime) ~= size(data,1)
     recTime = recTime(1:size(data,1));
 end
 Update_info_text;
 
 % eye position
-% data(:,1,n) +direction => nasal, -direction => temporal
-% data(:,2,n) + 
 Update_plot(hfig.plot1_1, recTime, data(:, 1, n));
 Update_plot(hfig.plot1_2, recTime, data(:, 2, n));
 
 % velocity
-[data1_offset, data2_offset, vel] = Radial_Vel;
+[data1_offset, data2_offset, vel, pks, locs] = Radial_Vel(r, data, recTime);
 vel(end) = NaN;
-Update_plot(hfig.plot2, recTime(1:end-1), vel);
+
+Update_plot(hfig.plot2_1, recTime(1:end-1), vel);
+Update_plot(hfig.plot2_2, NaN, NaN);
+set(hfig.plot2_2, 'XDATA', recTime(locs), 'YData', pks);
+
+Update_plot(hfig.plot1_1_sac, NaN, NaN)
+set(hfig.plot1_1_sac, 'XDATA', recTime(locs), 'YData', data(locs, 1, n));
+Update_plot(hfig.plot1_2_sac, NaN, NaN)
+set(hfig.plot1_2_sac, 'XDATA', recTime(locs), 'YData', data(locs, 2, n));
+
+% saccade timing
+if ~isempty(locs)
+    locs_text = cell(length(locs), 1);
+    str_n = zeros(1, length(locs));
+    for i = 1:length(locs)
+        % round
+        loc_t = round(recTime(locs(i))*100)/100;
+        locs_text{i} = num2str(loc_t);
+        str_n(i) = loc_t;
+    end
+    str = num2str(str_n);    
+    set(hfig.sac_locs, 'string', str);
+else
+    set(hfig.sac_locs, 'string', '');
+end
 
 % rotary
 [~, rotVel] = DecodeRot(data(:, 4, n));%
@@ -36,59 +55,46 @@ Update_plot(hfig.plot3, recTime(1:end-1), rotVel);
 % photo sensor
 Update_plot(hfig.plot4, recTime, data(:, 3, n));
 
-% position XY
-data1_offset(end) = NaN;
-Update_plot(hfig.plot5, data1_offset, data2_offset);
-
 % STIM timing
 threshold  =  get(hfig.slider4, 'value');
 Update_area(threshold)
-set(hfig.line4, 'XData', [recTime(1), recTime(end)], 'YData',[threshold,threshold])
+set(hfig.line4, 'XData', [recTime(1), recTime(end)], 'YData',[threshold,threshold]);
+
+% position XY
+if isfield(hfig, 'eye_position')
+    Update_plot(hfig.plot5, data1_offset, data2_offset);
+end
+
+% peri-saccade
+if isfield(hfig, 'peri_saccade')
+    get_peri_saccade(locs, data, n, r);
+end
 
 %%
 % Adjust Y range
-%set(hfig.axes1_1, 'YLim', [min(data(:, 1, n)), max(data(:, 1, n))]);
-set(hfig.axes1_1, 'YLim', [-5, 7]);
-%set(hfig.axes1_2, 'YLim', [min(data(:, 2, n)), max(data(:, 2, n))]);
-set(hfig.axes1_2, 'YLim', [-5, 5]);
+set(hfig.axes1_1, 'YLim', [3, 10]);
+set(hfig.axes1_2, 'YLim', [-3, 3]);
 set(hfig.axes4, 'YLim', [min(data(:, 3, n))*0.9, max(data(:, 3, n))*1.1]);
-%set(hfig.slider4, 'Min', min(data(:, 3, n))*1.1, 'Max', max(data(:, 3, n))*1.1);
-%{
-%% Update ROI Trace
-if isfield(imgobj, 'dFF')  && isempty(imgobj.dFF) == 0
-    %imgobj.dFF にデータがある場合は 切り出して plot に表示
-    index = find(imgobj.FVt >= recTime(1) &...
-        imgobj.FVt <= recTime(1) + recobj.rect/1000 + recobj.interval);
-    hold on
-    for i = 1:length(hfig.plot6)
-        set(hfig.plot6(i), 'XData', NaN, 'YData', NaN);
-    end
-    clear hfig.plot6
-    
-    hfig.plot6 = zeros(length(imgobj.selectROI), 1);
-    for i = 1:length(imgobj.selectROI)
-        hfig.plot6(i) =  plot(imgobj.FVt(index), imgobj.dFF(index, imgobj.selectROI(i)));
-        set(hfig.plot6(i), 'Parent', hfig.axes6);
-    end
-    hold off
-    % Update_plot(hfig.plot6, imgobj.FVt(index), imgobj.dFF(index, imgobj.selectROI));
-end
-%}
 
 %% Update plots
 refreshdata(hfig.fig1, 'caller')
+% Update Eye position
+if isfield(hfig, 'eye_position')
+    refreshdata(hfig.eye_position, 'caller');
+end
 
 % Update Table info
 if isfield(hfig, 'params_table')
-    [rnames, values]= Get_stim_param_values(params, recobj, sobj);
+    [rnames, values]= Get_stim_param_values(r, sobj);
     set(hfig.params_table_contents, 'Data', values, 'RowName', rnames);
 end
+
 
 %% %%%%%%%%subfunctions%%%%%%%%%% %%
 %%
     function Update_info_text
-        if isfield(params{1,n}, 'stim1')
-            stim =  params{1,n}.stim1;
+        if isfield(p{1,n}, 'stim1')
+            stim =  p{1,n}.stim1;
             pos = num2str(stim.center_position);
             sz = num2str(stim.size_deg);
             switch sobj.pattern
@@ -112,7 +118,7 @@ end
                     dist_deg = num2str(stim.dist_deg);
                     angle_deg = num2str(stim.angle_deg);
                     
-                    stim2 =  params{1,n}.stim2;
+                    stim2 =  p{1,n}.stim2;
                     sz2 = num2str(stim2.size_deg);
                     stim1_info_txt = ['Stim1::Pos', pos, ', Size:', sz, 'deg'];
                     stim2_info_txt = ['Stim2::Dist:', dist_deg, ', Ang:', angle_deg, 'deg',...
@@ -173,7 +179,7 @@ end
     end
 %%
     function Update_area(threshold)
-        if isfield(params{1,n}, 'stim1')
+        if isfield(p{1,n}, 'stim1')
             ind_stim_on = find(data(:, 3, n) > threshold, 1);
             ind_stim_off = find(data(:, 3, n) > threshold, 1, 'last');
             
@@ -209,56 +215,25 @@ end
     end
 %%
     function [corON, corOFF] = Correct_stim_timing(ind_on, ind_off)
-        global ParamsSave
         if get(hfig.apply_threshold, 'value') == 0
             
             %Stim Timing, Corrected by Photo Sensor
             %Onset
-            corON= recTime(ind_on) - (params{1,n}.stim1.centerY_pix - 40)/1024/75;
+            corON= recTime(ind_on) - (p{1,n}.stim1.centerY_pix - 40)/1024/75;
             ParamsSave{1,n}.stim1.corON =  corON;
             
             %Offset
-            corOFF =  recTime(ind_off) - (params{1,n}.stim1.centerY_pix - 40)/1024/75;
+            corOFF =  recTime(ind_off) - (p{1,n}.stim1.centerY_pix - 40)/1024/75;
             ParamsSave{1,n}.stim1.corOFF =  corOFF;
         else
             corON =  ParamsSave{1,n}.stim1.corON;
             corOFF =  ParamsSave{1,n}.stim1.corOFF;
-            
-            
         end
         
         set(hfig.line4_correct_ON, 'XData',[corON, corON],'YData', [-10, 500])
         set(hfig.line4_correct_OFF, 'XData',[corOFF, corOFF],'YData', [-10, 500])
     end
 
-%%
-    function [data1_offset, data2_offset, velocity] = Radial_Vel
-        a = round(get(hfig.slider2, 'value')/(recobj.sampf/1000));
-        b = ones(1,a)/a;
-        
-        data1_filt = filter(b, a ,data(:, 1, n) - data(1, 1, n));
-        off1 =  str2double(get(hfig.offsetV, 'String'));
-        if off1 == 0
-            data1_offset = data1_filt - data1_filt(1);
-        else
-            data1_offset = data1_filt - off1;
-        end
-        
-        data2_filt = filter(b, a ,data(:, 2, n) - data(1, 2, n));
-        off2 =  str2double(get(hfig.offsetH, 'String'));
-        if off2 == 0
-            data2_offset = data2_filt - data2_filt(1);
-        else
-            data2_offset = data2_filt - off2;
-        end
-        
-        data1_diff = diff(data1_offset);
-        data2_diff = diff(data2_offset);
-        
-        diff_t = params{1,n}.AIstep;
-        [~, r] = cart2pol(data2_diff, -data1_diff);
-        velocity = r / diff_t * 100;
-    end
 %%
     function [positionDataDeg, rotVel] = DecodeRot(CTRin)
         % Transform counter data from rotary encoder into angular position (deg).
@@ -269,10 +244,14 @@ end
         
         rotMove = positionDataDeg / 360 * 12; %12 cm Disk
         rotMove = rotMove - rotMove(1);
-        a = round(get(hfig.slider2, 'value')/(recobj.sampf/1000));
-        b = ones(1,a)/a;
-        rotMove_filt = filter(b, a, rotMove);
-        rotVel = abs(diff(rotMove_filt)/params{1,n}.AIstep);
+        %a = round(get(hfig.slider2, 'value')/(r.sampf/1000));
+        %a = round(50*1000/r.sampf);
+        %b = ones(1,a)/a;
+        d_filt = designfilt('lowpassfir', 'FilterOrder', 8,...
+            'CutoffFrequency', 100, 'SampleRate', r.sampf);
+        rotMove_filt = filtfilt(d_filt, rotMove);
+%        rotMove_filt = filter(b, a, rotMove);
+        rotVel = abs(diff(rotMove_filt)/p{1,n}.AIstep);
         
     end
 %%
@@ -301,6 +280,7 @@ end
     function Update_plot(hplot, x, y)
         set(hplot, 'XData', x, 'YData', y);
     end
+
 %%
 % end of Plot_next
 end

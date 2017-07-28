@@ -19,6 +19,7 @@ for n = n_img
     clear F;
     
     fn = num2str(n);
+    
     name = [dirname, fsuf, fn, psuf, '.tif'];
     disp(['Reading File:: ', name])
     % check file

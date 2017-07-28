@@ -1,24 +1,49 @@
-function Select_Open_MAT(~,~)
+function Select_Open_MAT(~, ~, r)
 % select a new file and opne plot window
+
+%%
+clearvars -global DataSave
 global hfig
 global n
 global mainvar
-global DataSave
+global imgobj
 
-%%
 delete(hfig.fig1);
-clearvars -global recobj sobj DataSave ParamsSave
+imgobj = rmfield(imgobj, 'dFF');
 
 %%
-
 [mainvar.fname, mainvar.dirname] = uigetfile([mainvar.dirname, '*.mat']);
 load([mainvar.dirname, mainvar.fname]);
 
+%loaded file contains DataSave
+if isempty(DataSave)
+    errordlg('DataSave is missing')
+    [mainvar.fname, mainvar.dirname] = uigetfile([mainvar.dirname, '*.mat']);
+    load([mainvar.dirname, mainvar.fname]);
+end
+
+%%
+imgobj.nROI = 0;
+imgobj.selectROI = 1;
+imgobj.maxROIs =  1;
+
+if ~isfield(imgobj, 'dFF')
+    imgobj.dFF =[];
+end
+
+if ~isfield(imgobj, 'FVsampt')
+    imgobj.FVsampt = 0.574616;
+end
+
+%%%%%%%%%%
 if exist('DataSave', 'var')
-    DataSave(:,3,:) =  DataSave(:,3,:)* 1000;
-    hfig = GUI_NBA_Analysis(DataSave, ParamsSave, recobj, sobj, mainvar.fname); 
+    if isempty(imgobj.dFF)
+        DataSave(:,3,:) =  DataSave(:,3,:)* 1000;
+    end
+    hfig = GUI_NBA_Analysis(DataSave, ParamsSave, r, sobj, mainvar.fname); 
     n = 0;
-    Plot_next([], [], DataSave, 0, ParamsSave)
+    Plot_next([], [], DataSave, 0, ParamsSave, r)
 else
     errordlg('DataSave is missing!!')
+%}
 end

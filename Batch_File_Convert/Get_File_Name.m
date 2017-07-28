@@ -1,16 +1,22 @@
 function [Dir, File, Ext, Fsuf, Psuf] = Get_File_Name(varargin)
-
+%ファイル名のサフィックスなどを抽出, mat と tif を選択させる
 switch nargin
     case 0
-        dir = [];
+        dir_name = [];
     case 1
-        dir = vargin(1);
+        dir_name = char(varargin{1});
 end
 % select file and split file name for convert file type
-if ~isempty(dir)
-    [f, Dir] = uigetfile(dir, {'*.tif; *.tiff; *.mat', 'DATA files'});
-else 
-    [f, Dir] = uigetfile({'*.tif; *.tiff; *.mat', 'DATA files'});
+
+if ~isempty(dir_name)
+    %     [f, Dir] = uigetfile({[dir,'*.tif'], 'TIF files';...
+    %         [dir,'*.tiff'], 'TIFF files';...
+    %         [dir,'*.mat'], 'MAT files'},...
+    %         'select Data files');
+    %[f, Dir] = uigetfile({'*.tif', 'TIF files'; '*.mat', 'MAT files'}, 'SELECT files', '/Volumes/MyBook2017/2PData/');
+    [f, Dir] = uigetfile({'*.tif', 'TIF files'; '*.mat', 'MAT files'}, 'SELECT files', dir_name);
+else
+    [f, Dir] = uigetfile({'*.tif'; '*.tiff'; '*.mat'}, 'SELECT files');
 end
 [~, File, Ext] = fileparts(f);
 [i1, i2] = regexp(File, '\d*');
