@@ -9,10 +9,12 @@ sac_t = str2num(str);
 %update, saccade event
 ParamsSave{1,n}.sac_t = sac_t;
 
+%reset event plot
 set(hfig.plot1_1_sac, 'XData', NaN, 'YData', NaN);
 set(hfig.plot1_2_sac, 'XData', NaN, 'YData', NaN);
 set(hfig.plot2_2, 'XData', NaN, 'YData', NaN);
 
+%update event
 if ~isempty(sac_t)
     recTime = p{1,n}.AIStartTime:1/r.sampf:p{1,n}.AIEndTime+1/r.sampf;
     [~, ~, vel, ~, ~] = Radial_Vel(r, data, recTime);
@@ -25,6 +27,7 @@ if ~isempty(sac_t)
     
     set(hfig.plot2_2, 'XData', ParamsSave{1,n}.sac_t, 'YData', pks);
     
+    %update plot
     if isfield(hfig, 'peri_saccade')
         get_peri_saccade(locs, data, n, r);
     end

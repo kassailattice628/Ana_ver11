@@ -61,5 +61,5 @@ Plot_next([], [], DataSave, 0, ParamsSave, recobj)
 
 %% %%%%%%%%%
 if ~isempty(imgobj.dFF)
-    Open_2P(hfig.roi_traces, ParamsSave, recobj);
+    Open_2P(hfig.roi_traces,[], ParamsSave, recobj, sobj);
 end

@@ -1,15 +1,21 @@
-function Select_Open_MAT(~, ~, r)
+function Select_Open_MAT(~, ~)
 % select a new file and opne plot window
 
 %%
-clearvars -global DataSave
+clearvars -global DataSave ParamsSave recobj
 global hfig
 global n
 global mainvar
 global imgobj
+global recobj
+global DataSave
+global ParamsSave
+global sobj
 
 delete(hfig.fig1);
-imgobj = rmfield(imgobj, 'dFF');
+if isfield(imgobj,'dFF')
+    imgobj = rmfield(imgobj, 'dFF');
+end
 
 %%
 [mainvar.fname, mainvar.dirname] = uigetfile([mainvar.dirname, '*.mat']);
@@ -25,7 +31,7 @@ end
 %%
 imgobj.nROI = 0;
 imgobj.selectROI = 1;
-imgobj.maxROIs =  1;
+%imgobj.maxROIs =  1;
 
 if ~isfield(imgobj, 'dFF')
     imgobj.dFF =[];
@@ -40,9 +46,9 @@ if exist('DataSave', 'var')
     if isempty(imgobj.dFF)
         DataSave(:,3,:) =  DataSave(:,3,:)* 1000;
     end
-    hfig = GUI_NBA_Analysis(DataSave, ParamsSave, r, sobj, mainvar.fname); 
+    hfig = GUI_NBA_Analysis(DataSave, ParamsSave, recobj, sobj, mainvar.fname); 
     n = 0;
-    Plot_next([], [], DataSave, 0, ParamsSave, r)
+    Plot_next([], [], DataSave, 0, ParamsSave, recobj)
 else
     errordlg('DataSave is missing!!')
 %}

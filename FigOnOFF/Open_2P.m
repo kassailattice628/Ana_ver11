@@ -1,4 +1,4 @@
-function  Open_2P(hfig_handle, p, r)
+function  Open_2P(hfig_handle,  p, r, s)
 global hfig
 global imgobj
 
@@ -13,7 +13,7 @@ hfig.two_photon = figure('Position', [10, 20, 1100, 500], 'Name', 'Two-photon Tr
 p_roi =  uipanel('Title', 'ROI traces', 'FontSize', 12, 'Position', [0.01 0.89, 0.95, 0.1]);
 % Load DATA
 uicontrol('Parent', p_roi, 'Style', 'pushbutton', 'String', 'Load dFF', 'Position', [10, 5, 100, 30],...
-    'Callback', {@Load2P}, 'FontSize', 14);
+    'Callback', {@Load2P, s}, 'FontSize', 14);
 
 uicontrol('Parent', p_roi, 'Style', 'edit', 'String', imgobj.FVsampt, 'Position', [120, 7, 100, 25],...
     'Callback', {}, 'FontSize', 14);
@@ -67,7 +67,7 @@ if ~isempty(imgobj.dFF)
     imgobj.FVt = 0:imgobj.FVsampt:imgobj.FVsampt*(FVflames-1);
     Plot_dFF_next([], [], 0)
     Plot_dFF_selectROIs([], [])
-    OpenPanel2(hfig, imgobj)
+    OpenPanel2(hfig, imgobj, s)
 end
 
 
@@ -77,14 +77,19 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% subfunctions
-function Load2P(~,~)
+function Load2P(~,~, s)
 global imgobj
 global mainvar
 global hfig
 %%
 if isfield(imgobj, 'dFF')
     imgobj = rmfield(imgobj, 'dFF');
+end
+if isfield(imgobj,'dFF_s_ave')
     imgobj = rmfield(imgobj, 'dFF_s_ave');
+end
+if isfield(imgobj,'dFF_s_ave_os')
+    imgobj = rmfield(imgobj, 'dFF_s_ave_os');
 end
 imgobj.nROI = 0;
 imgobj.selectROI = 1;
@@ -117,7 +122,7 @@ else
     Plot_dFF_selectROIs([], [])
 end
 
-OpenPanel2(hfig, imgobj)
+OpenPanel2(hfig, imgobj, s)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function Open_file(d,f)
@@ -143,7 +148,6 @@ end
 %% plot stim timing
 function Get_Plot_stim_timing(r, p)
 area_Y =  [-1, 10, 10, -1];
-
 hold on
 % get stim timing
 for i =  r.prestim+1 : r.cycleCount
@@ -166,7 +170,7 @@ end
 
 
 %% panel2
-function OpenPanel2(hfig, imgobj)
+function OpenPanel2(hfig, imgobj, sobj)
 p_funcs = uipanel('Parent', hfig.two_photon, 'Title', 'Ctr', 'FontSize', 12, 'Position', [0.63 0.05 0.36 0.83]);
 h_Detrend = uicontrol('Parent', p_funcs, 'Style', 'togglebutton', 'String', 'Detrend', 'Position', [5, 360, 100, 30], 'FontSize', 14);
 
@@ -202,7 +206,22 @@ uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Average by Stim',
 uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show All ROIs', 'Position', [210, 220, 140, 30], 'FontSize', 14,...
     'Callback',  {@Plot_All_Ave_dFF_by_stim, h_Cmin, h_Cmax})
 
-uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Col ROIs', 'Position', [5, 185, 200, 30], 'FontSize', 14,...
+visible = 'on';
+switch sobj.pattern
+    case 'Size_rand'
+        text_tuning = 'Size Tuning';
+    case {'Sin', 'Rect', 'Gabor', 'MoveBar'}
+        text_tuning = 'Dir/Ori Tuning';
+    case {'Images'}
+        text_tuning = 'Image selectivity';
+    otherwise
+        text_tuning = '';
+        visible = 'off';
+end
+uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', text_tuning, 'Position', [5, 185, 200, 30], 'FontSize', 14,...
+    'Callback', {@Plot_Stim_Tuning, sobj}, 'Visible', visible)
+
+uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Col ROIs', 'Position', [5, 150, 200, 30], 'FontSize', 14,...
     'Callback', {@Col_ROIs})
 
 

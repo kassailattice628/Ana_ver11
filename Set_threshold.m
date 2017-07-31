@@ -1,4 +1,4 @@
-function Set_threshold(hGui,~, h, data, params)
+function Set_threshold(hGui,~, h, data, params, r)
 
 threshold =  str2double(get(hGui, 'string'));
 
@@ -10,5 +10,5 @@ end
 
 set(h.slider4, 'value', threshold);
 
-Plot_next([], [], data, 0, params);
+Plot_next([], [], data, 0, params, r);
 end

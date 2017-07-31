@@ -1,6 +1,7 @@
 function [data1_offset, data2_offset, velocity, pks, locs] = Radial_Vel(r, data, recTime)
 global n
 global hfig
+% update saccade time info 
 global ParamsSave
 
 %% % prep data % 
@@ -17,7 +18,7 @@ data1_offset = shift_data(data(:, 1, n) - data(1, 1, n), off1);
 data2_offset = shift_data(data(:, 2, n) - data(1, 2, n), off2);
 
 d_filt_eye = designfilt('lowpassfir', 'FilterOrder', 12,...
-    'CutoffFrequency', 50, 'SampleRate', r.sampf);
+    'CutoffFrequency', 5, 'SampleRate', r.sampf);
 d_filt_vel = designfilt('bandpassfir', 'FilterOrder', 5,...
     'CutoffFrequency1',5, 'CutoffFrequency2', 200,...
     'SampleRate', r.sampf);
@@ -43,13 +44,15 @@ if isfield(ParamsSave{1,n}, 'sac_t')
     end
 else
     [pks,locs] = findpeaks(velocity, 'MinPeakHeight', 45,...
-        'MinPeakDistance', 800);
+        'MinPeakDistance', 500);
     pks = pks(pks < 250);
     locs = locs(pks < 250);
-    
     if isempty(pks)
         ParamsSave{1,n}.sac_t = [];
+    else
+        ParamsSave{1,n}.sac_t = recTime(locs);
     end
+    
 end
 
 %

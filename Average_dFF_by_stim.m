@@ -14,10 +14,6 @@ mag_os = 200; %oversampling x200
 sampt_os = imgobj.FVsampt/mag_os;
 
 %% Get_dFF, Averaged by Stim Types
-
-%[stim_list, datap, datap_os, prep] = Get_dFF_Ave(mag_os);
-%nstim = length(stim_list);
-
 if ~isfield(imgobj, 'dFF_s_ave');
     [stim_list, datap, datap_os, prep] = Get_dFF_Ave(mag_os);
     nstim = length(stim_list);
@@ -29,7 +25,6 @@ else
     pret = 1;
     prep = ceil(pret/imgobj.FVsampt);
 end
-%}
 %% %%%%%%%%%%%%%%%%% Show Plot %%%%%%%%%%%%%%%%%%%% %%
 
 %% plot (imagesc)

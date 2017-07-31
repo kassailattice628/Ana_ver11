@@ -10,7 +10,7 @@ global recobj
 global ParamsSave
 %%%%%%%%%%%
 
-frame_stimON = zeros(1, size(ParamsSave,2) - recobj.prestim);
+frame_stimON = zeros(size(ParamsSave,2) - recobj.prestim, 1);
 frame_stimON_os = frame_stimON;
 stim = frame_stimON;
 
@@ -26,22 +26,36 @@ for i = (recobj.prestim + 1):size(ParamsSave,2)
     %stim specific index
     switch sobj.pattern
         case {'Uni', 'Looming'}
-            stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.center_position;
+            if strcmp(sobj.mode, 'Concentric')
+                if i == recobj.prestim + 1
+                    stim = zeros(size(ParamsSave,2) - recobj.prestim, 2);
+                end
+                stim(i-recobj.prestim,1) = ParamsSave{1,i}.stim1.dist_deg;
+                stim(i-recobj.prestim,2) = ParamsSave{1,i}.stim1.angle_deg;
+            else
+                stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.center_position;
+            end
         case {'Size_rand'}
             stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.size_deg;
+        case {'FineMap'}
+            stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.center_position_FineMap;
         case {'MoveBar'}
             stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.MovebarDir_angle_deg;
         case {'Images'}
             stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.Image_index;
-        case {'Rect'}
+        case {'Rect', 'Sin', 'Gabor'}
             stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.gratingAngle_deg;
+        case {'B/W'}
+            if i == recobj.prestim + 1
+                stim = zeros(size(ParamsSave,2) - recobj.prestim, 3);
+            end
+            stim(i-recobj.prestim,1) = ParamsSave{1,i}.stim1.color;
+            stim(i-recobj.prestim,2) = ParamsSave{1,i}.stim1.dist_deg;
+            stim(i-recobj.prestim,3) = ParamsSave{1,i}.stim1.angle_deg;
     end    
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-stim_list = unique(stim);
-nstim = length(stim_list);
-
 nframe = size(imgobj.dFF,1);
 %Set time poitn for stimulus average
 
@@ -50,8 +64,8 @@ pret = 1;
 prep = ceil(pret/imgobj.FVsampt);
 
 %post-stimulus time after **** sec from stim ON
-%postt = recobj.rect/1000 + recobj.interval - 2;
-postt = 11;
+postt = recobj.rect/1000 + recobj.interval - 2;
+%postt = 11;
 postp = ceil(postt/imgobj.FVsampt);
 
 %data point for plot
@@ -61,6 +75,14 @@ datap = (prep + postp)+ 1;
 datap_os = (prep + postp) * mag_os + 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%switch sobj.pattern
+    %case {'B/W'}
+        stim_list = unique(stim, 'rows');
+        nstim = size(stim_list, 1);
+%     otherwise
+%         stim_list = unique(stim);
+%         nstim = length(stim_list);
+%end
 %% Get_sitm_average for all ROI
 
 %prep mat for dFF_Ave
@@ -83,10 +105,12 @@ for i2 = 1:imgobj.maxROIs
         %%%%%%%%%%
         % i :: each stimlus
         %%%%%%%%%%
-        i_ext_stim = find(stim == stim_list(i));
+        i_list = ismember(stim, stim_list(i,:), 'rows');
+        i_ext_stim = find(i_list);
+        
+        %%
         dFF_ext = zeros(datap, length(i_ext_stim));
         dFF_ext_os = zeros(datap_os, length(i_ext_stim));
-        
         for i3 = 1:length(i_ext_stim)
             %%%%%%%%%%
             % i3 :: each trials

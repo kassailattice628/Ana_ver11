@@ -69,7 +69,7 @@ alpha(area_alpha);
 hold on
 h.plot3 = plot(NaN, NaN, 'LineWidth', 2);
 hold off
-set(h.axes3, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-0.02, 10]);
+set(h.axes3, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-0.02, 30]);
 title('Locomotion Velocity (Rotary)', 'FontSize', 14)
 ylabel(h.axes3, 'cm/sec');
 
@@ -91,13 +91,6 @@ xlabel('Time (s)');
 
 
 %% Controler
-%{
-slider2_height = axes2_h_base + axes_height;
-uicontrol('Style', 'text', 'String', 'Filter', 'Position',[640, slider2_height, 80, 20])
-h.slider2 = uicontrol('Style', 'slider', 'Position', [675, axes2_h_base, 20, axes_height],...
-    'Min', 1, 'Max', 200, 'Value', 20, 'Callback', {@Plot_next, data, 0, p, r});
-%}
-
 slider4_height = axes4_h_base + axes1_height;
 uicontrol('Style', 'text', 'String', 'Threshold', 'Position',[640, slider4_height, 80, 20])
 h.slider4 = uicontrol('Style', 'slider', 'Position', [675, axes4_h_base, 20, axes1_height],...
@@ -106,7 +99,7 @@ h.slider4 = uicontrol('Style', 'slider', 'Position', [675, axes4_h_base, 20, axe
 
 %% Select NBA DATA file
 uicontrol('Style', 'pushbutton', 'String', 'New File', 'Position', [10, 760, 100, 30],...
-    'Callback', {@Select_Open_MAT, r}, 'FontSize', 14);
+    'Callback', {@Select_Open_MAT}, 'FontSize', 14);
 
 %% Data Infomation
 h.file_name = uicontrol('Style', 'text', 'String', fname, 'Position', [115, 755, 150, 30], 'FontSize', 14);
@@ -127,7 +120,7 @@ h.set_n = uicontrol('Parent', h.p_trial, 'Style', 'edit', 'String', 1, 'Position
 uicontrol('Parent', h.p_trial, 'Style', 'text', 'String', 'Threshold:', 'Position', [200, 2, 80, 25], 'FontSize', 14);
 h.set_threshold = uicontrol('Parent', h.p_trial, 'Style', 'edit', 'String',...
     num2str(get(h.slider4, 'value')),'Position', [285, 7, 50, 25],...
-    'Callback', {@Set_threshold, h, data, p}, 'FontSize', 14, 'BackGroundColor', 'w');
+    'Callback', {@Set_threshold, h, data, p, r}, 'FontSize', 14, 'BackGroundColor', 'w');
 h.apply_threshold = uicontrol('Parent', h.p_trial, 'Style', 'togglebutton',...
     'String', 'Apply All', 'Position', [340, 5, 90, 30], 'Callback', {@Apply_threshold_to_all, h.set_threshold, data}, 'FontSize', 14);
 
@@ -144,6 +137,17 @@ uicontrol('Units', 'Pixels', 'Style', 'text', 'String', 'Detect Events', 'FontSi
 h.sac_locs = uicontrol('Units', 'Pixels', 'Style', 'Edit', 'String', '19', 'FontSize', 14,...
     'Position', [axes_left+axes_width+5, axes2_h_base + axes_height - 30, 300, 30],...
     'Callback', {@Update_saccade_time, p, r, data});
+uicontrol('Style', 'pushbutton', 'String', 'Update all event',...
+    'Position', [axes_left + axes_width + 5, axes2_h_base + axes_height - 65, 150, 30],...
+    'Callback', {@Update_all_saccade_time, p, r, data}, 'FontSize', 14);
+uicontrol('Style', 'pushbutton', 'String', 'Clear all event',...
+    'Position', [axes_left + axes_width + 155, axes2_h_base + axes_height - 65, 150, 30],...
+    'Callback', {@Clear_all_saccade_time}, 'FontSize', 14);
+
+uicontrol('Style', 'pushbutton', 'String', 'Plot all event',...
+    'Position', [axes_left + axes_width + 5, axes2_h_base + axes_height - 100, 150, 30],...
+    'Callback', {@ Plot_all_saccade, r, data}, 'FontSize', 14);
+
     
 %% Load two-photon traces
 h.roi_traces = uicontrol('Style', 'togglebutton', 'String', 'Two-photon', 'Position', [785, 760, 100, 30],...
@@ -188,12 +192,12 @@ end
 
 
 function GetF0(~,~)
-global pSave
-global r
+global ParamsSave
+global recobj
 global imgobj
 
-if isfield(pSave{1,r.prestim + 1}.stim1, 'corON')
-    numF0 = floor(pSave{1,r.prestim + 1}.stim1.corON / imgobj.FVsampt) - 1;
+if isfield(ParamsSave{1,recobj.prestim + 1}.stim1, 'corON')
+    numF0 = floor(ParamsSave{1,recobj.prestim + 1}.stim1.corON / imgobj.FVsampt) - 1;
     
     msgbox(['The number of frames for prestimulus is :: ', num2str(numF0)] );
 else

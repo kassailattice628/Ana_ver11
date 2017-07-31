@@ -38,7 +38,7 @@ if ~isempty(locs)
     str_n = zeros(1, length(locs));
     for i = 1:length(locs)
         % round
-        loc_t = round(recTime(locs(i))*100)/100;
+        loc_t = round(recTime(locs(i))*1000)/1000;
         locs_text{i} = num2str(loc_t);
         str_n(i) = loc_t;
     end
@@ -72,8 +72,8 @@ end
 
 %%
 % Adjust Y range
-set(hfig.axes1_1, 'YLim', [3, 10]);
-set(hfig.axes1_2, 'YLim', [-3, 3]);
+set(hfig.axes1_1, 'YLim', [-2, 6]);
+set(hfig.axes1_2, 'YLim', [-5, 4]);
 set(hfig.axes4, 'YLim', [min(data(:, 3, n))*0.9, max(data(:, 3, n))*1.1]);
 
 %% Update plots
@@ -128,9 +128,10 @@ end
                 case {'B/W'}
                     dist_deg = num2str(stim.dist_deg);
                     angle_deg = num2str(stim.angle_deg);
-                    stim1_info_txt = ['Center:', pos, ', Size:', sz, 'deg',...
-                        ', Dist:', dist_deg, 'deg', ', Ang:', angle_deg, 'deg',...
+                    stim1_info_txt = ['Center:', pos, ', Size:', sz, 'deg'];
+                    stim2_info_txt = ['Dist:', dist_deg, 'deg', ', Ang:', angle_deg, 'deg',...
                         ', Lumi:', num2str(stim.color)];
+                    set(hfig.stim2_info, 'String', stim2_info_txt);
                     
                 case {'Looming'}
                     spd = num2str(stim.LoomingSpd_deg_s);
@@ -142,9 +143,10 @@ end
                     sf = num2str(stim.gratingSF_cyc_deg);
                     spd = num2str(stim.gratingSpd_Hz);
                     angle = num2str(stim.gratingAngle_deg);
-                    stim1_info_txt = ['Pos:', pos, ', Size:', sz, 'deg',...
-                        ', SF:', sf, 'cpd', ', Spd:', spd, 'Hz',...
+                    stim1_info_txt = ['Pos:', pos, ', Size:', sz, 'deg'];
+                    stim2_info_txt = ['SF:', sf, 'cpd', ', Spd:', spd, 'Hz',...
                         ', Ang:', angle, 'deg'];
+                    set(hfig.stim2_info, 'String', stim2_info_txt);
                 
                 case {'MoveBar'}
                     angle=num2str(stim.MovebarDir_angle_deg);
@@ -189,9 +191,9 @@ end
                 
                 set(hfig.area1_1, 'XData', [corON, corOFF], 'YData', [10,10], 'basevalue', -10);
                 set(hfig.area1_2, 'XData', [corON, corOFF], 'YData', [10,10], 'basevalue', -10);
-                set(hfig.area2, 'XData', [corON, corOFF], 'YData', [150,150], 'basevalue', 0);
-                set(hfig.area3, 'XData', [corON, corOFF], 'YData', [2,2], 'basevalue', -0.02);
-                set(hfig.area4, 'XData', [corON, corOFF], 'YData', [500, 500], 'basevalue', -10);
+                set(hfig.area2, 'XData', [corON, corOFF], 'YData', [250,250], 'basevalue', 0);
+                set(hfig.area3, 'XData', [corON, corOFF], 'YData', [30,30], 'basevalue', -0.02);
+                set(hfig.area4, 'XData', [corON, corOFF], 'YData', [300, 300], 'basevalue', -10);
 
             else
                 Erase_area;
@@ -200,7 +202,6 @@ end
             Erase_area;
         end
     end
-
 %%
     function Erase_area
         set(hfig.area1_1,'XData', [NaN, NaN], 'YData', [NaN, NaN]);
@@ -233,7 +234,6 @@ end
         set(hfig.line4_correct_ON, 'XData',[corON, corON],'YData', [-10, 500])
         set(hfig.line4_correct_OFF, 'XData',[corOFF, corOFF],'YData', [-10, 500])
     end
-
 %%
     function [positionDataDeg, rotVel] = DecodeRot(CTRin)
         % Transform counter data from rotary encoder into angular position (deg).
@@ -280,7 +280,6 @@ end
     function Update_plot(hplot, x, y)
         set(hplot, 'XData', x, 'YData', y);
     end
-
 %%
 % end of Plot_next
 end
