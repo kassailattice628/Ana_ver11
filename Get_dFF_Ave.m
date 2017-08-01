@@ -52,7 +52,7 @@ for i = (recobj.prestim + 1):size(ParamsSave,2)
             stim(i-recobj.prestim,1) = ParamsSave{1,i}.stim1.color;
             stim(i-recobj.prestim,2) = ParamsSave{1,i}.stim1.dist_deg;
             stim(i-recobj.prestim,3) = ParamsSave{1,i}.stim1.angle_deg;
-    end    
+    end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -75,14 +75,10 @@ datap = (prep + postp)+ 1;
 datap_os = (prep + postp) * mag_os + 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%switch sobj.pattern
-    %case {'B/W'}
-        stim_list = unique(stim, 'rows');
-        nstim = size(stim_list, 1);
-%     otherwise
-%         stim_list = unique(stim);
-%         nstim = length(stim_list);
-%end
+
+stim_list = unique(stim, 'rows');
+nstim = size(stim_list, 1);
+
 %% Get_sitm_average for all ROI
 
 %prep mat for dFF_Ave
@@ -107,7 +103,6 @@ for i2 = 1:imgobj.maxROIs
         %%%%%%%%%%
         i_list = ismember(stim, stim_list(i,:), 'rows');
         i_ext_stim = find(i_list);
-        
         %%
         dFF_ext = zeros(datap, length(i_ext_stim));
         dFF_ext_os = zeros(datap_os, length(i_ext_stim));
@@ -118,14 +113,23 @@ for i2 = 1:imgobj.maxROIs
             ext_fs = frame_stimON(i_ext_stim(i3)) - prep:frame_stimON(i_ext_stim(i3)) + postp;
             ext_fs_os = frame_stimON_os(i_ext_stim(i3)) - prep*mag_os:frame_stimON_os(i_ext_stim(i3)) + postp*mag_os;
             
-            if max(ext_fs) < size(imgobj.dFF, 1)
+            %%%%%
+            if max(ext_fs) <= size(imgobj.dFF, 1)
                 dFF_ext(:,i3) = imgobj.dFF(ext_fs, i2);
-                dFF_ext_os(:,i3) = dFF_os(ext_fs_os);
-            else
+                
+            elseif max(ext_fs) > size(imgobj.dFF,1)
                 dFF_ext = dFF_ext(:, 1:i3-1);
-                dFF_ext_os = dFF_ext_os(:, 1:i3-1);
-                continue;
             end
+            %%%%%
+            if max(ext_fs_os) <= size(dFF_os, 2)
+                dFF_ext_os(:,i3) = dFF_os(ext_fs_os);
+                
+            elseif max(ext_fs_os) > size(dFF_os, 2)
+                dFF_ext_os = dFF_ext_os(:, 1:i3-1);
+                break;
+            end
+            %%%%%
+            
         end
         
         %Get mean traces for each stimlus

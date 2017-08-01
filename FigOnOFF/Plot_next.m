@@ -72,8 +72,8 @@ end
 
 %%
 % Adjust Y range
-set(hfig.axes1_1, 'YLim', [-2, 6]);
-set(hfig.axes1_2, 'YLim', [-5, 4]);
+set(hfig.axes1_1, 'YLim', [2, 10]);
+set(hfig.axes1_2, 'YLim', [-4, -1]);
 set(hfig.axes4, 'YLim', [min(data(:, 3, n))*0.9, max(data(:, 3, n))*1.1]);
 
 %% Update plots
