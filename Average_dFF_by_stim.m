@@ -4,6 +4,7 @@ function Average_dFF_by_stim(~,~, cmin, cmax)
 % frame rate are over sampled *** times higher.
 %%%%%%%%%%%
 global imgobj
+global sobj
 %%%%%%%%%%%
 
 c_min = str2double(get(cmin, 'string'));
@@ -27,6 +28,16 @@ else
 end
 %% %%%%%%%%%%%%%%%%% Show Plot %%%%%%%%%%%%%%%%%%%% %%
 
+%duration
+switch sobj.pattern
+    case {'MoveBar', 'Looming'}
+        duration = sobj.moveDuration;
+    otherwise
+        duration = sobj.duration;
+end
+
+
+
 %% plot (imagesc)
 figure,
 img_x = 1:nstim;
@@ -44,7 +55,8 @@ for i = 1:length(imgobj.selectROI)
     ylabel('Stim')
     xlabel('Time(s)')
     
-    line([t(prep+1), t(prep+1)],[0,nstim+1], 'Color', 'g', 'LineWidth', 2);
+    line([t(prep+1), t(prep+1)],[0, nstim+1], 'Color', 'g', 'LineWidth', 1);
+    line([t(prep+1)+duration, t(prep+1)+duration],[0, nstim+1], 'Color', 'r', 'LineWidth', 1);
 end
 
 
@@ -58,22 +70,22 @@ for i = 1:length(imgobj.selectROI)
     %imagesc(img_y, img_x, dFF_s_ave_os(:,:,i)')
     imagesc(t_os, img_x, imgobj.dFF_s_ave_os(:,:,imgobj.selectROI(i))')
     caxis([c_min, c_max])
-    
-    
-    
     title(['ROI=#', num2str(imgobj.selectROI(i))]);
     
     set(gca,'YTick', 1:nstim);% something like this
     ylabel('Stim')
     xlabel('Time(s), (Over Sampled)')
     
-    line([t_os(prep*mag_os+1), t_os(prep*mag_os+1)],[0,nstim+1], 'Color', 'g', 'LineWidth', 2);
+    line([t_os(prep*mag_os+1), t_os(prep*mag_os+1)],[0,nstim+1], 'Color', 'g', 'LineWidth', 1);
+    line([t_os(prep*mag_os+1)+duration, t_os(prep*mag_os+1)+duration],[0, nstim+1], 'Color', 'r', 'LineWidth', 1);
 end
 
 %% plot trace
+
+s_off_p = ceil(duration/imgobj.FVsampt);
+
 figure
 for i = 1:length(imgobj.selectROI)
-    
     for i2 = 1:nstim
         subplot(nstim, length(imgobj.selectROI), i + (i2-1)*length(imgobj.selectROI))
         
@@ -84,11 +96,38 @@ for i = 1:length(imgobj.selectROI)
             title(['ROI=#', num2str(imgobj.selectROI(i))])
         end
         line([t(prep+1), t(prep+1)],[-1,3], 'Color', 'g', 'LineWidth', 2);
+        line([t(prep+1)+duration, t(prep+1)+duration],[-1,3], 'Color', 'g', 'LineWidth', 2);
     end
-    
+end
+
+%% overlay plot
+%%%%
+for i = 1:length(imgobj.selectROI)
+min_ = min(min(imgobj.dFF_s_ave(:, 1:nstim, imgobj.selectROI(i))));
+max_ = max(max(imgobj.dFF_s_ave(:, 1:nstim, imgobj.selectROI(i))));
+
+figure
+hold on
+%subplot(nstim+1, length(imgobj.selectROI), i + nstim*length(imgobj.selectROI))
+for i2 = 1:nstim
+plot(t, imgobj.dFF_s_ave(:, i2, imgobj.selectROI(i)), 'linewidth', 2);
+if i2 ==  1
+title(['ROI=#', num2str(imgobj.selectROI(i))])
+end
+end
+legend('show')
+
+area([t(prep+1), t(prep+1+s_off_p)],[max_, max_], min_, 'FaceColor', 'k', 'LineStyle', 'none', 'ShowBaseLine', 'off');
+alpha(0.1);
+hold off
+ylim([min_, max_])
+
 end
 
 %% plot trace (Oversampled)
+%stim area
+%s_off_p = ceil(sobj.duration/imgobj.FVsampt);
+
 figure
 for i = 1:length(imgobj.selectROI)
     
@@ -101,8 +140,24 @@ for i = 1:length(imgobj.selectROI)
             title(['ROI=#', num2str(imgobj.selectROI(i))])
         end
         line([t_os(prep*mag_os+1), t_os(prep*mag_os+1)],[-1,3], 'Color', 'g', 'LineWidth', 2);
+        line([t_os(prep*mag_os+1)+duration, t_os(prep*mag_os+1)+duration],[-1,3], 'Color', 'g', 'LineWidth', 2);
     end
     
+    %{
+    figure,
+    %subplot(nstim+1, length(imgobj.selectROI), i + nstim*length(imgobj.selectROI))
+    area([(prep*mag_os+1), (s_off_p*mag_os+1)],[1, 1], 'FaceColor', 'k', 'LineStyle', 'none', 'ShowBaseLine', 'off');
+    alpha(0.1);
+    hold on
+    plot(imgobj.dFF_s_ave_os(:, 1:nstim, imgobj.selectROI(i)), 'linewidth', 2);
+    title(['ROI=#', num2str(imgobj.selectROI(i))])
+    legend('show')
+    hold off
+    
+    min_ = min(min(imgobj.dFF_s_ave_os(:, 1:nstim, imgobj.selectROI(i))));
+    max_ = max(max(imgobj.dFF_s_ave_os(:, 1:nstim, imgobj.selectROI(i))));
+    ylim([min_, max_])
+    %}
 end
 %}
 end

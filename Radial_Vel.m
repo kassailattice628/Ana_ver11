@@ -17,11 +17,25 @@ end
 data1_offset = shift_data(data(:, 1, n) - data(1, 1, n), off1);
 data2_offset = shift_data(data(:, 2, n) - data(1, 2, n), off2);
 
-d_filt_eye = designfilt('lowpassfir', 'FilterOrder', 12,...
-    'CutoffFrequency', 5, 'SampleRate', r.sampf);
-d_filt_vel = designfilt('bandpassfir', 'FilterOrder', 5,...
-    'CutoffFrequency1',5, 'CutoffFrequency2', 200,...
+%d_filt_eye = designfilt('lowpassfir', 'FilterOrder', 10,...
+%    'CutoffFrequency', 20, 'SampleRate', r.sampf);
+
+d_filt_vel = designfilt('bandpassfir', 'FilterOrder', 10,...
+    'CutoffFrequency1',100, 'CutoffFrequency2', 200,...
     'SampleRate', r.sampf);
+
+d_filt_eye = designfilt('lowpassiir', ...        % Response type
+       'PassbandFrequency',20, ...     % Frequency constraints
+       'StopbandFrequency',200, ...
+       'PassbandRipple',4, ...          % Magnitude constraints
+       'StopbandAttenuation',55, ...
+       'DesignMethod','butter', ...      % Design method
+       'MatchExactly','stopband', ...   % Design method options
+       'SampleRate',r.sampf) ;              % Sample rate   
+ 
+
+
+
 
 data1_filt = filter(d_filt_eye ,data1_offset);
 data2_filt = filter(d_filt_eye ,data2_offset);
@@ -30,9 +44,11 @@ data2_filt = filter(d_filt_eye ,data2_offset);
 data1_diff = diff(data1_filt);
 data2_diff = diff(data2_filt);
 [~, r_amp] = cart2pol(data2_diff, -data1_diff);
-velocity = r_amp * r.sampf;
-velocity = filter(d_filt_vel, velocity);
-velocity = velocity - mean(velocity(1:100));
+velocity_pre = r_amp * r.sampf;
+%low-pass filt
+velocity = filter(d_filt_vel, velocity_pre);
+%offset
+velocity = velocity - mean(velocity(1:100)); 
 
 if isfield(ParamsSave{1,n}, 'sac_t')
     sac_t = ParamsSave{1,n}.sac_t;
@@ -43,8 +59,11 @@ if isfield(ParamsSave{1,n}, 'sac_t')
         pks(i) = velocity(locs(i));
     end
 else
-    [pks,locs] = findpeaks(velocity, 'MinPeakHeight', 45,...
-        'MinPeakDistance', 500);
+    th = str2double(get(hfig.vel_th, 'String'));
+    %disp(th)
+    [pks,locs] = findpeaks(velocity, 'MinPeakHeight', th,...
+        'MinPeakDistance', 200);
+    locs =  locs - 10;
     pks = pks(pks < 250);
     locs = locs(pks < 250);
     if isempty(pks)
@@ -54,10 +73,11 @@ else
     end
     
 end
-
 %
 data1_offset(end) = NaN;
 
+
+%test_filter(data1_offset, data2_offset)
 %plot_spectrum(velocity)
 %plot_show;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -76,8 +96,9 @@ data1_offset(end) = NaN;
         title('Vertical')
         
         subplot(3,1,3)
-        plot(velocity)
+        plot(velocity_pre - mean(velocity_pre(1:100)))
         hold on
+        plot(velocity)
         plot(locs, pks, '*');
         hold off
         title('Velocity')

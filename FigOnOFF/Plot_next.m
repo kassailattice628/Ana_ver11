@@ -72,8 +72,10 @@ end
 
 %%
 % Adjust Y range
-set(hfig.axes1_1, 'YLim', [2, 10]);
-set(hfig.axes1_2, 'YLim', [-4, -1]);
+range_plot1_1 = str2num(get(hfig.range_p1_1, 'String'));
+range_plot1_2 = str2num(get(hfig.range_p1_2, 'String'));
+set(hfig.axes1_1, 'YLim', range_plot1_1);
+set(hfig.axes1_2, 'YLim', range_plot1_2);
 set(hfig.axes4, 'YLim', [min(data(:, 3, n))*0.9, max(data(:, 3, n))*1.1]);
 
 %% Update plots
@@ -185,7 +187,7 @@ end
             ind_stim_on = find(data(:, 3, n) > threshold, 1);
             ind_stim_off = find(data(:, 3, n) > threshold, 1, 'last');
             
-            if isempty(ind_stim_on) == 0 && isempty(ind_stim_off) == 0
+            if ~isempty(ind_stim_on) && ~isempty(ind_stim_off)
                 
                 [corON, corOFF] = Correct_stim_timing(ind_stim_on, ind_stim_off);
                 
@@ -227,6 +229,7 @@ end
             corOFF =  recTime(ind_off) - (p{1,n}.stim1.centerY_pix - 40)/1024/75;
             ParamsSave{1,n}.stim1.corOFF =  corOFF;
         else
+            %Stim Timing, Corrected by PTB3 info
             corON =  ParamsSave{1,n}.stim1.corON;
             corOFF =  ParamsSave{1,n}.stim1.corOFF;
         end

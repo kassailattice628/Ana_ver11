@@ -14,7 +14,7 @@ frame_stimON = zeros(size(ParamsSave,2) - recobj.prestim, 1);
 frame_stimON_os = frame_stimON;
 stim = frame_stimON;
 
-%mag_os = 200;
+%mag_os = 200;f
 sampt_os = imgobj.FVsampt/mag_os;
 
 
@@ -35,6 +35,12 @@ for i = (recobj.prestim + 1):size(ParamsSave,2)
             else
                 stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.center_position;
             end
+        case {'1P_Conc'}
+            if i == recobj.prestim + 1
+                stim = zeros(size(ParamsSave,2) - recobj.prestim, 2);
+            end
+            stim(i-recobj.prestim,1) = ParamsSave{1,i}.stim1.dist_deg;
+            stim(i-recobj.prestim,2) = ParamsSave{1,i}.stim1.angle_deg;
         case {'Size_rand'}
             stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.size_deg;
         case {'FineMap'}
@@ -105,7 +111,7 @@ for i2 = 1:imgobj.maxROIs
         i_ext_stim = find(i_list);
         %%
         dFF_ext = zeros(datap, length(i_ext_stim));
-        dFF_ext_os = zeros(datap_os, length(i_ext_stim));
+        dFF_ext_os = zeros(datap_os, length(i_ext_stim) );
         for i3 = 1:length(i_ext_stim)
             %%%%%%%%%%
             % i3 :: each trials

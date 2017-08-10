@@ -1,4 +1,4 @@
-function  Open_2P(hfig_handle,  p, r, s)
+function Open_2P(hfig_handle, p, r, s)
 global hfig
 global imgobj
 
@@ -62,7 +62,7 @@ xlabel(hfig.two_photon_axes2, 'Time (sec)');
 
 
 %% %%%%%%
-if ~isempty(imgobj.dFF)
+if ~isempty(imgobj.dFF) || ~isfield(imgobj, 'dFF')
     [FVflames, imgobj.maxROIs] = size(imgobj.dFF);
     imgobj.FVt = 0:imgobj.FVsampt:imgobj.FVsampt*(FVflames-1);
     Plot_dFF_next([], [], 0)

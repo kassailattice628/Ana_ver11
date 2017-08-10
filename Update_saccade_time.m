@@ -31,9 +31,16 @@ if opt ==  1
     
     
 elseif opt == 2
-    [pks,locs] = findpeaks(vel, 'MinPeakHeight', 45, 'MinPeakDistance', 500);
+    th = str2double(get(hfig.vel_th, 'String'));
+    %disp(th)
+    [pks,locs] = findpeaks(vel, 'MinPeakHeight', th,...
+        'MinPeakDistance', 200);
+    locs =  locs - 10;
     pks = pks(pks < 250);
     locs = locs(pks < 250);
+    
+    
+    
     if isempty(pks)
         ParamsSave{1,n}.sac_t = [];
     else
