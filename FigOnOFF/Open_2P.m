@@ -37,6 +37,9 @@ hfig.two_photon_deselect_roi_n = uicontrol('Parent', p_roi, 'Style', 'edit', 'St
     'Callback', @Plot_dFF_selectROIs, 'FontSize', 14, 'BackGroundColor', 'w');
 
 %% plot1:: Single ROI
+uicontrol('Style', 'pushbutton', 'String', 'Saccade', 'Position', [10, 420, 100, 25],...
+    'Callback', {@Get_Plot_sac_timing, r, p}, 'FontSize', 14');
+
 hfig.two_photon_axes1 = axes('Units', 'Pixels', 'Position', [70, 290, 600, 120]);
 
 Get_Plot_stim_timing(r, p);
@@ -168,6 +171,29 @@ hold off
 
 end
 
+%% plot saccade timing
+function Get_Plot_sac_timing(~, ~, r, p)
+global hfig
+
+
+sac_t = [];
+for i = r.prestim+1 : size(p,2)
+    if isfield(p{i}, 'sac_t')
+        sac_t = [sac_t, p{i}.sac_t];
+    end
+end
+
+
+axes(hfig.two_photon_axes1)
+hold on
+for i = 1:length(sac_t)
+    line([sac_t(i), sac_t(i)], [-1,6], 'Color', 'r');
+    disp(i)
+end
+hold off
+
+end
+
 
 %% panel2
 function OpenPanel2(hfig, imgobj, sobj)
@@ -292,6 +318,7 @@ suf = get(h, 'string');
 save_name = [mainvar.dirname, name, suf, ext];
 %update parameters
 save(save_name, 'DataSave', 'imgobj', 'mainvar', 'ParamsSave', 'recobj', 'sobj');
+%save save_name DataSave imgobj mainvar ParamsSave recobj sobj;
 
 end
 

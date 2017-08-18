@@ -14,7 +14,7 @@ frame_stimON = zeros(size(ParamsSave,2) - recobj.prestim, 1);
 frame_stimON_os = frame_stimON;
 stim = frame_stimON;
 
-%mag_os = 200;f
+%mag_os = 200;
 sampt_os = imgobj.FVsampt/mag_os;
 
 
@@ -71,7 +71,6 @@ prep = ceil(pret/imgobj.FVsampt);
 
 %post-stimulus time after **** sec from stim ON
 postt = recobj.rect/1000 + recobj.interval - 2;
-%postt = 11;
 postp = ceil(postt/imgobj.FVsampt);
 
 %data point for plot
@@ -90,7 +89,7 @@ nstim = size(stim_list, 1);
 %prep mat for dFF_Ave
 imgobj.dFF_s_ave = zeros(datap, nstim, imgobj.maxROIs);
 
-%prep mat for over sampled dFF_Ave
+%prep mat for over-sampled dFF_Ave
 imgobj.dFF_s_ave_os = zeros(datap_os, nstim, imgobj.maxROIs);
 
 for i2 = 1:imgobj.maxROIs
