@@ -92,7 +92,7 @@ for i = 1:length(imgobj.selectROI)
         plot(t, imgobj.dFF_s_ave(:,i2, imgobj.selectROI(i)), '-r', 'linewidth', 2);
         xlim([0 , datap*imgobj.FVsampt])
         ylim([-0.2 1.5])
-        if i2 ==  1
+        if i2 == 1
             title(['ROI=#', num2str(imgobj.selectROI(i))])
         end
         line([t(prep+1), t(prep+1)],[-1,3], 'Color', 'g', 'LineWidth', 2);
@@ -103,25 +103,25 @@ end
 %% overlay plot
 %%%%
 for i = 1:length(imgobj.selectROI)
-min_ = min(min(imgobj.dFF_s_ave(:, 1:nstim, imgobj.selectROI(i))));
-max_ = max(max(imgobj.dFF_s_ave(:, 1:nstim, imgobj.selectROI(i))));
-
-figure
-hold on
-%subplot(nstim+1, length(imgobj.selectROI), i + nstim*length(imgobj.selectROI))
-for i2 = 1:nstim
-plot(t, imgobj.dFF_s_ave(:, i2, imgobj.selectROI(i)), 'linewidth', 2);
-if i2 ==  1
-title(['ROI=#', num2str(imgobj.selectROI(i))])
-end
-end
-legend('show')
-
-area([t(prep+1), t(prep+1+s_off_p)],[max_, max_], min_, 'FaceColor', 'k', 'LineStyle', 'none', 'ShowBaseLine', 'off');
-alpha(0.1);
-hold off
-ylim([min_, max_])
-
+    min_ = min(min(imgobj.dFF_s_ave(:, 1:nstim, imgobj.selectROI(i))));
+    max_ = max(max(imgobj.dFF_s_ave(:, 1:nstim, imgobj.selectROI(i))));
+    
+    figure
+    hold on
+    %subplot(nstim+1, length(imgobj.selectROI), i + nstim*length(imgobj.selectROI))
+    for i2 = 1:nstim
+        plot(t, imgobj.dFF_s_ave(:, i2, imgobj.selectROI(i)), 'linewidth', 2);
+        if i2 == 1
+            title(['ROI=#', num2str(imgobj.selectROI(i))])
+        end
+    end
+    legend('show')
+    
+    area([t(prep+1), t(prep+1+s_off_p)],[max_, max_], min_, 'FaceColor', 'k', 'LineStyle', 'none', 'ShowBaseLine', 'off');
+    alpha(0.1);
+    hold off
+    ylim([min_, max_])
+    
 end
 
 %% plot trace (Oversampled)

@@ -1,4 +1,4 @@
-function dirname = Batch_Save_dFFmat(varargin)
+function dirname = Batch_dFF_ROI(varargin)
 %Batch extract dFF from dFF.mat data using roiset.zip
 addpath('/Users/lattice/Dropbox/None_But_Air/Ana_ver11/');
 

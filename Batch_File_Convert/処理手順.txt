@@ -1,0 +1,30 @@
+Imaging Data (OIB) から Motion Correction, dFF 計算，ROI から Ca trace を抽出するまでの流れ
+
+1. OIB を Tif に変換．
+    Fiji で .oib ファイルを開く．
+    最後のフレーム等で，スキャンが不完全なものは，そのフレームを表示させて Stk から Delete Slice を選択
+    Save as で .tif にする．
+
+2. NoRMC を使って Motion Correction
+     Matlab で Batch_NoRMC.m を開く（~/Dropbox/NoneButAir/Ana11/Batch_File_Conver/)．
+     f_nums = []; に，batch 処理する画像の番号のリストをいれて，Batch_NoRMC.m を走らせる．
+     SC1.tif など，適当にファイルを選ぶと，同じフォルダの中の画像で，f_nums で指定した番号のファイルを順番に NoRMC 処理する．
+
+3. sima で HM2 Motino Correction
+    python の SIMA パッケージを使って HM2 補正
+    >cd /path/to/the/data/data/folder
+    >python ~/Dropbox/NoneButAir/Py_Img_Reg/MC_sima.py #1 #2 (#1, #2 はファイル名の連番の始めと終わり)
+
+4. dFF を計算
+    NBA の Ana11 で パラメタファイルを見て，F0フレームを 確認しておく．
+    Matlab で Batch_dFF.m を開いて，n_img に連番，f0_frames に ファイルごとの f0フレーム数を入れておく．
+    Batch_dFF.m を走らせて，てきとうなファイルを選択．
+
+5. ROI を描く
+    Motion correction したデータから Fiji で ROI を作成．
+    .mat データしかない場合は，Batch_Mat2Tif.m で，.tif に変換して読ませる．
+    Mean, Max, SD の画像を使って，ROI を描くと見やすい．最後に，dFF データを見ながら，取りこぼしを消す．
+
+6. ROI ごとの dFF データをファイルに保存．
+    dFF.mat と RoiSet.zip を同じフォルダに入れておいて
+    Batch_dFF_ROI.m を走らせる．

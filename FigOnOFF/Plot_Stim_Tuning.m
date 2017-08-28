@@ -148,11 +148,11 @@ switch s.pattern
                 hold on
                 polar([0, imgobj.Ang_dir(k)], [0, imgobj.L_dir(k)], 'r-');
                 hold off
-                title('Move direction')
+                title('Move Direction')
                 
                 subplot(1,2,2)
                 polar([0, imgobj.Ang_ori(k)+pi/2], [0, imgobj.L_ori(k)], 'r-');
-                title('Orientation')
+                title('Bar Orientation')
                 
                 disp(['1 - CirVal_ori = ', num2str(imgobj.L_ori(k))])
                 disp(['1 - CirVal_dir = ', num2str(imgobj.L_dir(k))])

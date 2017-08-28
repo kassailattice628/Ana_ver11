@@ -21,9 +21,9 @@ else
     [dirname, fname, ext, fsuf, psuf] = Get_File_Name([]);
 end
 
-files = subdir(fullfile(dirname,['*', ext]));
+files = subdir(fullfile(dirname,['SC*', ext]));
 %%%%%%% define f ile name %%%%%%%%%%%% Modify This Part %%%%%%%%%%%%%%%%%%%%
-f_nums = [6 8];
+f_nums = 1:6;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
