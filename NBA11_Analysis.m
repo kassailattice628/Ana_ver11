@@ -17,6 +17,7 @@ if exist('DataSave', 'var') == 0
     load([mainvar.dirname, mainvar.fname]);
     
     while isempty(DataSave)
+        
         errordlg('DataSave is missing!')
         % select another file
         [mainvar.fname, mainvar.dirname] = uigetfile({[dirame, '*.mat']});

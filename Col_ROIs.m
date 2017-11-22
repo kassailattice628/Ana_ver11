@@ -9,7 +9,7 @@ img_sz = 320;
 %% make ROI MASK for response map
 if ~isfield(imgobj, 'Mask_rois')
     %import ROI info from imageJ format
-    [roiname, dir] = uigetfile([mainvar.dirname, '*.zip'], 'Select ImageJ ROI data');
+    [roiname, dir] = uigetfile([mainvar.dirname2, '*.zip'], 'Select ImageJ ROI data');
     ROIs = ReadImageJROI([dir,roiname]);
     
     %ROI position (XY-cordinate)
@@ -54,7 +54,7 @@ end
         imgBG2 = zeros(img_sz * img_sz, 3);
         %% set colormap based on 1 parameter
         rois = find(max(imgobj.R_size(:,:,2))>0.15);
-        RGB_list = colormap(jet(5));
+        RGB_list = colormap(jet(7));
         for i2 = rois
             [~, best_i_on] = max(imgobj.R_size(:, i2, 1));
             [~, best_i_off] = max(imgobj.R_size(:, i2, 2));
@@ -77,7 +77,7 @@ end
         figure
         subplot(1,2,1)
         imshow(imgBG)
-        colormap(jet(5))
+        colormap(jet(7))
         colorbar
         
         subplot(1,2,2)

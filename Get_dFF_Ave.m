@@ -17,12 +17,15 @@ stim = frame_stimON;
 %mag_os = 200;
 sampt_os = imgobj.FVsampt/mag_os;
 
-
+disp(recobj.prestim + 1)
+disp(size(ParamsSave,2))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 for i = (recobj.prestim + 1):size(ParamsSave,2)
     %nearest frame for stim onset
-    frame_stimON(i-recobj.prestim) = floor((ParamsSave{1,i}.stim1.corON)/imgobj.FVsampt);
-    frame_stimON_os(i-recobj.prestim) = floor((ParamsSave{1,i}.stim1.corON)/sampt_os);
+    if isfield(ParamsSave{1,i}.stim1, 'corON')
+        frame_stimON(i-recobj.prestim) = floor((ParamsSave{1,i}.stim1.corON)/imgobj.FVsampt);
+        frame_stimON_os(i-recobj.prestim) = floor((ParamsSave{1,i}.stim1.corON)/sampt_os);
+
     %stim specific index
     switch sobj.pattern
         case {'Uni', 'Looming'}
@@ -58,6 +61,7 @@ for i = (recobj.prestim + 1):size(ParamsSave,2)
             stim(i-recobj.prestim,1) = ParamsSave{1,i}.stim1.color;
             stim(i-recobj.prestim,2) = ParamsSave{1,i}.stim1.dist_deg;
             stim(i-recobj.prestim,3) = ParamsSave{1,i}.stim1.angle_deg;
+    end
     end
 end
 

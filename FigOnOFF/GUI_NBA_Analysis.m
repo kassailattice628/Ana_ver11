@@ -61,18 +61,21 @@ hold off
 set(h.axes2, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-2, 50]);
 title('Radial-Velocity', 'FontSize', 14);
 ylabel(h.axes2, 'Pix/sec');
-%% plot Rotary Velocity%%
+%% plot Rotary Velocity %%
 axes3_h_base =  axes2_h_base - axes_height - axes_space;
 h.axes3 = axes('Units', 'Pixels', 'Position', [axes_left, axes3_h_base, axes_width, axes_height]);
 h.area3 = area([NaN, NaN], [NaN, NaN], 'FaceColor', 'k', 'LineStyle', 'none', 'ShowBaseLine', 'off');
 alpha(area_alpha);
 hold on
-h.plot3 = plot(NaN, NaN, 'LineWidth', 2);
+%h.plot3 = plot(NaN, NaN, 'LineWidth', 2);
+[h.axes3, h.line1, h.line2] = plotyy(NaN, NaN, NaN, NaN);
 hold off
-set(h.axes3, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-0.02, 30]);
-title('Locomotion Velocity (Rotary)', 'FontSize', 14)
-ylabel(h.axes3, 'cm/sec');
-
+%set(h.axes3, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-0.02, 30]);
+set(h.axes3(1), 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-0.02, 10]);
+set(h.axes3(2), 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-10, -8]);
+title('Locomotion Velocity, Eye Open Ratio', 'FontSize', 14)
+%ylabel(h.axes3, 'cm/sec');
+    
 %% plot Photo Sensor
 axes4_h_base =  axes3_h_base - axes1_height - axes_space;
 h.axes4 = axes('Units', 'Pixels', 'Position', [axes_left, axes4_h_base, axes_width, axes1_height]);
@@ -94,7 +97,7 @@ xlabel('Time (s)');
 slider4_height = axes4_h_base + axes1_height;
 uicontrol('Style', 'text', 'String', 'Threshold', 'Position',[640, slider4_height, 80, 20])
 h.slider4 = uicontrol('Style', 'slider', 'Position', [675, axes4_h_base, 20, axes1_height],...
-    'Min',0, 'Max', 500, 'Value', 10, 'Callback', {@Plot_next, data, 0, p, r});
+    'Min',0, 'Max', 500, 'Value', 85, 'Callback', {@Plot_next, data, 0, p, r});
 
 
 %% Select NBA DATA file
@@ -158,7 +161,7 @@ h.sac_locs = uicontrol('Units', 'Pixels', 'Style', 'Edit', 'String', '', 'FontSi
 
 uicontrol('Units', 'Pixels', 'Style', 'text', 'String', 'Threshold:', 'FontSize', 14,...
     'Position', [axes_left + axes_width + 110, axes2_h_base + axes_height, 100, 20]);
-h.vel_th = uicontrol('Units', 'Pixels', 'Style', 'Edit', 'String', '45', 'FontSize', 14,...
+h.vel_th = uicontrol('Units', 'Pixels', 'Style', 'Edit', 'String', '5', 'FontSize', 14,...
     'Position', [axes_left + axes_width + 210, axes2_h_base + axes_height, 50, 30],...
     'Callback', {@Update_saccade_time, p, r, data, 2});
 
@@ -206,6 +209,10 @@ set(h.fig1, 'KeyPressFcn', @callback_keypress);
                 Plot_next([], [], data, 1, p, r)
             case {'leftarrow', 'downarrow', 'backspace'}
                 Plot_next([], [], data, -1, p, r)
+            
+            case {'d'}
+                Clear_saccade_time([],[],1)
+
         end
     end
 

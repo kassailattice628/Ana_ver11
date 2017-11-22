@@ -19,7 +19,7 @@ Update_info_text;
 Update_plot(hfig.plot1_1, recTime, data(:, 1, n));
 Update_plot(hfig.plot1_2, recTime, data(:, 2, n));
 
-% velocity
+% eye velocity
 [data1_offset, data2_offset, vel, pks, locs] = Radial_Vel(r, data, recTime);
 vel(end) = NaN;
 
@@ -48,9 +48,18 @@ else
     set(hfig.sac_locs, 'string', '');
 end
 
-% rotary
-[~, rotVel] = DecodeRot(data(:, 4, n));%
-Update_plot(hfig.plot3, recTime(1:end-1), rotVel);
+% running, rotary encoder
+
+if size(data,2) == 4
+    ch_rot = 4;
+elseif size(data,2) == 5
+    ch_rot = 5;
+end
+    
+[~, rotVel] = DecodeRot(data(:, ch_rot, n));%
+%Update_plot(hfig.plot3, recTime(1:end-1), rotVel);
+Update_plot(hfig.line1, recTime(1:end-1), rotVel);
+Update_plot(hfig.line2, recTime(1:end-1), data(1:end-1, 4, n));
 
 % photo sensor
 Update_plot(hfig.plot4, recTime, data(:, 3, n));

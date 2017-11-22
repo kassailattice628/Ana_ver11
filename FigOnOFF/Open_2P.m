@@ -16,7 +16,7 @@ uicontrol('Parent', p_roi, 'Style', 'pushbutton', 'String', 'Load dFF', 'Positio
     'Callback', {@Load2P, s}, 'FontSize', 14);
 
 uicontrol('Parent', p_roi, 'Style', 'edit', 'String', imgobj.FVsampt, 'Position', [120, 7, 100, 25],...
-    'Callback', {}, 'FontSize', 14);
+    'Callback', {@Change_sampt}, 'FontSize', 14);
 
 uicontrol('Parent', p_roi, 'Style', 'text', 'String', 's/Flame', 'Position', [225, 2, 50, 20], 'FontSize', 12);
 % ROI select
@@ -84,15 +84,18 @@ function Load2P(~,~, s)
 global imgobj
 global mainvar
 global hfig
+
 %%
 if isfield(imgobj, 'dFF')
     imgobj = rmfield(imgobj, 'dFF');
 end
 if isfield(imgobj,'dFF_s_ave')
-    imgobj = rmfield(imgobj, 'dFF_s_ave');
+    fields = {'dFF_s_ave', 'dFF_s_ave_os'};
+    imgobj = rmfield(imgobj, fields);
 end
-if isfield(imgobj,'dFF_s_ave_os')
-    imgobj = rmfield(imgobj, 'dFF_s_ave_os');
+if isfield(imgobj,'Mask_rois')
+    fields = {'Mask_rois', 'centroid'};
+    imgobj = rmfield(imgobj, fields);
 end
 imgobj.nROI = 0;
 imgobj.selectROI = 1;
@@ -101,20 +104,26 @@ imgobj.maxROIs =  1;
 %%
 
 if isfield(imgobj, 'dFF') == 0
-    [fname, dirname] = uigetfile({'*.csv; *.mat','Data Files'; '*.*','All Files' },...
-        'Select Data(.csv, .mat)', mainvar.dirname);
+    %update mainvar
+    if isfield(mainvar, 'dirname2') && isnumeric(mainvar.dirname2) == 0
+        [mainvar.fname2, mainvar.dirname2] = uigetfile({'*.csv; *.mat','Data Files'; '*.*','All Files' },...
+            'Select Data(.csv, .mat)', mainvar.dirname2);
+    else
+        [mainvar.fname2, mainvar.dirname2] = uigetfile({'*.csv; *.mat','Data Files'; '*.*','All Files' },...
+            'Select Data(.csv, .mat)', mainvar.dirname);
+    end
     
-    if dirname == 0 %cancel select file
+    if mainvar.dirname == 0 %cancel select file
         %skip open file
     else
-        Open_file(dirname, fname);
+        Open_file(mainvar.dirname2, mainvar.fname2);
     end
 else
     % 2P.xls is alread loaded the base workspace.
     % select another file
-    [fname, dirname] = uigetfile({'*.csv; *.mat','Data Files'; '*.*','All Files' },...
-        'Select Data(.csv, .mat)', mainvar.dirname);
-    Open_file(dirname, fname);
+    [mainvar.fname2, mainvar.dirname2] = uigetfile({'*.csv; *.mat','Data Files'; '*.*','All Files' },...
+        'Select Data(.csv, .mat)', mainvar.dirname2);
+    Open_file(mainvar.dirname2, mainvar.fname2);
 end
 
 if isempty(imgobj.dFF)
@@ -143,18 +152,22 @@ OpenPanel2(hfig, imgobj, s)
         imgobj.FVt = 0:imgobj.FVsampt:imgobj.FVsampt*(FVflames-1);
     end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %%
-
-
 end
 
-%% %%%%% subfunctions%%%%% %%
+%% frame rate
+function Change_sampt(h, ~)
+global imgobj
+
+imgobj.FVsampt = str2double(get(h, 'String'));
+end
+
 %% plot stim timing
 function Get_Plot_stim_timing(r, p)
 area_Y =  [-1, 10, 10, -1];
 hold on
 % get stim timing
 for i =  r.prestim+1 : r.cycleCount
-    if i <= size(p,2)
+    if i <= size(p,2) && isfield(p{1,i},'stim1')
         if isfield(p{1,i}.stim1, 'corON')
             ON = p{1,i}.stim1.corON;
             OFF = p{1,i}.stim1.corOFF;
@@ -265,21 +278,21 @@ function Apply_change_dFF(~,~, h1, h2, h_freq, h3, h_frames, h4)
 global imgobj
 %delete dFF field
 %imgobj = rmfield(imgobj, 'dFF');
-%%Detrend
+
+%% Detrend
 if get(h1, 'value')
     dFF_mod = detrend(imgobj.dFF_raw);
 else
     dFF_mod = imgobj.dFF_raw;
 end
 
-%%LowCutFilter
+%% LowCutFilter
 if get(h2, 'value')
     lowcutfreq = str2double(get(h_freq, 'string'));
     [dFF_mod, ~, ~] = filtbutter(2, lowcutfreq, 'high', 1/imgobj.FVsampt, dFF_mod);
 end
 
-
-%%Offset
+%% Offset
 if get(h3, 'value')
     F0frames = str2double(get(h_frames, 'string'));
     imgobj.f0 = F0frames; % update f0 info
@@ -289,7 +302,7 @@ if get(h3, 'value')
     end
 end
 
-%%Normalize
+%% Normalize
 if get(h4, 'value')
     MaxdFF = max(dFF_mod);
     disp(size(dFF_mod))

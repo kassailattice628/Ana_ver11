@@ -1,5 +1,7 @@
 function Plot_Stim_Tuning(~,~, s)
-%calc stim
+% get stimulus specific tuning properties
+
+%%%%%%%%%%
 global imgobj
 
 %%%%%%%%%%
@@ -19,9 +21,9 @@ switch s.pattern
         p_off = prep + 1 + p_duration;
         
         %best size (on & off)
-        imgobj.R_size = zeros(5, imgobj.maxROIs, 2);
+        imgobj.R_size = zeros(length(stim_list), imgobj.maxROIs, 2);
         for k = 1:imgobj.maxROIs
-            imgobj.R_size(:, k, 1)  = max(imgobj.dFF_s_ave(p_on:p_on+p_duration, :, k))';
+            imgobj.R_size(:, k, 1) = max(imgobj.dFF_s_ave(p_on:p_on+p_duration, :, k))';
             imgobj.R_size(:, k, 2) = max(imgobj.dFF_s_ave(p_off:p_off+p_duration, :, k))';
             
         end
@@ -34,37 +36,31 @@ switch s.pattern
             hold off
             title(['ROI=#', num2str(k)])
             set(gca, 'xtick', stim_list);
-            set(gca, 'xticklabel', {'0.5deg', '1deg', '3deg', '5deg', '10deg'});
+            if length(stim_list) == 5
+                set(gca, 'xticklabel', {'0.5deg', '1deg', '3deg', '5deg', '10deg'});
+            elseif length(stim_list) == 7
+                set(gca, 'xticklabel', {'0.5deg', '1deg', '3deg', '5deg', '10deg', '30deg', '50deg'});
+            end
         end
         
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case {'Sin', 'Rect', 'Gabor', 'MoveBar'}
-        on_mat = zeros(length(stim_list), length(imgobj.selectROI));
-        
         if length(stim_list) == 8
             stim_txt = {'0:2pi', '1/4', '1/2', '3/4', 'pi', '5/4', '3/2', '7/4'};
         elseif length(stim_list) == 7 %irregular
             stim_txt = {'0:2pi', '1/4', '1/2', '3/4', 'pi', '5/4', '3/2'};
+        elseif length(stim_list) == 12
+            stim_txt = {'0:2pi', '1/6', '1/3', '1/2', '2/3', '5/6', 'pi',...
+                '7/6', '4/3', '3/2', '5/3', '11/6'};
         elseif length(stim_list) == 16
             stim_txt = {'0:2pi', '1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8',...
                 'pi', '9/8', '5/4', '11/8', '3/2', '13/8', '7/4', '15/8'};
         end
         %
-        
         if strcmp(s.pattern, 'MoveBar')
             p_duration = round(s.moveDuration/imgobj.FVsampt);
         else
             p_duration = round(s.duration/imgobj.FVsampt);
-        end
-        
-        %
-        for k = 1:length(imgobj.selectROI)
-            on_mat(:,k) = max(imgobj.dFF_s_ave(p_on:p_on+p_duration, :, imgobj.selectROI(k)))';
-            figure
-            plot(stim_list, on_mat(:,k), 'o-b')
-            title(['ROI=#', num2str(imgobj.selectROI(k))])
-            set(gca, 'xtick', stim_list);
-            set(gca, 'xticklabel', stim_txt);
         end
         
         %distribution of dir selectivity
@@ -72,6 +68,7 @@ switch s.pattern
         imgobj.L_ori = zeros(1, imgobj.maxROIs);
         imgobj.L_dir = zeros(1, imgobj.maxROIs);
         %imgobj.Z = zeros(1, imgobj.maxROIs);
+        
         for k = 1:imgobj.maxROIs
             %% Orientation / Direction selectivity index%%%%%%%%%%%%%%%%%%%
             %{
@@ -111,16 +108,34 @@ switch s.pattern
             
             %% vector averaging%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %calc circular variance
-            base = imgobj.dFF_s_ave(1, :, k);
-            R_all_dir = max(imgobj.dFF_s_ave(p_on:p_on+p_duration, :, k)) - base;
+            base = imgobj.dFF_s_ave(1, :, k); % dFF_s_ave(points, stim, ROI)
+            
+            R_all_dir_max = max(imgobj.dFF_s_ave(p_on:p_on+p_duration, :, k)) - base;
+            R_all_dir_min = min(imgobj.dFF_s_ave(p_on:p_on+p_duration, :, k)) - base;
+                        
+            dir = linspace(0, (2*pi - 2*pi/length(R_all_dir_max)), length(R_all_dir_max));
+            %{
             if length(R_all_dir) == 8
                 dir = linspace(0, 2*pi-pi/4, 8);
             elseif length(R_all_dir) == 7
                 dir = linspace(0, 2*pi-pi/2, 7);
+            elseif length(R_all_dir) == 12
+                dir = linspace(0, 2*pi-pi/6, 12);
             elseif length(R_all_dir) == 16
                 dir = linspace(0, 2*pi-pi/8, 16);
             end
+            %}
             
+            %negative Ca responses are extracted
+            %!!!!! how to treat rebound excitation !!!!!
+            if max(abs(R_all_dir_max)) >= max(abs(R_all_dir_min))
+                R_all_dir = R_all_dir_max;
+                R_all_dir(R_all_dir < 0) = 0;
+                line_prop = 'o-b';
+            else
+                R_all_dir = -R_all_dir_min;
+                line_prop = 'o-r';
+            end
             % orientation
             Z = sum(R_all_dir .* exp(2*1i*dir))/sum(R_all_dir);
             imgobj.L_ori(k) = abs(Z);
@@ -140,11 +155,20 @@ switch s.pattern
             end
             imgobj.Ang_dir(k) = angle_Z;
             
-            %% plot direction
+            %% plot direction, orientation
             if ismember(k, imgobj.selectROI)
+                
+                %tuning direction
+                figure
+                plot(stim_list, R_all_dir, line_prop)
+                title(['ROI=#', num2str(k)])
+                set(gca, 'xtick', stim_list);
+                set(gca, 'xticklabel', stim_txt);
+                
+                %direction, orientation selectivity
                 figure
                 subplot(1,2,1)
-                polar([dir, dir(1)], [R_all_dir, R_all_dir(1)], 'o-b')
+                polar([dir, dir(1)], [R_all_dir, R_all_dir(1)], line_prop)
                 hold on
                 polar([0, imgobj.Ang_dir(k)], [0, imgobj.L_dir(k)], 'r-');
                 hold off

@@ -12,11 +12,11 @@ addpath('/Users/lattice/Dropbox/NoRMCorre/');
 
 %%%%%%%%%% modify info %%%%%%%%%%
 % a vector of file number to be processed, and thouse f0 frame numbers.
-n_img = 1:3;
-f0_frames = [30, 41, 30];
+n_img = 11:13;
+f0_frames = [76,76,76];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % dFF are save as MAT or TIFF
-i_save = input('Save dFF as Tiff? [Y/N] >> ', 's');
+i_save = input('Save dFF as Tiff? [Y/N] or both Tiff & Mat [W] >> ', 's');
 
 
 %% Batch for multiple files %%
@@ -67,10 +67,22 @@ for n = n_img
             disp(['Saving Tiff File as ', out_name]);
             options.append = true;
             saveastiff(dFF, out_name, options);
-        otherwise
+        case {'N', 'n', 'No', 'NO'}
             out_name = [dirname, 'dFF/', fsuf, fn, psuf, '_dFF.mat'];
             disp(['Saving MAT File as ', out_name]);
             save(out_name, 'dFF');
+            
+        case {'W', 'w'}
+            % Save as tif %
+            out_name = [dirname, 'dFF/', fsuf, fn, psuf, '_dFF.tif'];
+            disp(['Saving Tiff File as ', out_name]);
+            options.append = true;
+            saveastiff(dFF, out_name, options);
+             % Save as mat %
+            out_name = [dirname, 'dFF/', fsuf, fn, psuf, '_dFF.mat'];
+            disp(['Saving MAT File as ', out_name]);
+            save(out_name, 'dFF', '-v7.3');
+            
     end
     
     disp('Save Finished!!');

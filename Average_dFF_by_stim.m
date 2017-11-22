@@ -31,12 +31,18 @@ end
 %duration
 switch sobj.pattern
     case {'MoveBar', 'Looming'}
-        duration = sobj.moveDuration;
+        duration = max(sobj.moveDuration);
+        
+        if length(sobj.moveDuration) > 1
+            A = 1:length(sobj.moveDuration);
+            B = flip(A);
+            C = repmat([A, B(2:end-1)],1,2);
+        end
+        
     otherwise
+        sobj.moveDuration = 0;
         duration = sobj.duration;
 end
-
-
 
 %% plot (imagesc)
 figure,
@@ -55,8 +61,19 @@ for i = 1:length(imgobj.selectROI)
     ylabel('Stim')
     xlabel('Time(s)')
     
+    %stim onset
     line([t(prep+1), t(prep+1)],[0, nstim+1], 'Color', 'g', 'LineWidth', 1);
-    line([t(prep+1)+duration, t(prep+1)+duration],[0, nstim+1], 'Color', 'r', 'LineWidth', 1);
+    
+    %stim offset
+    if length(sobj.moveDuration) > 1
+        for i2 = 1:nstim
+            x_off = t(prep+1) + sobj.moveDuration(C(i2));
+            y = [i2-0.5, i2+0.5];
+            line([x_off, x_off], y, 'Color', 'r', 'LineWidth', 1);
+        end
+    else
+        line([t(prep+1)+duration, t(prep+1)+duration],[0, nstim+1], 'Color', 'r', 'LineWidth', 1);
+    end
 end
 
 
@@ -77,7 +94,19 @@ for i = 1:length(imgobj.selectROI)
     xlabel('Time(s), (Over Sampled)')
     
     line([t_os(prep*mag_os+1), t_os(prep*mag_os+1)],[0,nstim+1], 'Color', 'g', 'LineWidth', 1);
-    line([t_os(prep*mag_os+1)+duration, t_os(prep*mag_os+1)+duration],[0, nstim+1], 'Color', 'r', 'LineWidth', 1);
+    
+    %stim offset
+    if length(sobj.moveDuration) > 1
+        for i2 = 1:nstim
+            x_off = t_os(prep*mag_os+1) + sobj.moveDuration(C(i2));
+            y = [i2-0.5, i2+0.5];
+            line([x_off, x_off], y, 'Color', 'r', 'LineWidth', 1);
+        end
+    else
+        line([x_off, x_off],[0, nstim+1], 'Color', 'r', 'LineWidth', 1);
+    end
+    
+    
 end
 
 %% plot trace
@@ -95,8 +124,17 @@ for i = 1:length(imgobj.selectROI)
         if i2 == 1
             title(['ROI=#', num2str(imgobj.selectROI(i))])
         end
+        %stim onset
         line([t(prep+1), t(prep+1)],[-1,3], 'Color', 'g', 'LineWidth', 2);
-        line([t(prep+1)+duration, t(prep+1)+duration],[-1,3], 'Color', 'g', 'LineWidth', 2);
+        
+        if length(sobj.moveDuration) > 1
+                x_off = t(prep+1) + sobj.moveDuration(C(i2));
+                y = [-1, 3];
+                line([x_off, x_off], y, 'Color', 'g', 'LineWidth', 2);
+        else
+            line([t(prep+1)+duration, t(prep+1)+duration],[-1,3], 'Color', 'g', 'LineWidth', 2);
+        end
+        
     end
 end
 
@@ -139,8 +177,19 @@ for i = 1:length(imgobj.selectROI)
         if i2==1
             title(['ROI=#', num2str(imgobj.selectROI(i))])
         end
+        
+        % stim onset
         line([t_os(prep*mag_os+1), t_os(prep*mag_os+1)],[-1,3], 'Color', 'g', 'LineWidth', 2);
-        line([t_os(prep*mag_os+1)+duration, t_os(prep*mag_os+1)+duration],[-1,3], 'Color', 'g', 'LineWidth', 2);
+        
+        % stim offset
+        if length(sobj.moveDuration) > 1
+            x_off = t_os(prep*mag_os+1) + sobj.moveDuration(C(i2));
+            y = [-1, 3];
+            line([x_off, x_off], y, 'Color', 'g', 'LineWidth', 2);
+        else
+            
+            line([t_os(prep*mag_os+1)+duration, t_os(prep*mag_os+1)+duration],[-1,3], 'Color', 'g', 'LineWidth', 2);
+        end
     end
     
     %{

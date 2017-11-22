@@ -55,10 +55,6 @@ for n = 1:size(files,1)
             T = size(F, ndims(F));
         case {'.mat'}
             load(name);
-            if exist('stack_F', 'var')
-                 F = stack_F;
-                 clear stack_F
-            end
     end
     
     %%%%%% Try non-rigid motion correction (in paralle) %%%%%%
@@ -66,30 +62,31 @@ for n = 1:size(files,1)
     %
     options_nonrigid = NoRMCorreSetParms...
         ('d1',size(F,1),'d2',size(F,2),...
-        'grid_size', [60, 60],...  % size of non-overlapping regions (default: [d1,d2,d3])
+        'grid_size', [100, 100],...  % size of non-overlapping regions (default: [d1,d2,d3])
         'overlap_pre', 20,... % size of overlapping region (default: [32,32,16])
         'us_fac', 20,... % upsampling factor for subpixel registration (default: 20)
         'mot_uf' , 4,... % degree of patches upsampling (default: [4,4,1])
-        'max_dev', 3,... % maximum deviation of patch shift from rigid shift (default: [3,3,1])
-        'max_shift', 30,... % maximum rigid shift in each direction (default: [15,15,5])
-        'bin_width', 100,... % width of each bin (default: 10)  use 40
+        'max_dev', 10,... % maximum deviation of patch shift from rigid shift (default: [3,3,1])
+        'max_shift', 80,... % maximum rigid shift in each direction (default: [15,15,5])
+        'bin_width', 300,... % width of each bin (default: 10)  use 40
         'iter', 1);... % number of data passes (default: 1)
     
-    
+    tic
     disp('1st Calculating motion correction...')
-    [M2, ~, ~] = normcorre_batch(F, options_nonrigid);
+    [M1, ~, ~] = normcorre_batch(F, options_nonrigid);
+    toc
     %}
-    %{
+    %
     % Set params
     options_nonrigid = NoRMCorreSetParms...
         ('d1',size(F,1),'d2',size(F,2),...
         'grid_size', [27, 27],...  % size of non-overlapping regions (default: [d1,d2,d3])
-        'overlap_pre', 5,... % size of overlapping region (default: [32,32,16])
+        'overlap_pre', 10,... % size of overlapping region (default: [32,32,16])
         'us_fac', 20,... % upsampling factor for subpixel registration (default: 20)
         'mot_uf' , 4,... % degree of patches upsampling (default: [4,4,1])
         'max_dev', 3,... % maximum deviation of patch shift from rigid shift (default: [3,3,1])
-        'max_shift', 80,... % maximum rigid shift in each direction (default: [15,15,5])
-        'bin_width', 100,... % width of each bin (default: 10)  use 40
+        'max_shift', 30,... % maximum rigid shift in each direction (default: [15,15,5])
+        'bin_width', 30,... % width of each bin (default: 10)  use 40
         'iter', 1);... % number of data passes (default: 1)
         %'output_type', 'tiff',...
         %'tiff_filename', [dirname, suffix, fn, '_NoRMC', ext]);
@@ -97,7 +94,7 @@ for n = 1:size(files,1)
     % Get non-rigid motion correction
     tic;
     disp('Calculating motion correction...')
-    [M2, shifts, template2] = normcorre_batch(F, options_nonrigid); %F -> M1)
+    [M2, shifts, template2] = normcorre_batch(M1, options_nonrigid); %F -> M1)
     toc;
     %}
     
