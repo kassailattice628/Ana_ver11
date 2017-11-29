@@ -52,14 +52,16 @@ end
 
 if size(data,2) == 4
     ch_rot = 4;
+    
 elseif size(data,2) == 5
     ch_rot = 5;
+    %eye_open_ratio
+    Update_plot(hfig.line2, recTime(1:end-1), data(1:end-1, 4, n));
 end
     
-[~, rotVel] = DecodeRot(data(:, ch_rot, n));%
+[~, rotVel] = DecodeRot(data(:, ch_rot, n), n, p, r);%
 %Update_plot(hfig.plot3, recTime(1:end-1), rotVel);
 Update_plot(hfig.line1, recTime(1:end-1), rotVel);
-Update_plot(hfig.line2, recTime(1:end-1), data(1:end-1, 4, n));
 
 % photo sensor
 Update_plot(hfig.plot4, recTime, data(:, 3, n));
@@ -247,25 +249,6 @@ end
         set(hfig.line4_correct_OFF, 'XData',[corOFF, corOFF],'YData', [-10, 500])
     end
 %%
-    function [positionDataDeg, rotVel] = DecodeRot(CTRin)
-        % Transform counter data from rotary encoder into angular position (deg).
-        signedThreshold = 2^(32-1); %resolution 32 bit
-        signedData = CTRin; % data from DAQ
-        signedData(signedData > signedThreshold) = signedData(signedData > signedThreshold) - 2^32;
-        positionDataDeg = signedData * 360 / 1000 / 4;
-        
-        rotMove = positionDataDeg / 360 * 12; %12 cm Disk
-        rotMove = rotMove - rotMove(1);
-        %a = round(get(hfig.slider2, 'value')/(r.sampf/1000));
-        %a = round(50*1000/r.sampf);
-        %b = ones(1,a)/a;
-        d_filt = designfilt('lowpassfir', 'FilterOrder', 8,...
-            'CutoffFrequency', 100, 'SampleRate', r.sampf);
-        rotMove_filt = filtfilt(d_filt, rotMove);
-%        rotMove_filt = filter(b, a, rotMove);
-        rotVel = abs(diff(rotMove_filt)/p{1,n}.AIstep);
-        
-    end
 %%
     function N = Update_n(set_n)
         if set_n == 1

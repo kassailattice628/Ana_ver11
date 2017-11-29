@@ -16,7 +16,7 @@ if ~isempty(dir_name)
     %[f, Dir] = uigetfile({'*.tif', 'TIF files'; '*.mat', 'MAT files'}, 'SELECT files', '/Volumes/MyBook2017/2PData/');
     [f, Dir] = uigetfile({'*.tif', 'TIF files'; '*.mat', 'MAT files'}, 'SELECT files', dir_name);
 else
-    [f, Dir] = uigetfile({'*.tif'; '*.tiff'; '*.mat'}, 'SELECT files');
+    [f, Dir] = uigetfile({'*.tif'; '*.mat'}, 'SELECT files');
 end
 [~, File, Ext] = fileparts(f);
 [i1, i2] = regexp(File, '\d*');

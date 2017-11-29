@@ -6,14 +6,14 @@
 % Save multi-tif image
 
 % use "read_file" for reading tif"
-addpath('/Users/lattice/Dropbox/NoRMCorre/');
+addpath('/Users/lattice/Dropbox/TwoPhoton_Analysis/NoRMCorre/');
 % file info
 [dirname, fname, ext, fsuf, psuf] = Get_File_Name;
 
 %%%%%%%%%% modify info %%%%%%%%%%
 % a vector of file number to be processed, and thouse f0 frame numbers.
-n_img = 11:13;
-f0_frames = [76,76,76];
+n_img = 14:19;
+f0_frames = [76,76,76,76,76,86];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % dFF are save as MAT or TIFF
 i_save = input('Save dFF as Tiff? [Y/N] or both Tiff & Mat [W] >> ', 's');
@@ -45,13 +45,15 @@ for n = n_img
         case {'.mat'}
             load(name);
     end
-    
     F0 = mean(F(:,:, 1:f0_frames(nn)), 3);
     dFF = F;
     for n3 = 1:size(F,3)
         dFF(:,:,n3) = (F(:,:, n3) - F0)./F0;
     end
     dFF = single(dFF);
+    
+    
+    F = dFF;
     
     
     % Create new directry
@@ -66,22 +68,23 @@ for n = n_img
             out_name = [dirname, 'dFF/', fsuf, fn, psuf, '_dFF.tif'];
             disp(['Saving Tiff File as ', out_name]);
             options.append = true;
-            saveastiff(dFF, out_name, options);
+            saveastiff(F, out_name, options);
         case {'N', 'n', 'No', 'NO'}
+            % Save as mat
             out_name = [dirname, 'dFF/', fsuf, fn, psuf, '_dFF.mat'];
             disp(['Saving MAT File as ', out_name]);
-            save(out_name, 'dFF');
+            save(out_name, 'F', '-v7.3');
             
         case {'W', 'w'}
             % Save as tif %
             out_name = [dirname, 'dFF/', fsuf, fn, psuf, '_dFF.tif'];
             disp(['Saving Tiff File as ', out_name]);
             options.append = true;
-            saveastiff(dFF, out_name, options);
+            saveastiff(F, out_name, options);
              % Save as mat %
             out_name = [dirname, 'dFF/', fsuf, fn, psuf, '_dFF.mat'];
             disp(['Saving MAT File as ', out_name]);
-            save(out_name, 'dFF', '-v7.3');
+            save(out_name, 'F', '-v7.3');
             
     end
     

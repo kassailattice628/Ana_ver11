@@ -10,60 +10,67 @@ global recobj
 global ParamsSave
 %%%%%%%%%%%
 
-frame_stimON = zeros(size(ParamsSave,2) - recobj.prestim, 1);
+frame_stimON = nan(size(ParamsSave,2) - recobj.prestim, 1);
 frame_stimON_os = frame_stimON;
 stim = frame_stimON;
 
 %mag_os = 200;
 sampt_os = imgobj.FVsampt/mag_os;
 
-disp(recobj.prestim + 1)
-disp(size(ParamsSave,2))
+disp(['Prestim: ',num2str(recobj.prestim + 1)]);
+disp(['Stim Trials: ', num2str(size(ParamsSave,2))])
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 for i = (recobj.prestim + 1):size(ParamsSave,2)
     %nearest frame for stim onset
-    if isfield(ParamsSave{1,i}.stim1, 'corON')
+    if isfield(ParamsSave{1,i},'stim1') && isfield(ParamsSave{1,i}.stim1, 'corON')
         frame_stimON(i-recobj.prestim) = floor((ParamsSave{1,i}.stim1.corON)/imgobj.FVsampt);
         frame_stimON_os(i-recobj.prestim) = floor((ParamsSave{1,i}.stim1.corON)/sampt_os);
 
-    %stim specific index
-    switch sobj.pattern
-        case {'Uni', 'Looming'}
-            if strcmp(sobj.mode, 'Concentric')
+        %stim specific index
+        switch sobj.pattern
+            case {'Uni', 'Looming'}
+                if strcmp(sobj.mode, 'Concentric')
+                    if i == recobj.prestim + 1
+                        stim = zeros(size(ParamsSave,2) - recobj.prestim, 2);
+                    end
+                    stim(i-recobj.prestim,1) = ParamsSave{1,i}.stim1.dist_deg;
+                    stim(i-recobj.prestim,2) = ParamsSave{1,i}.stim1.angle_deg;
+                else
+                    stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.center_position;
+                end
+            case {'1P_Conc'}
                 if i == recobj.prestim + 1
                     stim = zeros(size(ParamsSave,2) - recobj.prestim, 2);
                 end
                 stim(i-recobj.prestim,1) = ParamsSave{1,i}.stim1.dist_deg;
                 stim(i-recobj.prestim,2) = ParamsSave{1,i}.stim1.angle_deg;
-            else
-                stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.center_position;
-            end
-        case {'1P_Conc'}
-            if i == recobj.prestim + 1
-                stim = zeros(size(ParamsSave,2) - recobj.prestim, 2);
-            end
-            stim(i-recobj.prestim,1) = ParamsSave{1,i}.stim1.dist_deg;
-            stim(i-recobj.prestim,2) = ParamsSave{1,i}.stim1.angle_deg;
-        case {'Size_rand'}
-            stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.size_deg;
-        case {'FineMap'}
-            stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.center_position_FineMap;
-        case {'MoveBar'}
-            stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.MovebarDir_angle_deg;
-        case {'Images'}
-            stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.Image_index;
-        case {'Rect', 'Sin', 'Gabor'}
-            stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.gratingAngle_deg;
-        case {'B/W'}
-            if i == recobj.prestim + 1
-                stim = zeros(size(ParamsSave,2) - recobj.prestim, 3);
-            end
-            stim(i-recobj.prestim,1) = ParamsSave{1,i}.stim1.color;
-            stim(i-recobj.prestim,2) = ParamsSave{1,i}.stim1.dist_deg;
-            stim(i-recobj.prestim,3) = ParamsSave{1,i}.stim1.angle_deg;
-    end
+            case {'Size_rand'}
+                stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.size_deg;
+            case {'FineMap'}
+                stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.center_position_FineMap;
+            case {'MoveBar'}
+                stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.MovebarDir_angle_deg;
+            case {'Images'}
+                stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.Image_index;
+            case {'Rect', 'Sin', 'Gabor'}
+                stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.gratingAngle_deg;
+            case {'B/W'}
+                if i == recobj.prestim + 1
+                    stim = zeros(size(ParamsSave,2) - recobj.prestim, 3);
+                end
+                stim(i-recobj.prestim,1) = ParamsSave{1,i}.stim1.color;
+                stim(i-recobj.prestim,2) = ParamsSave{1,i}.stim1.dist_deg;
+                stim(i-recobj.prestim,3) = ParamsSave{1,i}.stim1.angle_deg;
+        end
+    else
+        frame_stimON(i-recobj.prestim) =  nan;
+        frame_stimON_os(i-recobj.prestim) =  nan;
+        stim(i-recobj.prestim) = nan;
+
     end
 end
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 nframe = size(imgobj.dFF,1);
@@ -86,8 +93,9 @@ datap_os = (prep + postp) * mag_os + 1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 stim_list = unique(stim, 'rows');
+stim_list(isnan(stim_list)) = [];
 nstim = size(stim_list, 1);
-
+disp(length(nstim))
 %% Get_sitm_average for all ROI
 
 %prep mat for dFF_Ave
@@ -110,8 +118,12 @@ for i2 = 1:imgobj.maxROIs
         %%%%%%%%%%
         % i :: each stimlus
         %%%%%%%%%%
+        
         i_list = ismember(stim, stim_list(i,:), 'rows');
         i_ext_stim = find(i_list);
+        
+        %disp(i_list)
+        %disp(i_ext_stim)
         %%
         dFF_ext = zeros(datap, length(i_ext_stim));
         dFF_ext_os = zeros(datap_os, length(i_ext_stim) );

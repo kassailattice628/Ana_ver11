@@ -61,6 +61,7 @@ hold off
 set(h.axes2, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-2, 50]);
 title('Radial-Velocity', 'FontSize', 14);
 ylabel(h.axes2, 'Pix/sec');
+
 %% plot Rotary Velocity %%
 axes3_h_base =  axes2_h_base - axes_height - axes_space;
 h.axes3 = axes('Units', 'Pixels', 'Position', [axes_left, axes3_h_base, axes_width, axes_height]);
@@ -68,11 +69,13 @@ h.area3 = area([NaN, NaN], [NaN, NaN], 'FaceColor', 'k', 'LineStyle', 'none', 'S
 alpha(area_alpha);
 hold on
 %h.plot3 = plot(NaN, NaN, 'LineWidth', 2);
+%(1) for rotary vel
+%(2) for pupil size
 [h.axes3, h.line1, h.line2] = plotyy(NaN, NaN, NaN, NaN);
 hold off
 %set(h.axes3, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-0.02, 30]);
-set(h.axes3(1), 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-0.02, 10]);
-set(h.axes3(2), 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-10, -8]);
+set(h.axes3(1), 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [0, 20]);
+set(h.axes3(2), 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-5, -4]);
 title('Locomotion Velocity, Eye Open Ratio', 'FontSize', 14)
 %ylabel(h.axes3, 'cm/sec');
     
@@ -138,7 +141,7 @@ h.FVsampt = uicontrol('Parent', h.p_trial, 'Style', 'edit', 'String', imgobj.FVs
 uicontrol('Units', 'Pixels', 'Style', 'text', 'String', 'P1_1:range', 'FontSize', 14,...
     'Position', [axes_left + axes_width + 5, axes1_1_h_base + 80, 80, 20],...
     'HorizontalAlignment', 'left');
-range_plot1_1 = [-8.5, -6.5];
+range_plot1_1 = [-5, -3];
 h.range_p1_1 = uicontrol('Units', 'Pixels', 'Style', 'Edit', 'String', num2str(range_plot1_1), 'FontSize', 14,...
     'Position', [axes_left + axes_width + 5, axes1_1_h_base + 50, 100, 30],...
     'Callback', {@Plot_next, data, 0, p, r});
@@ -146,7 +149,7 @@ h.range_p1_1 = uicontrol('Units', 'Pixels', 'Style', 'Edit', 'String', num2str(r
 uicontrol('Units', 'Pixels', 'Style', 'text', 'String', 'P1_2:range', 'FontSize', 14,...
     'Position', [axes_left + axes_width + 5, axes1_2_h_base + 80, 80, 20],...
     'Horizontalalignment', 'left');
-range_plot1_2 = [-8.5, -6.5];
+range_plot1_2 = [-5, -3];
 h.range_p1_2 = uicontrol('Units', 'Pixels', 'Style', 'Edit', 'String', num2str(range_plot1_2), 'FontSize', 14,...
     'Position', [axes_left + axes_width + 5, axes1_2_h_base + 50, 100, 30],...
     'Callback', {@Plot_next, data, 0, p, r});

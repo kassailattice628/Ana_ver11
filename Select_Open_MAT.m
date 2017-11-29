@@ -58,15 +58,17 @@ end
 %}
 
 %% Load Data %%
-[mainvar.fname, mainvar.dirname] = uigetfile([mainvar.dirname, '*.mat']);
-load([mainvar.dirname, mainvar.fname]);
+[fname, dirname] = uigetfile([mainvar.dirname, '*.mat']);
+load([dirname, fname]);
+mainvar.dirname = dirname;
 
 
 %loaded file contains DataSave
 if isempty(DataSave)
     errordlg('DataSave is missing')
-    [mainvar.fname, mainvar.dirname] = uigetfile([mainvar.dirname, '*.mat']);
-    load([mainvar.dirname, mainvar.fname]);
+    [fname, dirname] = uigetfile([mainvar.dirname, '*.mat']);
+    load([dirname, fname]);
+    mainvar.dirname = dirname;
 end
 
 

@@ -103,7 +103,8 @@ for i = 1:length(imgobj.selectROI)
             line([x_off, x_off], y, 'Color', 'r', 'LineWidth', 1);
         end
     else
-        line([x_off, x_off],[0, nstim+1], 'Color', 'r', 'LineWidth', 1);
+        %line([x_off, x_off],[0, nstim+1], 'Color', 'r', 'LineWidth', 1);
+        line([t_os(prep*mag_os+1)+duration, t_os(prep*mag_os+1)+duration],[0, nstim+1], 'Color', 'r', 'LineWidth', 1);
     end
     
     

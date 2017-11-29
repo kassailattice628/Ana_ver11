@@ -36,12 +36,16 @@ uicontrol('Parent', p_roi, 'Style', 'text', 'String', 'Deselect', 'Position', [7
 hfig.two_photon_deselect_roi_n = uicontrol('Parent', p_roi, 'Style', 'edit', 'String', '', 'Position', [825, 7, 150, 25],...
     'Callback', @Plot_dFF_selectROIs, 'FontSize', 14, 'BackGroundColor', 'w');
 
-%% plot1:: Single ROI
+%% Behavior check
 uicontrol('Style', 'pushbutton', 'String', 'Saccade', 'Position', [10, 420, 100, 25],...
-    'Callback', {@Get_Plot_sac_timing, r, p}, 'FontSize', 14');
+    'Callback', {@Get_Plot_sac_timing, p}, 'FontSize', 14');
 
+
+uicontrol('Style', 'pushbutton', 'String', 'Locomotion', 'Position', [115, 420, 100, 25],...
+    'Callback', {@Get_Plot_locomotion_timing, r, p}, 'FontSize', 14');
+
+%% plot1:: Single ROI
 hfig.two_photon_axes1 = axes('Units', 'Pixels', 'Position', [70, 290, 600, 120]);
-
 Get_Plot_stim_timing(r, p);
 
 hold on
@@ -185,12 +189,12 @@ hold off
 end
 
 %% plot saccade timing
-function Get_Plot_sac_timing(~, ~, r, p)
+function Get_Plot_sac_timing(~, ~, p)
 global hfig
 
 
 sac_t = [];
-for i = r.prestim+1 : size(p,2)
+for i = 1:size(p,2)
     if isfield(p{i}, 'sac_t')
         sac_t = [sac_t, p{i}.sac_t];
     end
@@ -201,11 +205,62 @@ axes(hfig.two_photon_axes1)
 hold on
 for i = 1:length(sac_t)
     line([sac_t(i), sac_t(i)], [-1,6], 'Color', 'r');
-    disp(i)
 end
 hold off
 
 end
+
+%% plot locomotion timing
+function Get_Plot_locomotion_timing(~, ~, r, p)
+global hfig
+global DataSave
+global ParamsSave
+
+area_t = [];
+
+if ~isfield(ParamsSave{1,1}, 'loc_t')
+    disp(1)
+    for n = 1:size(p, 2)
+        recTime = p{1,n}.AIStartTime:1/r.sampf...
+            :p{1,n}.AIEndTime+1/r.sampf;
+        
+        [~, rotVel] = DecodeRot(DataSave(:, size(DataSave, 2), n), n, p, r);
+        
+        sig = rotVel > 1.5; %threshold;;;
+        dsig = diff([0; sig]);
+        s_i = find(dsig > 0);
+        e_i = find(dsig < 0) -1;
+        %len = s_i - e_i + 1;
+        
+        if length(s_i) == length(e_i)
+            loc_t = [recTime(s_i); recTime(e_i)];
+        else
+            loc_t = [recTime(s_i); [recTime(e_i), recTime(end)]];
+        end
+        ParamsSave{1,n}.loc_t = loc_t';
+        
+        area_t = [area_t; loc_t'];
+    end
+    
+else
+    for n = 1:size(p,2)
+        area_t = [area_t; ParamsSave{1,n}.loc_t];
+    end
+end
+
+% locomotion area plot
+axes(hfig.two_photon_axes1)
+hold on
+for n = 1:size(area_t,1);
+    area_Y =  [-1, 10, 10, -1];
+    area_X = [area_t(n,1), area_t(n,1), area_t(n,2), area_t(n,2)];
+    fill(area_X, area_Y, [0.3 0.0 0.3], 'EdgeColor', 'none');
+    alpha(0.5)
+end
+hold off
+
+end
+
 
 
 %% panel2
@@ -321,10 +376,11 @@ end
 function Update_Params(~,  ~, h)
 global DataSave
 global imgobj
-global mainvar
 global ParamsSave
 global recobj
 global sobj
+
+global mainvar
 
 suf = get(h, 'string');
 [~, name,ext] = fileparts(mainvar.fname);

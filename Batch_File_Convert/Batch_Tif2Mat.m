@@ -11,7 +11,7 @@ addpath('/Users/lattice/Dropbox/NoRMCorre/');
 % psuf = fname(i2(1)+1:end);
 
 %%%%%%%%%% Moify Here %%%%%%%%%
-n_img = [1:2]; % a vector of file number to be processed
+n_img = 3; % a vector of file numbers, to be processed.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

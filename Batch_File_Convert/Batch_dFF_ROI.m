@@ -1,6 +1,7 @@
 function dirname = Batch_dFF_ROI(varargin)
 %Batch extract dFF from dFF.mat data using roiset.zip
 addpath('/Users/lattice/Dropbox/None_But_Air/Ana_ver11/');
+addpath('/Users/lattice/Dropbox/TwoPhoton_Analysis/NoRMCorre/');
 
 switch nargin
     case 1
@@ -9,9 +10,15 @@ switch nargin
         dir_name = [];
 end
 [dirname, ~, ext, fsuf, psuf] = Get_File_Name(dir_name);
-files = dir(fullfile(dirname, '*.mat'));
 
-%n_file = 3:7;
+switch ext
+    case '.mat'
+        files = dir(fullfile(dirname, '*.mat'));
+    case '.tif'
+        files = dir(fullfile(dirname, '*.tif'));
+end
+
+
 for n = 1:size(files, 1)
     if files(n).bytes > 0
         i1 = regexp(files(n).name,'\d*');
@@ -22,16 +29,24 @@ for n = 1:size(files, 1)
         save_name = [dirname, fsuf, fn, '_dFF.mat'];
         roi_name = [dirname, fsuf, fn, '_RoiSet.zip'];
         
-        if exist(save_name, 'file') 
+        if exist(save_name, 'file')
             disp([fsuf, fn, '_dFF.mat is already exist! SKIP....'])
+            
         elseif ~exist(roi_name, 'file')
             disp([fsuf, fn, '_RoiSet.zip is missing! SKIP....'])
-        else
             
-            %load mat
-            %mat_name = [dirname, fsuf, fn, psuf, ext];
-            y = load(mat_name);
-            dFF = y.dFF;
+        else
+            % load mat
+            % mat_name = [dirname, fsuf, fn, psuf, ext];
+            switch ext
+                case '.mat'
+                    %load mat
+                    y = load(mat_name);
+                    dFF = y.F;
+                case '.tif'
+                    dFF = read_file(mat_name);
+                    dFF = double(dFF);
+            end
             nFRMs = size(dFF,3);
             disp(['dFF Loading::: ', mat_name]);
             %load roi
