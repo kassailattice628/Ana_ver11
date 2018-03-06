@@ -39,5 +39,8 @@ hold off
 %%
 upper = max(max(imgobj.dFF(:, imgobj.selectROI)));
 lower = min(min(imgobj.dFF(:, imgobj.selectROI)));
-set(hfig.two_photon_axes2, 'YLim', [lower*1.2, upper*1.2]);
+
+if ~isnan(upper) && ~isnan(lower)
+    set(hfig.two_photon_axes2, 'YLim', [lower*1.2, upper*1.2]);
+end
 end

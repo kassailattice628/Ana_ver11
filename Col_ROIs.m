@@ -43,8 +43,16 @@ imgBG = zeros(img_sz * img_sz, 3);
 switch sobj.pattern
     case 'Size_rand'
         map_size
+        
     case {'Sin', 'Rect', 'Gabor', 'MoveBar'}
         map_angler;
+        
+    case {'Uni'}
+        map_nxn(1);
+        
+    case 'FineMap'
+        map_nxn(2)
+        
     otherwise
 end
 
@@ -93,7 +101,7 @@ end
         % colorized every 10 deg in hue (HSV space), 360/10 = 36
         h_list = linspace(0, 1, 36);
         angle_list = linspace(0, 2*pi, 36);
-
+        
         rois_selective = find(imgobj.L_dir > 0.2);
         rois_max = max(max(imgobj.dFF_s_ave));
         rois_valid = find(rois_max > 0.15);
@@ -152,7 +160,77 @@ end
         set(gca, 'Xticklabel', [], 'YTicklabel', []);
         %}
     end
-end
+
+%% %%%%%%%%%%%%%%%%%%%% %%
+    function map_nxn(type)
+        
+        if type == 1
+            div = sobj.divnum;
+        elseif type == 2
+            div = sobj.div_zoom;
+        end
+        
+        % Colorize ROI along with stimulus positions (N x N divisions).
+        
+        %hue -> along column (=vertical position)
+        h_list = linspace(0, 1, div+1);
+        %blightness value -> along row (=horizontal position)
+        v_list = linspace(0.2, 1, div+1);
+        
+        %roiごとに best position を出す．
+        %best positionごとに，hue と value を与えて
+        %roiを色付けする
+        [val, ind] = max(max(imgobj.dFF_s_ave,[],1));
+        
+        for i2 = 1:imgobj.maxROIs
+            %h(=hue) for vertical position
+            h = h_list(ceil(ind(i2)/div));
+            
+            %v(=blightness value) for horizontal position
+            v_res = rem(ind(i2), div);
+            if v_res == 0
+                v = v_list(end);
+            else
+                v_res = div;
+                v = v_list(v_res);
+            end
+            
+            if val <= 0.15
+                v = 0;
+            end
+            
+            HSV_roi = [h, 1, v];
+            RGB = hsv2rgb(HSV_roi);
+            imgBG(imgobj.Mask_rois(:,i2), 1) = RGB(1);
+            imgBG(imgobj.Mask_rois(:,i2), 2) = RGB(2);
+            imgBG(imgobj.Mask_rois(:,i2), 3) = RGB(3);
+        end
+        
+        imgBG = reshape(imgBG, [img_sz, img_sz, 3]);
+        
+        %plot
+        figure
+        imshow(imgBG)
+        axis ij
+        axis([0, 320, 0, 320])
+        %colormap(hsv(div))
+        
+        
+        %stim position
+        RGB_stim = zeros(div, div, 3);
+        H = repmat(h_list(1:div)', 1, div);
+        V = repmat(v_list(1:div), div, 1);
+        for n1 = 1:div
+            for n2 = 1:div
+                RGB_stim(n1, n2, :) = hsv2rgb([H(n1, n2), 1, V(n1, n2)]);
+            end
+        end
+        
+        figure
+        imagesc(RGB_stim)
+        
+    end
 
 
-%%
+
+end %End of Col_ROIs

@@ -219,7 +219,8 @@ global ParamsSave
 area_t = [];
 
 if ~isfield(ParamsSave{1,1}, 'loc_t')
-    disp(1)
+    disp('read locomotion area...')
+    tic
     for n = 1:size(p, 2)
         recTime = p{1,n}.AIStartTime:1/r.sampf...
             :p{1,n}.AIEndTime+1/r.sampf;
@@ -241,7 +242,7 @@ if ~isfield(ParamsSave{1,1}, 'loc_t')
         
         area_t = [area_t; loc_t'];
     end
-    
+    toc
 else
     for n = 1:size(p,2)
         area_t = [area_t; ParamsSave{1,n}.loc_t];
@@ -251,13 +252,16 @@ end
 % locomotion area plot
 axes(hfig.two_photon_axes1)
 hold on
-for n = 1:size(area_t,1);
+disp('plot locomotion area...')
+tic
+for n = 1:size(area_t,1)
     area_Y =  [-1, 10, 10, -1];
     area_X = [area_t(n,1), area_t(n,1), area_t(n,2), area_t(n,2)];
-    fill(area_X, area_Y, [0.3 0.0 0.3], 'EdgeColor', 'none');
-    alpha(0.5)
+    fill(area_X, area_Y, [0 0 0.7], 'EdgeColor', 'none');
+    %alpha(0.5)
 end
 hold off
+toc
 
 end
 
@@ -388,6 +392,8 @@ save_name = [mainvar.dirname, name, suf, ext];
 %update parameters
 save(save_name, 'DataSave', 'imgobj', 'mainvar', 'ParamsSave', 'recobj', 'sobj');
 %save save_name DataSave imgobj mainvar ParamsSave recobj sobj;
+
+disp(['save as ', save_name]);
 
 end
 

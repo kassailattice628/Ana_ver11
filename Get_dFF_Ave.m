@@ -53,7 +53,7 @@ for i = (recobj.prestim + 1):size(ParamsSave,2)
             case {'Images'}
                 stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.Image_index;
             case {'Rect', 'Sin', 'Gabor'}
-                stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.gratingAngle_deg;
+                stim(i-recobj.prestim, 1) = ParamsSave{1,i}.stim1.gratingAngle_deg;
             case {'B/W'}
                 if i == recobj.prestim + 1
                     stim = zeros(size(ParamsSave,2) - recobj.prestim, 3);

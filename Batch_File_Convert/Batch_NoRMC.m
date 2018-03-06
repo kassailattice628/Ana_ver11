@@ -77,7 +77,7 @@ for n = 1:size(files,1)
     
     
     disp('1st Calculating motion correction...')
-    [M2, ~, ~] = normcorre_batch(F, options_nonrigid);
+    [M2, shifts, template] = normcorre_batch(F, options_nonrigid);
     %}
     %{
     % Set params

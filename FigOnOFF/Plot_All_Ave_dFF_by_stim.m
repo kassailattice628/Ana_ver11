@@ -12,7 +12,7 @@ c_max = str2double(get(cmax, 'string'));
 %% Get_dFF, Averaged by Stim Types
 %[ ~, datap, datap_os, ~] = Get_dFF_Ave(mag_os);
 %
-if ~isfield(imgobj, 'dFF_s_ave');
+if ~isfield(imgobj, 'dFF_s_ave')
     [~, datap, datap_os, ~] =  Get_dFF_Ave(mag_os);
 else
      datap = size(imgobj.dFF_s_ave, 1);

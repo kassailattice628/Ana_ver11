@@ -36,9 +36,11 @@ elseif opt == 2
     [pks,locs] = findpeaks(vel, 'MinPeakHeight', th,...
         'MinPeakDistance', 200);
     locs =  locs - 10;
-    pks = pks(pks < 250);
-    locs = locs(pks < 250);
     
+    %
+    MaxPeakHeight = 30;
+    locs = locs(pks < MaxPeakHeight);
+    pks = pks(pks < MaxPeakHeight);
     
     
     if isempty(pks)
