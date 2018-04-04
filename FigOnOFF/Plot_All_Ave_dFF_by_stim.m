@@ -4,6 +4,7 @@ function Plot_All_Ave_dFF_by_stim(~,~, cmin, cmax)
 %%%%%%%%%
 
 global imgobj
+global sobj
 %%%%%%%%%%
 mag_os = 200; %oversampling x200
 c_min = str2double(get(cmin, 'string'));
@@ -26,6 +27,18 @@ end
 mat = zeros(5 + datap, size(imgobj.dFF_s_ave,2), size(imgobj.dFF_s_ave,3));
 mat(1:datap,:,:) =  imgobj.dFF_s_ave;
 imgobj.mat2D = reshape(mat, [], imgobj.maxROIs);
+
+%%—ÕŽž
+if strcmp(sobj.pattern, 'Size_rand')
+    mat = zeros(5 + datap, 5, size(imgobj.dFF_s_ave,3));
+    mat(1:datap,:,:) = imgobj.dFF_s_ave(:, 1:5, :) ;
+    imgobj.mat2D = reshape(mat, [], imgobj.maxROIs);
+end
+
+%%—ÕŽž
+if strcmp(sobj.pattern, 'MoveBar')
+    %imgobj.mat2D = imgobj.mat2D(:,1:214);
+end
 
 show_mat(imgobj.mat2D)
 

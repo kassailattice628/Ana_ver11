@@ -46,8 +46,10 @@ for i = (recobj.prestim + 1):size(ParamsSave,2)
                 stim(i-recobj.prestim,2) = ParamsSave{1,i}.stim1.angle_deg;
             case {'Size_rand'}
                 stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.size_deg;
+                
             case {'FineMap'}
                 stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.center_position_FineMap;
+                
             case {'MoveBar'}
                 stim(i-recobj.prestim) = ParamsSave{1,i}.stim1.MovebarDir_angle_deg;
             case {'Images'}
@@ -69,8 +71,6 @@ for i = (recobj.prestim + 1):size(ParamsSave,2)
 
     end
 end
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 nframe = size(imgobj.dFF,1);
@@ -95,11 +95,12 @@ datap_os = (prep + postp) * mag_os + 1;
 stim_list = unique(stim, 'rows');
 stim_list(isnan(stim_list)) = [];
 nstim = size(stim_list, 1);
-disp(length(nstim))
+%disp(length(nstim))
 %% Get_sitm_average for all ROI
 
 %prep mat for dFF_Ave
 imgobj.dFF_s_ave = zeros(datap, nstim, imgobj.maxROIs);
+imgobj.dFF_s_each = NaN([15, nstim, imgobj.maxROIs]);
 
 %prep mat for over-sampled dFF_Ave
 imgobj.dFF_s_ave_os = zeros(datap_os, nstim, imgobj.maxROIs);
@@ -124,9 +125,10 @@ for i2 = 1:imgobj.maxROIs
         
         %disp(i_list)
         %disp(i_ext_stim)
-        %%
+        %% 
         dFF_ext = zeros(datap, length(i_ext_stim));
         dFF_ext_os = zeros(datap_os, length(i_ext_stim) );
+        
         for i3 = 1:length(i_ext_stim)
             %%%%%%%%%%
             % i3 :: each trials
@@ -134,14 +136,15 @@ for i2 = 1:imgobj.maxROIs
             ext_fs = frame_stimON(i_ext_stim(i3)) - prep:frame_stimON(i_ext_stim(i3)) + postp;
             ext_fs_os = frame_stimON_os(i_ext_stim(i3)) - prep*mag_os:frame_stimON_os(i_ext_stim(i3)) + postp*mag_os;
             
-            %%%%%
+            %%%%% raw data
             if max(ext_fs) <= size(imgobj.dFF, 1)
                 dFF_ext(:,i3) = imgobj.dFF(ext_fs, i2);
                 
             elseif max(ext_fs) > size(imgobj.dFF,1)
                 dFF_ext = dFF_ext(:, 1:i3-1);
             end
-            %%%%%
+            
+            %%%%% over-sampled data
             if max(ext_fs_os) <= size(dFF_os, 2)
                 dFF_ext_os(:,i3) = dFF_os(ext_fs_os);
                 
@@ -149,13 +152,16 @@ for i2 = 1:imgobj.maxROIs
                 dFF_ext_os = dFF_ext_os(:, 1:i3-1);
                 break;
             end
+            
             %%%%%
             
+            imgobj.dFF_s_each(i3, i, i2) = max(dFF_ext(:,i3));
         end
         
         %Get mean traces for each stimlus
-        imgobj.dFF_s_ave(:,i, i2) = mean(dFF_ext, 2);
+        a = mean(dFF_ext, 2);
+        a = a - a(1);
+        imgobj.dFF_s_ave(:,i, i2) = a;
         imgobj.dFF_s_ave_os(:, i, i2) = mean(dFF_ext_os, 2);
-        
     end
 end

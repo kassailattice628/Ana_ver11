@@ -387,7 +387,7 @@ global sobj
 global mainvar
 
 suf = get(h, 'string');
-[~, name,ext] = fileparts(mainvar.fname);
+[~, name, ext] = fileparts(mainvar.fname);
 save_name = [mainvar.dirname, name, suf, ext];
 %update parameters
 save(save_name, 'DataSave', 'imgobj', 'mainvar', 'ParamsSave', 'recobj', 'sobj');

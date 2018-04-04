@@ -121,7 +121,8 @@ for i = 1:length(imgobj.selectROI)
         
         plot(t, imgobj.dFF_s_ave(:,i2, imgobj.selectROI(i)), '-r', 'linewidth', 2);
         xlim([0 , datap*imgobj.FVsampt])
-        ylim([-0.2 1.5])
+        %ylim([-0.2 1.5])
+        ylim([-0.5, 0.5])
         if i2 == 1
             title(['ROI=#', num2str(imgobj.selectROI(i))])
         end
@@ -156,8 +157,8 @@ for i = 1:length(imgobj.selectROI)
     end
     legend('show')
     
-    area([t(prep+1), t(prep+1+s_off_p)],[max_, max_], min_, 'FaceColor', 'k', 'LineStyle', 'none', 'ShowBaseLine', 'off');
-    alpha(0.1);
+    %area([t(prep+1), t(prep+1+s_off_p)],[max_, max_], min_, 'FaceColor', 'k', 'LineStyle', 'none', 'ShowBaseLine', 'off');
+    %alpha(0.1);
     hold off
     ylim([min_, max_])
     

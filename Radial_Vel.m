@@ -60,12 +60,15 @@ if isfield(ParamsSave{1,n}, 'sac_t')
     end
 else
     th = str2double(get(hfig.vel_th, 'String'));
-    %disp(th)
+    %disp(max(velocity))
     [pks,locs] = findpeaks(velocity, 'MinPeakHeight', th,...
-        'MinPeakDistance', 200);
+        'MinPeakDistance', 200);%200
     locs =  locs - 10;
-    pks = pks(pks < 250);
-    locs = locs(pks < 250);
+    
+    %pks_threshold =  250;%default 250
+    %pks = pks(pks < pks_threshold);
+    %locs = locs(pks < pks_threshold);
+    
     if isempty(pks)
         ParamsSave{1,n}.sac_t = [];
     else

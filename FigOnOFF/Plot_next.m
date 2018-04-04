@@ -42,7 +42,7 @@ if ~isempty(locs)
         locs_text{i} = num2str(loc_t);
         str_n(i) = loc_t;
     end
-    str = num2str(str_n);    
+    str = num2str(str_n);
     set(hfig.sac_locs, 'string', str);
 else
     set(hfig.sac_locs, 'string', '');
@@ -58,7 +58,7 @@ elseif size(data,2) == 5
     %eye_open_ratio
     Update_plot(hfig.line2, recTime(1:end-1), data(1:end-1, 4, n));
 end
-    
+
 [~, rotVel] = DecodeRot(data(:, ch_rot, n), n, p, r);%
 %Update_plot(hfig.plot3, recTime(1:end-1), rotVel);
 Update_plot(hfig.line1, recTime(1:end-1), rotVel);
@@ -90,7 +90,9 @@ set(hfig.axes1_2, 'YLim', range_plot1_2);
 set(hfig.axes4, 'YLim', [min(data(:, 3, n))*0.9, max(data(:, 3, n))*1.1]);
 
 %% Update plots
-refreshdata(hfig.fig1, 'caller')
+%refreshdata(hfig.fig1, 'caller')
+drawnow % <- faster than 'refreshdata' ?
+
 % Update Eye position
 if isfield(hfig, 'eye_position')
     refreshdata(hfig.eye_position, 'caller');
@@ -102,6 +104,24 @@ if isfield(hfig, 'params_table')
     set(hfig.params_table_contents, 'Data', values, 'RowName', rnames);
 end
 
+
+%% —ÕŽž
+%{
+figure,
+subplot(3,1,1)
+plot(recTime, data(:, 1, n))
+xlim([recTime(1), recTime(end)])
+ylim([-4, -3.6])
+
+subplot(3,1,2)
+plot(recTime, data(:, 2, n))
+xlim([recTime(1), recTime(end)])
+ylim([-4.3, -3.9])
+subplot(3,1,3)
+plot(recTime(1:end-1), rotVel)
+xlim([recTime(1), recTime(end-1)])
+ylim([0, 15])
+%}
 
 %% %%%%%%%%subfunctions%%%%%%%%%% %%
 %%
@@ -119,14 +139,14 @@ end
                         stim1_info_txt = ['Center:', pos, ', Size:', sz, 'deg',...
                             ', dist:', dist_deg, 'deg', ', Ang:', angle_deg, 'deg'];
                     end
-                %%%%%% for old version %%%%%%%
+                    %%%%%% for old version %%%%%%%
                 case {'1P_Conc'}
                     dist_deg = num2str(stim.dist_deg);
                     angle_deg = num2str(stim.angle_deg);
                     stim1_info_txt = ['Stim1::Dist:', dist_deg, ', Ang:', angle_deg, 'deg',...
                         ', Size:', sz, 'deg'];
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    
                 case {'2P', '2P_Conc'}
                     dist_deg = num2str(stim.dist_deg);
                     angle_deg = num2str(stim.angle_deg);
@@ -160,7 +180,7 @@ end
                     stim2_info_txt = ['SF:', sf, 'cpd', ', Spd:', spd, 'Hz',...
                         ', Ang:', angle, 'deg'];
                     set(hfig.stim2_info, 'String', stim2_info_txt);
-                
+                    
                 case {'MoveBar'}
                     angle=num2str(stim.MovebarDir_angle_deg);
                     spd = num2str(stim.MovebarSpd_deg_s);
@@ -207,7 +227,7 @@ end
                 set(hfig.area2, 'XData', [corON, corOFF], 'YData', [250,250], 'basevalue', 0);
                 set(hfig.area3, 'XData', [corON, corOFF], 'YData', [30,30], 'basevalue', -0.02);
                 set(hfig.area4, 'XData', [corON, corOFF], 'YData', [300, 300], 'basevalue', -10);
-
+                
             else
                 Erase_area;
             end
@@ -259,6 +279,7 @@ end
                 disp('No more trials.')
             end
             set(hfig.set_n, 'string', num2str(N))
+            
         elseif set_n == -1
             if n < size(data, 3) + 1 && n > 1
                 N = n - 1;
@@ -267,6 +288,7 @@ end
                 disp('First trials.')
             end
             set(hfig.set_n, 'string', num2str(N))
+            
         else
             N = str2double(get(hfig.set_n, 'string'));
         end

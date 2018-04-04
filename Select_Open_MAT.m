@@ -59,7 +59,6 @@ end
 load([dirname, fname]);
 mainvar.dirname = dirname;
 
-
 %loaded file contains DataSave
 if isempty(DataSave)
     errordlg('DataSave is missing')

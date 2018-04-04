@@ -100,7 +100,8 @@ xlabel('Time (s)');
 slider4_height = axes4_h_base + axes1_height;
 uicontrol('Style', 'text', 'String', 'Threshold', 'Position',[640, slider4_height, 80, 20])
 h.slider4 = uicontrol('Style', 'slider', 'Position', [675, axes4_h_base, 20, axes1_height],...
-    'Min',0, 'Max', 500, 'Value', 85, 'Callback', {@Plot_next, data, 0, p, r});
+    'Min',0, 'Max', 500, 'Value', 85, 'SliderStep',[0.01 0.10], 'Callback', {@Plot_next, data, 0, p, r});
+%Value: 85
 
 
 %% Select NBA DATA file

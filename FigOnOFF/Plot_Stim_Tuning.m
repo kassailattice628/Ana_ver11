@@ -13,19 +13,22 @@ stim_list = 1:size(imgobj.dFF_s_ave, 2);
 prep = ceil(1/imgobj.FVsampt);
 p_on = prep + 1;
 
+%%%%%%%%%%
 switch s.pattern
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'Size_rand'
-        
         p_duration = round(s.duration/imgobj.FVsampt);
         p_off = prep + 1 + p_duration;
         
         %best size (on & off)
-        imgobj.R_size = zeros(length(stim_list), imgobj.maxROIs, 2);
+        imgobj.R_size = zeros(length(stim_list), imgobj.maxROIs, 3);
         for k = 1:imgobj.maxROIs
-            imgobj.R_size(:, k, 1) = max(imgobj.dFF_s_ave(p_on:p_on+p_duration, :, k))';
-            imgobj.R_size(:, k, 2) = max(imgobj.dFF_s_ave(p_off:p_off+p_duration, :, k))';
+            base = mean(imgobj.dFF_s_ave(1:2, :, k)); % dFF_s_ave(points, stim, ROI)
             
+            imgobj.R_size(:, k, 1) = max(imgobj.dFF_s_ave(p_on:p_on+p_duration, :, k) - base)';
+            imgobj.R_size(:, k, 2) = max(imgobj.dFF_s_ave(p_off:p_off+p_duration, :, k) - base)';
+            imgobj.R_size(:, k, 3) = max(imgobj.dFF_s_ave(p_on:p_off+p_duration, :, k) - base)';
         end
         
         for k = imgobj.selectROI
@@ -33,11 +36,25 @@ switch s.pattern
             plot(stim_list, imgobj.R_size(:, k, 1), 'o-g')
             hold on
             plot(stim_list, imgobj.R_size(:, k, 2), 'o-r')
+            
+            %{
+            %each trial
+            for k2 = stim_list
+                for k3 = 1:10
+                    if ~isnan(imgobj.dFF_s_each(k3, k2, k))
+                        plot(k2, imgobj.dFF_s_each(k3, k2, k), 'og')
+                    end
+                end
+            end
+            %}
+            
             hold off
             title(['ROI=#', num2str(k)])
             set(gca, 'xtick', stim_list);
             if length(stim_list) == 5
                 set(gca, 'xticklabel', {'0.5deg', '1deg', '3deg', '5deg', '10deg'});
+            elseif length(stim_list) ==  6
+                set(gca, 'xticklabel', {'0.5deg', '1deg', '3deg', '5deg', '10deg', '20deg'});
             elseif length(stim_list) == 7
                 set(gca, 'xticklabel', {'0.5deg', '1deg', '3deg', '5deg', '10deg', '30deg', '50deg'});
             end
@@ -56,6 +73,7 @@ switch s.pattern
             stim_txt = {'0:2pi', '1/8', '1/4', '3/8', '1/2', '5/8', '3/4', '7/8',...
                 'pi', '9/8', '5/4', '11/8', '3/2', '13/8', '7/4', '15/8'};
         end
+        
         %
         if strcmp(s.pattern, 'MoveBar')
             p_duration = round(s.moveDuration/imgobj.FVsampt);
@@ -106,7 +124,7 @@ switch s.pattern
             imgobj.dir_sel_rois(3,k) = (R_pref_ori - R_null_dir)/R_pref_ori;
             %}
             
-            %% vector averaging%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %% Orientation / Direction selectivity by vector averaging%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %calc circular variance
             base = imgobj.dFF_s_ave(1, :, k); % dFF_s_ave(points, stim, ROI)
             
@@ -182,9 +200,10 @@ switch s.pattern
                 disp(['1 - CirVal_dir = ', num2str(imgobj.L_dir(k))])
             end
         end
-        
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case {'Images'}
         
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     otherwise
 end
 end

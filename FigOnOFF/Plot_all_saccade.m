@@ -21,7 +21,7 @@ hold on
 d_filt_eye = designfilt('lowpassfir', 'FilterOrder', 12,...
     'CutoffFrequency', 30, 'SampleRate', r.sampf);
 
-for n = (r.prestim + 1) : size(ParamsSave,2);
+for n = (r.prestim + 1) : size(ParamsSave,2)
     %eye_position, Horizontal
     data1 = data(:,1,n);
     data_filt1 = filter(d_filt_eye, data1);

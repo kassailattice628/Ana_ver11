@@ -42,7 +42,8 @@ for n = 1:size(files, 1)
                 case '.mat'
                     %load mat
                     y = load(mat_name);
-                    dFF = y.F;
+                    %dFF = y.F;
+                    dFF = y.dFF;
                 case '.tif'
                     dFF = read_file(mat_name);
                     dFF = double(dFF);
