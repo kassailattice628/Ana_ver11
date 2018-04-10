@@ -1,5 +1,5 @@
 # Change_log
-## 11.1... 180410
+## 11.5（にする）... 180410
 Open2P.m で呼んでいた Trial average 等の計算 と plot の 関数を分けた．
 Oversampling して plot するのは 一旦やめる．
 trial ごとの peak value を imgobj.dFF_s_each に保存．
