@@ -165,3 +165,4 @@ for i2 = 1:imgobj.maxROIs
         imgobj.dFF_s_ave_os(:, i, i2) = mean(dFF_ext_os, 2);
     end
 end
+end

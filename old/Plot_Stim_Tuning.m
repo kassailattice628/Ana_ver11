@@ -132,17 +132,6 @@ switch s.pattern
             R_all_dir_min = min(imgobj.dFF_s_ave(p_on:p_on+p_duration, :, k)) - base;
                         
             dir = linspace(0, (2*pi - 2*pi/length(R_all_dir_max)), length(R_all_dir_max));
-            %{
-            if length(R_all_dir) == 8
-                dir = linspace(0, 2*pi-pi/4, 8);
-            elseif length(R_all_dir) == 7
-                dir = linspace(0, 2*pi-pi/2, 7);
-            elseif length(R_all_dir) == 12
-                dir = linspace(0, 2*pi-pi/6, 12);
-            elseif length(R_all_dir) == 16
-                dir = linspace(0, 2*pi-pi/8, 16);
-            end
-            %}
             
             %negative Ca responses are extracted
             %!!!!! how to treat rebound excitation !!!!!
@@ -154,13 +143,13 @@ switch s.pattern
                 R_all_dir = -R_all_dir_min;
                 line_prop = 'o-r';
             end
+            
             % orientation
             Z = sum(R_all_dir .* exp(2*1i*dir))/sum(R_all_dir);
             imgobj.L_ori(k) = abs(Z);
             
             % orientation selectivity-degree
-            imgobj.Ang_ori(k) = angle(Z)/2;
-            
+            imgobj.Ang_ori(k) = angle(Z)/2 +pi/2;
             
             % direction
             Z = sum(R_all_dir .* exp(1i*dir))/sum(R_all_dir);
@@ -183,6 +172,9 @@ switch s.pattern
                 set(gca, 'xtick', stim_list);
                 set(gca, 'xticklabel', stim_txt);
                 
+                %fit tuning and plot
+                fit_DS_OS_tuning(k, dir);
+                
                 %direction, orientation selectivity
                 figure
                 subplot(1,2,1)
@@ -193,7 +185,7 @@ switch s.pattern
                 title('Move Direction')
                 
                 subplot(1,2,2)
-                polar([0, imgobj.Ang_ori(k)+pi/2], [0, imgobj.L_ori(k)], 'r-');
+                polar([0, imgobj.Ang_ori(k)], [0, imgobj.L_ori(k)], 'r-');
                 title('Bar Orientation')
                 
                 disp(['1 - CirVal_ori = ', num2str(imgobj.L_ori(k))])

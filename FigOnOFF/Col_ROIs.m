@@ -45,7 +45,6 @@ switch sobj.pattern
         map_size
         
     case {'Sin', 'Rect', 'Gabor'}
-        m
         map_angler(0, imgBG);
         
     case 'MoveBar'
@@ -130,7 +129,6 @@ end
     end
 
 %% %%%%%%%%%%%%%%%%%%%% %%
-
     function map_angler(type, imgBG)
         %type:: directino or orientation
         
@@ -141,8 +139,9 @@ end
                 angle_list = linspace(0, 2*pi, n);
                 L = imgobj.L_dir;
                 Ang = imgobj.Ang_dir;
+                
             case 1 %orientation
-                n = 18;
+                n = 9;
                 h_list = linspace(0, 1, n);
                 angle_list = linspace(-pi/2, pi/2, n);
                 L = imgobj.L_ori;
@@ -163,8 +162,10 @@ end
             else
                 ang = ang2;
             end
+            
             h = h_list(ang);
-            if L(i2) > 1, v = 1; else, v = L(i2); end
+            
+            if L(i2) > 1, v = 1; else, v = L(i2)  ; end
             
             HSV_roi = [h, 1, v];
             RGB = hsv2rgb(HSV_roi);
@@ -187,108 +188,6 @@ end
         
         colormap(hsv(n));
     end
-%%
-%{
-function map_angler
-        %% Direction Selectivity Map
-        % set colormap based on angler info
-        % colorized every 10 deg in hue (HSV space), 360/10 = 36
-        h_list = linspace(0, 1, 36);
-        angle_list = linspace(0, 2*pi, 36);
-        
-        rois_selective = find(imgobj.L_dir > 0.2);
-        rois_max = max(max(imgobj.dFF_s_ave));
-        rois_valid = find(rois_max > 0.15);
-        rois = intersect(rois_selective, rois_valid);
-        
-        for i2 = rois'
-            %set HSV
-            ang1 = find(angle_list > imgobj.Ang_dir(i2), 1, 'first');
-            ang2 = find(angle_list <= imgobj.Ang_dir(i2), 1, 'last');
-            if abs(imgobj.Ang_dir(i2)-angle_list(ang1)) < abs(imgobj.Ang_dir(i2) - angle_list(ang2))
-                ang = ang1;
-            else
-                ang = ang2;
-            end
-            h = h_list(ang);
-            
-            v = imgobj.L_dir(i2);
-            if imgobj.L_dir(i2) > 1
-                v = 1;
-            end
-            
-            HSV_roi = [h, 1, v];
-            RGB = hsv2rgb(HSV_roi);
-            
-            imgBG(imgobj.Mask_rois(:,i2),1) = RGB(1);
-            imgBG(imgobj.Mask_rois(:,i2),2) = RGB(2);
-            imgBG(imgobj.Mask_rois(:,i2),3) = RGB(3);
-        end
-        
-        imgBG = reshape(imgBG,[img_sz, img_sz, 3]);
-        
-        figure
-        imshow(imgBG)
-        hold on
-        % vector map
-        [U, V] = pol2cart(imgobj.Ang_dir, imgobj.L_dir);
-        quiver(imgobj.centroid(1,rois), imgobj.centroid(2,rois), U(rois)*50, -V(rois)*50,...
-            'AutoScale', 'off', 'Color', 'w')
-        axis ij
-        axis([0, 320, 0, 320])
-        hold off
-        
-        colormap(hsv(36));
-        
-        %% Orientation Selectivity Map
-        % set colormap based on olientation angle info
-        % colorized evely 10 deg in hue sapce, 180/10 = 18
-        h_list = linspace(0, 1, 18);
-        angle_list = linspace(-pi/2, pi/2, 18);
-        
-        rois_selective = find(imgobj.L_ori > 0.2);
-        rois_max = max(max(imgobj.dFF_s_ave));
-        rois_valid = find(rois_max > 0.15);
-        rois = intersect(rois_selective, rois_valid);
-        
-        for i2 = rois'
-            ang1 = find(angle_list > imgobj.Ang_ori(i2), 1, 'first');
-            ang2 = find(angle_list <= imgobj.Ang_ori(i2), 1, 'last');
-            if abs(imgobj.Ang_ori(i2) - angle_list(ang1)) < abs(imgobj.Ang_ori(i2) - angle_list(ang2))
-                ang = ang1;
-            else
-                ang = ang2;
-            end
-            h = h_list(ang);
-            v = imgobj.L_ori(i2);
-            if imgobj.L_ori (i2) > 1
-                v = 1;
-            end
-            HSV_roi = [h, 1, v];
-            RGB = hsv2rgb(HSV_roi);
-            
-            imgBG(imgobj.Mask_rois(:,i2),1) = RGB(1);
-            imgBG(imgobj.Mask_rois(:,i2),2) = RGB(2);
-            imgBG(imgobj.Mask_rois(:,i2),3) = RGB(3);
-        end
-        
-        imgBG = reshape(imgBG,[img_sz, img_sz, 3]);
-        
-        figure
-        imshow(imgBG)
-        hold on
-        % vector map
-        [U, V] = pol2cart(imgobj.Ang_ori, imgobj.L_ori);
-        quiver(imgobj.centroid(1,rois), imgobj.centroid(2,rois), U(rois)*50, -V(rois)*50,...
-            'AutoScale', 'off', 'Color', 'w')
-        axis ij
-        axis([0, 320, 0, 320])
-        hold off
-        
-        colormap(hsv(18));
-    end
-
-%}
 
 %% %%%%%%%%%%%%%%%%%%%% %%
     function map_nxn(type)

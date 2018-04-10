@@ -297,19 +297,23 @@ uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Apply Mod to dFF'
     'Callback', {@Apply_change_dFF, h_Detrend, h_LowCut, h_LowCutFrq,...
     h_Offset, h_OffsetFrame, h_Norm});
 
-%%
-uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Average by Stim', 'Position', [5, 220, 200, 30], 'FontSize', 14,...
-    'Callback',  {@Average_dFF_by_stim, h_Cmin, h_Cmax})
+%% Calculat trial average
+uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Average by Stim', 'Position', [210, 255, 140, 30], 'FontSize', 14,...
+    'Callback', @Get_Trial_Averages, 'BackGroundColor', 'g')
 
-uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show All ROIs', 'Position', [210, 220, 140, 30], 'FontSize', 14,...
-    'Callback',  {@Plot_All_Ave_dFF_by_stim, h_Cmin, h_Cmax})
+%% plot figures
+uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show selected', 'Position', [5, 220, 200, 30], 'FontSize', 14,...
+    'Callback',  {@Plot_Selected_Averages, h_Cmin, h_Cmax})
+
+uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show All', 'Position', [210, 220, 140, 30], 'FontSize', 14,...
+    'Callback',  {@Plot_All_Averages, h_Cmin, h_Cmax})
 
 visible = 'on';
 switch sobj.pattern
     case 'Size_rand'
         text_tuning = 'Size Tuning';
     case {'Sin', 'Rect', 'Gabor', 'MoveBar'}
-        text_tuning = 'Dir/Ori Tuning';
+        text_tuning = 'Show Tuning(Dir/Ori)';
     case {'Images'}
         text_tuning = 'Image selectivity';
     otherwise
@@ -317,10 +321,10 @@ switch sobj.pattern
         visible = 'off';
 end
 uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', text_tuning, 'Position', [5, 185, 200, 30], 'FontSize', 14,...
-    'Callback', {@Plot_Stim_Tuning, sobj}, 'Visible', visible)
+    'Callback', @Plot_Stim_Tuning_selected, 'Visible', visible)
 
-uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Col ROIs', 'Position', [5, 150, 200, 30], 'FontSize', 14,...
-    'Callback', {@Col_ROIs})
+uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show tuning Map', 'Position', [5, 150, 200, 30], 'FontSize', 14,...
+    'Callback', {@Plot_Tuning_Distributions})
 
 
 %% update params
