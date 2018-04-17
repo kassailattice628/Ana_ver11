@@ -82,47 +82,10 @@ switch s.pattern
         end
         
         %distribution of dir selectivity
-        imgobj.dir_sel_rois = zeros(3, imgobj.maxROIs);
         imgobj.L_ori = zeros(1, imgobj.maxROIs);
         imgobj.L_dir = zeros(1, imgobj.maxROIs);
-        %imgobj.Z = zeros(1, imgobj.maxROIs);
         
         for k = 1:imgobj.maxROIs
-            %% Orientation / Direction selectivity index%%%%%%%%%%%%%%%%%%%
-            %{
-            % orientation/direction selectivity index
-            [R_pref_ori, pref_ori] = max(max(imgobj.dFF_s_ave(p_on:p_on+p_duration, :, k)));
-            imgobj.dir_sel_rois(1,k) = pref_ori;
-            
-            %%%%%
-            ortho_ori1 = pref_ori + size(imgobj.dFF_s_ave,2)/4;
-            if ortho_ori1 > size(imgobj.dFF_s_ave,2)
-                ortho_ori1 = ortho_ori1 - size(imgobj.dFF_s_ave,2);
-            end
-            
-            ortho_ori2 = pref_ori - size(imgobj.dFF_s_ave,2)/4;
-            if ortho_ori2 < 1
-                ortho_ori2 = size(imgobj.dFF_s_ave,2) + ortho_ori2;
-            end
-            
-            R_ortho_ori1 = max(imgobj.dFF_s_ave(p_on:p_on+p_duration, ortho_ori1, k));
-            
-            R_ortho_ori2 = max(imgobj.dFF_s_ave(p_on:p_on+p_duration, ortho_ori2, k));
-            
-            %%%%%%
-            null_dir = pref_ori + 4;
-            if null_dir > size(imgobj.dFF_s_ave,2)
-                null_dir = null_dir - size(imgobj.dFF_s_ave,2);
-            end
-            R_null_dir = max(imgobj.dFF_s_ave(p_on:p_on+p_duration, null_dir, k));
-            
-            %%%%%%%%%%
-            %OI
-            imgobj.dir_sel_rois(2, k) = (R_pref_ori + R_null_dir - (R_ortho_ori1 + R_ortho_ori2)) / (R_pref_ori + R_null_dir);
-            
-            %dI
-            imgobj.dir_sel_rois(3,k) = (R_pref_ori - R_null_dir)/R_pref_ori;
-            %}
             
             %% Orientation / Direction selectivity by vector averaging%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %calc circular variance

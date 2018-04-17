@@ -49,36 +49,71 @@ switch sobj.pattern
         for i = imgobj.selectROI
             R_all_dir = nanmean(imgobj.dFF_s_each(:, :, i));
             
+            % Fit tuning curve to double gaussian
+            [x, x_me, y, y_me, F, params] = fit_DS_tuning(i, dir);
+            
+            xp = 0:0.01:2*pi;
+            F_fit = F(params, xp);
+            size(F_fit)
+            
+            if ismember(i, imgobj.roi_non_sel) && ismember(i, imgobj.roi_nega_R)
+                %negative response
+                R_all_dir = -R_all_dir;
+                F_fit = -F_fit;
+                y = -y;
+                y_me = -y_me;
+                color = 'r';
+                ylim_p1 = [min(R_all_dir)*1.1, 0];
+                ylim_p2 = [min(y)*1.1, 0];
+                    
+            elseif ismember(i, imgobj.roi_pos_R)
+                %positive response
+                color = 'b';
+                ylim_p1 = [0, max(R_all_dir)*1.1] ;
+                ylim_p2 = [0, max(y)*1.1];
+                
+            else
+                
+                color = 'g';
+                ylim_p1 = [0, max(R_all_dir)*1.1] ;
+                ylim_p2 = [0, max(y)*1.1];
+            end
+            %%
             % Raw plot
             figure
-            plot(stim_list, R_all_dir, 'o-')
+            subplot(2,2,1)
+            plot(stim_list, R_all_dir, [color, 'o-'])
             xlim([stim_list(1) - 0.1, stim_list(end) + 0.1])
-            ylim([0, max(R_all_dir)*1.1])
+            ylim(ylim_p1)
             title(['ROI=#', num2str(i)])
             set(gca, 'xtick', stim_list,...
                 'xticklabel', stim_txt)
             
-            % Fit tuning curve to double gaussian
-            [x, x_me, y, y_me, F, params] = fit_DS_OS_tuning(i, dir);
-            
-            figure
-            scatter(x, y, 'b*') %original data
-            xlim([-pi, pi])
-            ylim([0, max(y)*1.1])
+            % Selectivity
+            subplot(2,2,3)
+            scatter(x, y, [color, '*']) %original data
+            xlim([0, 2*pi])
+            ylim(ylim_p2)
             hold on
-            scatter(x_me, y_me, 'ro'); %mean plot
-            xp = -pi:0.01:pi;
-            plot(xp, F(params, xp)); %fitted func
+            scatter(x_me, y_me, 'mo'); %mean plot
+            plot(xp, F_fit, 'LineWidth', 2); %fitted func
+            title('Dboule Gaussian Fit');
+            xlabel('Centered at Pref. Direction or Orientation')
+            set(gca, 'xtick', [0, pi/2, pi, 3*pi/2, 2*pi],...
+                'xticklabel', {'-pi/2', '0', 'pi/2', 'pi', '3pi/2'})
             
             % Direction, Orientation selectivity
-            figure
-            polar([dir, dir(1)], [R_all_dir, R_all_dir(1)], 'o-');
+            %figure
+            subplot(2,2,[2,4])
+            polar([dir, dir(1)], abs([R_all_dir, R_all_dir(1)]), [color, 'o-']);
             hold on
             polar([0, imgobj.Ang_dir(i)], [0, imgobj.L_dir(i)], 'r-')
             polar([0, imgobj.Ang_ori(i)], [0, imgobj.L_ori(i)], 'b-')
-            title('Move Direction (red) and Bar Orientation (blue)')
+            title('DS (red) and OS (blue)')
             
-            %%%%%%%%%%
+            
+            %%
+            %%%%%%%%%% index info 
             disp(['1 - CirVal_ori = ', num2str(imgobj.L_ori(i))]);
             disp(['1 - CirVal_dir = ', num2str(imgobj.L_dir(i))]);
         end

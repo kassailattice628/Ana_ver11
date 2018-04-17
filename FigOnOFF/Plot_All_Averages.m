@@ -17,28 +17,28 @@ c_min = str2double(get(cmin, 'string'));
 c_max = str2double(get(cmax, 'string'));
 
 datap = size(imgobj.dFF_s_ave, 1);
-%% plot simple average
-% transform 3D-mat into 2D-mat
 
+% transform 3D-mat into 2D-mat
 mat = zeros(5 + datap, size(imgobj.dFF_s_ave,2), size(imgobj.dFF_s_ave,3));
 mat(1:datap,:,:) =  imgobj.dFF_s_ave;
 imgobj.mat2D = reshape(mat, [], imgobj.maxROIs);
 
-%%—ÕŽž
-if strcmp(sobj.pattern, 'Size_rand')
-    mat = zeros(5 + datap, 5, size(imgobj.dFF_s_ave,3));
-    mat(1:datap,:,:) = imgobj.dFF_s_ave(:, 1:5, :) ;
-    imgobj.mat2D = reshape(mat, [], imgobj.maxROIs);
+%% show averages
+switch sobj.pattern
+    case 'Size_rand'
+        %use 1:5 (0.5d. 1d, 3d, 5d, 10d)
+        
+        imgobj.mat2D = imgobj.mat2D(:, 1:5*(5+datap));
+        mat2D  = imgobj.mat2D;
+        
+    case 'MoveBar'
+        [mat2D, imgobj.mat2D_i_sort] = sort_mat(imgobj.mat2D);
+        
 end
 
-%%—ÕŽž
-if strcmp(sobj.pattern, 'MoveBar')
-    %imgobj.mat2D = imgobj.mat2D(:,1:214);
-end
+show_mat(mat2D)
 
-show_mat(imgobj.mat2D)
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% subfunctions plot %%
     function show_mat(mat)
         figure
@@ -46,5 +46,22 @@ show_mat(imgobj.mat2D)
         caxis([c_min, c_max])
         ylabel('Neuron#')
         xlabel('data point')
+    end
+
+%% sort by pref direction
+    function [mat2, i] = sort_mat(mat)
+        %positive or negative roi
+        rois_max = max(nanmean(imgobj.dFF_s_each));
+        rois_valid = find(rois_max > 0.15);
+        
+        rois_n = intersect(rois_valid, imgobj.roi_nega_R);
+        rois_p = intersect(rois_valid, imgobj.roi_pos_R);
+        rois_nores = setdiff(rois_valid, 1:imgobj.maxROIs);
+        %
+        
+        %find pref direction
+        [~, i_sort] = sort(imgobj.Ang_dir(rois_p));
+        i = [rois_p(i_sort); rois_n; rois_nores];
+        mat2 = mat(:, i);
     end
 end

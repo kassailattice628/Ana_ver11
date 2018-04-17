@@ -93,10 +93,22 @@ global hfig
 if isfield(imgobj, 'dFF')
     imgobj = rmfield(imgobj, 'dFF');
 end
+
 if isfield(imgobj,'dFF_s_ave')
-    fields = {'dFF_s_ave', 'dFF_s_ave_os'};
+    fields = {'dFF_s_ave'};
     imgobj = rmfield(imgobj, fields);
 end
+
+if isfield(imgobj,'dFF_s_ave_os')
+    fields = {'dFF_s_ave_os'};
+    imgobj = rmfield(imgobj, fields);
+end
+
+if isfield(imgobj,'dFF_s_each')
+    fields = {'dFF_s_each'};
+    imgobj = rmfield(imgobj, fields);
+end
+
 if isfield(imgobj,'Mask_rois')
     fields = {'Mask_rois', 'centroid'};
     imgobj = rmfield(imgobj, fields);
@@ -308,6 +320,7 @@ uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show selected', '
 uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show All', 'Position', [210, 220, 140, 30], 'FontSize', 14,...
     'Callback',  {@Plot_All_Averages, h_Cmin, h_Cmax})
 
+%%
 visible = 'on';
 switch sobj.pattern
     case 'Size_rand'
@@ -322,6 +335,9 @@ switch sobj.pattern
 end
 uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', text_tuning, 'Position', [5, 185, 200, 30], 'FontSize', 14,...
     'Callback', @Plot_Stim_Tuning_selected, 'Visible', visible)
+
+uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show Fits', 'Position', [210, 185, 140, 30], 'FontSize', 14,...
+    'Callback', @Get_Fit_params, 'BackGroundColor', 'g')
 
 uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show tuning Map', 'Position', [5, 150, 200, 30], 'FontSize', 14,...
     'Callback', {@Plot_Tuning_Distributions})

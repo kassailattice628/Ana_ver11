@@ -65,15 +65,10 @@ end
     function map_size
         imgBG2 = zeros(img_sz * img_sz, 3);
         imgBG3 = zeros(img_sz * img_sz, 3);
-        %% set colormap based on 1 parameter
-        %rois = find(max(imgobj.R_size(:,:,2))>0.15);
-        rois = find(max(imgobj.R_size(1:5,:,2))>0.15);
         
         %RGB_list = colormap(jet(7));
         RGB_list = colormap(jet(size(imgobj.R_size,1)));
-        for i2 = rois
-            %[~, best_i_on] = max(imgobj.R_size(:, i2, 1));
-            %[~, best_i_off] = max(imgobj.R_size(:, i2, 2));
+        for i2 = imgobj.roi_res
             [~, best_i_on] = max(imgobj.R_size(1:5, i2, 1));
             [~, best_i_off] = max(imgobj.R_size(1:5, i2, 2));
             %ON
@@ -133,27 +128,30 @@ end
         %type:: directino or orientation
         
         switch type
-            case 0 %directino
+            case 0 %for directino
                 n = 36;
                 h_list = linspace(0, 1, n);
                 angle_list = linspace(0, 2*pi, n);
                 L = imgobj.L_dir;
                 Ang = imgobj.Ang_dir;
                 
-            case 1 %orientation
+                rois = imgobj.roi_dir_sel;
+                rois_n = imgobj.roi_no_sel;
+                
+            case 1 %for orientation
                 n = 9;
                 h_list = linspace(0, 1, n);
                 angle_list = linspace(-pi/2, pi/2, n);
                 L = imgobj.L_ori;
                 Ang = imgobj.Ang_ori;
+                
+                rois = imgobj.roi_ori_sel;
+                rois_n = imgobj.roi_no_sel;
+                
         end
         
-        rois_selective = find(L > 0.2); 
-        rois_max = max(max(imgobj.dFF_s_ave));
-        rois_valid = find(rois_max > 0.15);
-        rois = intersect(rois_selective, rois_valid);
-        
-        for i2 = rois'
+        %%%%%%%%%%
+        for i2 = rois
             %set HSV
             ang1 = find(angle_list > Ang(i2), 1, 'first');
             ang2 = find(angle_list <= Ang(i2), 1, 'last');
@@ -174,6 +172,21 @@ end
             imgBG(imgobj.Mask_rois(:,i2),2) = RGB(2);
             imgBG(imgobj.Mask_rois(:,i2),3) = RGB(3);
         end
+        
+        for i2 = rois_n'
+            if ismember(i2, imgobj.roi_nega_R)
+                % rois with negative response are gray color;
+                imgBG(imgobj.Mask_rois(:,i2),1) =  1;%imgobj.R_max(i2);
+                imgBG(imgobj.Mask_rois(:,i2),2) =  0.5;
+                imgBG(imgobj.Mask_rois(:,i2),3) =  1;
+                
+            elseif ismember(i2, imgobj.roi_pos_R)
+                % rois with positive non-selective are white....
+                % is this good??
+                imgBG(imgobj.Mask_rois(:,i2),:) = 1;
+            end
+        end
+        
         imgBG = reshape(imgBG,[img_sz, img_sz, 3]);
         figure
         imshow(imgBG)
