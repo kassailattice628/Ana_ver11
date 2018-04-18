@@ -1,4 +1,14 @@
 # Change_log
+##... 180418
+一応，変な data を編集する flow を作ったが，まだ manual すぎるきがする．
+
+##... 180417
+
+DStuning と OS tuning 別でファイルに分ける．
+dFF_s_each にある以上なresponse のチェックように Delete_event.m を作成
+Delete 後に selctivity も再計算する必要があるので， Get_Trial_Average で tuning properties
+計算するところを 別の関数に分ける．
+
 ## 11.5（にする）... 180410
 Open2P.m で呼んでいた Trial average 等の計算 と plot の 関数を分けた．
 Oversampling して plot するのは 一旦やめる．

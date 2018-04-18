@@ -50,6 +50,7 @@ switch sobj.pattern
     case 'MoveBar'
         map_angler(0, imgBG);
         map_angler(1, imgBG);
+        map_angler(2, imgBG);
         
     case {'Uni'}
         map_nxn(1);
@@ -136,7 +137,6 @@ end
                 Ang = imgobj.Ang_dir;
                 
                 rois = imgobj.roi_dir_sel;
-                rois_n = imgobj.roi_no_sel;
                 
             case 1 %for orientation
                 n = 9;
@@ -146,46 +146,14 @@ end
                 Ang = imgobj.Ang_ori;
                 
                 rois = imgobj.roi_ori_sel;
-                rois_n = imgobj.roi_no_sel;
+                
+            case 2 %for non-selective cell
+                rois_n = imgobj.roi_non_sel;
                 
         end
+        set_col(type);
         
         %%%%%%%%%%
-        for i2 = rois
-            %set HSV
-            ang1 = find(angle_list > Ang(i2), 1, 'first');
-            ang2 = find(angle_list <= Ang(i2), 1, 'last');
-            if abs(Ang(i2) - angle_list(ang1)) < abs(Ang(i2) - angle_list(ang2))
-                ang = ang1;
-            else
-                ang = ang2;
-            end
-            
-            h = h_list(ang);
-            
-            if L(i2) > 1, v = 1; else, v = L(i2)  ; end
-            
-            HSV_roi = [h, 1, v];
-            RGB = hsv2rgb(HSV_roi);
-            
-            imgBG(imgobj.Mask_rois(:,i2),1) = RGB(1);
-            imgBG(imgobj.Mask_rois(:,i2),2) = RGB(2);
-            imgBG(imgobj.Mask_rois(:,i2),3) = RGB(3);
-        end
-        
-        for i2 = rois_n'
-            if ismember(i2, imgobj.roi_nega_R)
-                % rois with negative response are gray color;
-                imgBG(imgobj.Mask_rois(:,i2),1) =  1;%imgobj.R_max(i2);
-                imgBG(imgobj.Mask_rois(:,i2),2) =  0.5;
-                imgBG(imgobj.Mask_rois(:,i2),3) =  1;
-                
-            elseif ismember(i2, imgobj.roi_pos_R)
-                % rois with positive non-selective are white....
-                % is this good??
-                imgBG(imgobj.Mask_rois(:,i2),:) = 1;
-            end
-        end
         
         imgBG = reshape(imgBG,[img_sz, img_sz, 3]);
         figure
@@ -200,7 +168,55 @@ end
         hold off
         
         colormap(hsv(n));
+        
+        function set_col(type)
+            switch type
+                case {0, 1}
+                    for i2 = rois
+                        %set HSV
+                        ang1 = find(angle_list > Ang(i2), 1, 'first');
+                        ang2 = find(angle_list <= Ang(i2), 1, 'last');
+                        if abs(Ang(i2) - angle_list(ang1)) < abs(Ang(i2) - angle_list(ang2))
+                            ang = ang1;
+                        else
+                            ang = ang2;
+                        end
+                        
+                        h = h_list(ang);
+                        
+                        if L(i2) > 1, v = 1; else, v = L(i2)  ; end
+                        
+                        HSV_roi = [h, 1, v];
+                        RGB = hsv2rgb(HSV_roi);
+                        
+                        imgBG(imgobj.Mask_rois(:,i2),1) = RGB(1);
+                        imgBG(imgobj.Mask_rois(:,i2),2) = RGB(2);
+                        imgBG(imgobj.Mask_rois(:,i2),3) = RGB(3);
+                    end
+                    
+                case 2
+                    
+                    for i2 = rois_n
+                        if ismember(i2, imgobj.roi_nega_R)
+                            % rois with negative response are gray color;
+                            imgBG(imgobj.Mask_rois(:,i2),1) =  1;%imgobj.R_max(i2);
+                            imgBG(imgobj.Mask_rois(:,i2),2) =  0;
+                            imgBG(imgobj.Mask_rois(:,i2),3) =  1;
+                            
+                        elseif ismember(i2, imgobj.roi_pos_R)
+                            % rois with positive non-selective are white....
+                            % is this good??
+                            imgBG(imgobj.Mask_rois(:,i2),1) =  0.4;%imgobj.R_max(i2);
+                            imgBG(imgobj.Mask_rois(:,i2),2) =  1;
+                            imgBG(imgobj.Mask_rois(:,i2),3) =  0.6;
+                        end
+                    end
+            end
+        end
+        %% end of map_angler
     end
+
+
 
 %% %%%%%%%%%%%%%%%%%%%% %%
     function map_nxn(type)

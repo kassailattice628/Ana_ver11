@@ -66,9 +66,7 @@ elseif show == 1
         end
         figure
         scatter(x, y, '*b');
-        
     end
-    
 end
 
 %%

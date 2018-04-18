@@ -34,6 +34,7 @@ if ~isfield(imgobj, 'tuning_params')
             imgobj.tuning_params = zeros(6, length(imgobj.roi_res));
             imgobj.tuning_params_ori = zeros(3, length(imgobj.roi_res));
             imgobj.hmfw = zeros(1, length(imgobj.roi_dir_sel));
+            imgobj.hmfw_ori = imgobj.hmfw;
             
             for k = imgobj.roi_res
                 [~, ~, ~, ~, ~, imgobj.tuning_params(:, k)] = fit_DS_tuning(k, dir);
@@ -67,20 +68,34 @@ Plot_fits;
         hold off
         
         xlabel('Orientation (centerd at Pref. Ori)')
-        title('Orientation tuning')
+        title('Orientation tuning --Double Gaussian--')
         set(gca, 'xtick', [-pi/2, 0, pi/2, pi, 3*pi/2, 2*pi],...
             'xticklabel', {'-pi', '-pi/2', '0', 'pi/2', 'pi', '3pi/2'})
+        hold off
         
-        % single gaussian
+        %% single gaussian for orientation
         figure
         hold on
         me_F_norm = zeros(1, length(xp_ori));
         for i = imgobj.roi_ori_sel
             F_fit_ori = F_ori(imgobj.tuning_params_ori(:,i), xp_ori);
+            % normalize F_fit
             F_norm = F_fit_ori/max(F_fit_ori);
+            
+            % HMFW
+            x1 = find(F_norm > 0.5, 1, 'first');
+            x2 = find(F_norm > 0.5, 1, 'last');
+            imgobj.hmfw_ori(i) = xp_ori(x2) - xp_ori(x1);
+            
             me_F_norm = me_F_norm + F_norm;
             plot(xp_ori, F_norm)
         end
+        plot(xp_ori, me_F_norm/length(imgobj.roi_ori_sel), 'k-', 'LineWidth', 2)
+        
+        xlabel('Orientation (centerd at Pref. Ori)')
+        title('Orientation tuning --Single Gaussian--')
+        set(gca, 'xtick', [-pi, -pi/2, 0, pi/2, pi],...
+            'xticklabel', {'-pi', '-pi/2', '0', 'pi/2', 'pi'})
         hold off
         
         
@@ -111,11 +126,17 @@ Plot_fits;
         set(gca, 'xtick', [-pi/2, 0, pi/2, pi, 3*pi/2, 2*pi],...
             'xticklabel', {'-pi', '-pi/2', '0', 'pi/2', 'pi', '3pi/2'})
         
-        % tuning widht
-        hmfw_me = mean(imgobj.hmfw(imgobj.hmfw > 0));
-        hmfw_std = std(imgobj.hmfw(imgobj.hmfw > 0));
+        %%
+        % tuning widht (Half maximum full width)
+        hmfw_me = mean(imgobj.hmfw > 0);
+        hmfw_std = std(imgobj.hmfw > 0);
         
-        disp(['HMFW = ', num2str(hmfw_me), 'Å} ', num2str(hmfw_std), ' (rad)'])
+        hmfw_ori_me = mean(imgobj.hmfw_ori > 0);
+        hmfw_ori_std = std(imgobj.hmfw_ori > 0);
+        
+        disp(['DS:: HMFW = ', num2str(hmfw_me), ' Å} ', num2str(hmfw_std), ' (rad)'])
+        
+        disp(['OS:: HMFW = ', num2str(hmfw_ori_me), ' Å} ', num2str(hmfw_ori_std), ' (rad)'])
     end
 %%
 end

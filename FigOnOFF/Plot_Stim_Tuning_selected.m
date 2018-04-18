@@ -56,7 +56,12 @@ switch sobj.pattern
             F_fit = F(params, xp);
             size(F_fit)
             
-            if ismember(i, imgobj.roi_non_sel) && ismember(i, imgobj.roi_nega_R)
+            if ismember(i, imgobj.roi_no_res)
+                color = 'k';
+                ylim_p1 = [0, 1] ;
+                ylim_p2 = [0, 1];
+                
+            elseif ismember(i, imgobj.roi_nega_R)
                 %negative response
                 R_all_dir = -R_all_dir;
                 F_fit = -F_fit;
@@ -65,18 +70,21 @@ switch sobj.pattern
                 color = 'r';
                 ylim_p1 = [min(R_all_dir)*1.1, 0];
                 ylim_p2 = [min(y)*1.1, 0];
-                    
-            elseif ismember(i, imgobj.roi_pos_R)
-                %positive response
-                color = 'b';
-                ylim_p1 = [0, max(R_all_dir)*1.1] ;
-                ylim_p2 = [0, max(y)*1.1];
-                
             else
-                
-                color = 'g';
-                ylim_p1 = [0, max(R_all_dir)*1.1] ;
+                %posotive cells
+                ylim_p1 = [0, max(R_all_dir)*1.1];
                 ylim_p2 = [0, max(y)*1.1];
+                
+                if ismember(i, imgobj.roi_dir_sel)
+                    color = 'b';
+                    
+                elseif ismember(i, imgobj.roi_ori_sel)
+                    color = 'g';
+                    
+                else
+                    %non selective
+                    color = 'm';
+                end
             end
             %%
             % Raw plot

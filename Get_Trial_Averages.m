@@ -80,7 +80,8 @@ for i = (recobj.prestim + 1) : size(ParamsSave, 2)
 end
 
 %%
-
+[prep, postp, p_on, p_off, datap] = Def_len_datap;
+%{
 %set time point for stimulus average
 %pre stimulus time befor 1 sec from stim ON
 pret = 1; %sec
@@ -107,6 +108,7 @@ p_off = p_on + postp2;
 
 %data points for plot
 datap = p_on + p_off;
+%}
 
 %%
 
@@ -174,9 +176,18 @@ end
 
 s_each = Delete_event(s_each);
 
+%% Set imgobj params
+imgobj.dFF_s_ave = s_ave;
+imgobj.dFF_s_each = s_each;
+
+imgobj.roi_pos_R = roi_p;
+imgobj.roi_nega_R = roi_n;
+
 
 %% Get stimulus specific tuning properties
 
+Get_Stim_Tuning;
+%{
 switch sobj.pattern
     
     %%%%%%%%%%%%%%%%%%%%%%%%
@@ -227,14 +238,7 @@ switch sobj.pattern
             imgobj.Ang_dir(i) = wrapTo2Pi(angle(Z));
         end
 end
-
-
-%% Set imgobj params
-imgobj.dFF_s_ave = s_ave;
-imgobj.dFF_s_each = s_each;
-
-imgobj.roi_pos_R = roi_p;
-imgobj.roi_nega_R = roi_n;
+%}
 
 %% Get tuning parameters
 
