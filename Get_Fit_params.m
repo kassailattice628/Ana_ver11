@@ -52,14 +52,12 @@ Plot_fits;
 
 %%
     function Plot_fits
-        %% plot orientation selectivity
+        %% double goussian plot orientation selectivity
         figure
         hold on
         me_F_norm = zeros(1, length(xp));
         for i = imgobj.roi_ori_sel
             F_fit = F(imgobj.tuning_params(:,i), xp);
-            %plot(xp, F_fit)
-            
             F_norm = F_fit/max(F_fit);
             me_F_norm = me_F_norm + F_norm;
             plot(xp, F_norm)
@@ -79,9 +77,7 @@ Plot_fits;
         me_F_norm = zeros(1, length(xp_ori));
         for i = imgobj.roi_ori_sel
             F_fit_ori = F_ori(imgobj.tuning_params_ori(:,i), xp_ori);
-            % normalize F_fit
             F_norm = F_fit_ori/max(F_fit_ori);
-            
             % HMFW
             x1 = find(F_norm > 0.5, 1, 'first');
             x2 = find(F_norm > 0.5, 1, 'last');
@@ -118,7 +114,6 @@ Plot_fits;
         end
         plot(xp, me_F_norm/length(imgobj.roi_dir_sel), 'k-', 'LineWidth', 2)
         
-        %xlim([-pi/2, 3*pi/2])
         ylim([0, 1.1])
         xlabel('Direction (centerd at Pref. Dir)')
         ylabel('Normalized response')

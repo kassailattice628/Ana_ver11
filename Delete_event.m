@@ -16,7 +16,8 @@ if nargin == 1
     show = 0;
     th = 1;
     idx = [];
-else
+    
+elseif nargin > 1
     if show == 1
         
     end
@@ -36,6 +37,7 @@ if isempty(idx)
     roi_ch = find(val_std > th);
     
 else
+    %for selected roi
     roi_ch = idx;
     roi_std = nanstd(s_each(:,:, roi_ch));
     [val_std, i2] = max(roi_std);
@@ -58,12 +60,18 @@ elseif show == 1
     for i = roi_ch
         x = [];
         y = [];
-        events = rmmissing(s_each(:,:,i));
         
-        for j = 1:size(events,2)
-            x = [x; repmat(j, size(events,1),1)];
-            y = [y; events(:, j)];
+        for i3 = 1:size(s_each, 2)
+            ev = rmmissing(s_each(:,i3,i));
+            
+            %
+            for j = 1:length(ev)
+                x = [x; repmat(i3, length(ev),1)];
+                y = [y; ev];
+            end
+            %}
         end
+        
         figure
         scatter(x, y, '*b');
     end

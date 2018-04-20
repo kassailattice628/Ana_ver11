@@ -153,22 +153,10 @@ end
         end
         set_col(type);
         
+        show_map(type);
         %%%%%%%%%%
         
-        imgBG = reshape(imgBG,[img_sz, img_sz, 3]);
-        figure
-        imshow(imgBG)
-        hold on
-        % vector map
-        [U, V] = pol2cart(Ang, L);
-        quiver(imgobj.centroid(1,rois), imgobj.centroid(2,rois), U(rois)*50, -V(rois)*50,...
-            'AutoScale', 'off', 'Color', 'w')
-        axis ij
-        axis([0, img_sz, 0, img_sz])
-        hold off
-        
-        colormap(hsv(n));
-        
+        %%
         function set_col(type)
             switch type
                 case {0, 1}
@@ -213,7 +201,33 @@ end
                     end
             end
         end
-        %% end of map_angler
+        
+        %%
+        function show_map(type)
+            switch type
+                case {0,1}
+                    imgBG = reshape(imgBG,[img_sz, img_sz, 3]);
+                    figure
+                    imshow(imgBG)
+                    hold on
+                    % vector map
+                    [U, V] = pol2cart(Ang, L);
+                    quiver(imgobj.centroid(1,rois), imgobj.centroid(2,rois), U(rois)*50, -V(rois)*50,...
+                        'AutoScale', 'off', 'Color', 'w')
+                    axis ij
+                    axis([0, img_sz, 0, img_sz])
+                    hold off
+                    
+                    colormap(hsv(n));
+                case 2
+                    
+                    imgBG = reshape(imgBG,[img_sz, img_sz, 3]);
+                    figure
+                    imshow(imgBG)
+            end
+        end
+        
+    %% end of map_angler
     end
 
 

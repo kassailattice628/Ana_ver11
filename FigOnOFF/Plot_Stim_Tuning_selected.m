@@ -44,13 +44,13 @@ switch sobj.pattern
                 'pi', '9/8', '5/4', '11/8', '3/2', '13/8', '7/4', '15/8'};
         end
         %%%%%%%%%%
-        dir = linspace(0, (2*pi - 2*pi/size(imgobj.dFF_s_each, 2)), size(imgobj.dFF_s_each, 2));
+        d_vec = linspace(0, (2*pi - 2*pi/size(imgobj.dFF_s_each, 2)), size(imgobj.dFF_s_each, 2));
         
         for i = imgobj.selectROI
             R_all_dir = nanmean(imgobj.dFF_s_each(:, :, i));
             
             % Fit tuning curve to double gaussian
-            [x, x_me, y, y_me, F, params] = fit_DS_tuning(i, dir);
+            [x, x_me, y, y_me, F, params] = fit_DS_tuning(i, d_vec);
             
             xp = 0:0.01:2*pi;
             F_fit = F(params, xp);
@@ -113,7 +113,7 @@ switch sobj.pattern
             % Direction, Orientation selectivity
             %figure
             subplot(2,2,[2,4])
-            polar([dir, dir(1)], abs([R_all_dir, R_all_dir(1)]), [color, 'o-']);
+            polar([d_vec, d_vec(1)], abs([R_all_dir, R_all_dir(1)]), [color, 'o-']);
             hold on
             polar([0, imgobj.Ang_dir(i)], [0, imgobj.L_dir(i)], 'r-')
             polar([0, imgobj.Ang_ori(i)], [0, imgobj.L_ori(i)], 'b-')

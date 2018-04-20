@@ -1,9 +1,11 @@
 # Change_log
+##... 180420
+Orientation を double gaussian fit する時 の centering を変更
+
 ##... 180418
 一応，変な data を編集する flow を作ったが，まだ manual すぎるきがする．
 
 ##... 180417
-
 DStuning と OS tuning 別でファイルに分ける．
 dFF_s_each にある以上なresponse のチェックように Delete_event.m を作成
 Delete 後に selctivity も再計算する必要があるので， Get_Trial_Average で tuning properties

@@ -1,11 +1,11 @@
-function [x, x_me, y, y_me, fit_g, b_g] = fit_DS_tuning(k, dir)
+function [x, x_me, y, y_me, fit_g, b_g] = fit_DS_tuning(k, d)
 %%%%%%%%%%
 %
-%fit double Gaussians to direction slective response
+%fit double Gaussians to dection slective response
 % to compare ROIs, centering by preferred direction
 %
 % k =: selected roi
-% dir =: direction vector
+% dr =: dection vector
 %
 %%%%%%%%%%
 
@@ -17,14 +17,14 @@ y = [];
 x_me = [];
 y_me = [];
 
-for k2 = 1:length(dir)
+for k2 = 1:length(d)
     y_s = rmmissing(imgobj.dFF_s_each(:,k2, k));
-    x_s = repmat(dir(k2), [length(y_s),1]);
+    x_s = repmat(d(k2), [length(y_s),1]);
     
     y = [y; y_s];
     x = [x; x_s];
     
-    x_me = [x_me; dir(k2)];
+    x_me = [x_me; d(k2)];
     y_me = [y_me; mean(y_s)];
 end
 %%
@@ -40,6 +40,7 @@ b0_g = [0.5; 1; 0.5; pi; 1; 0];
 %%
 %%%%%%%%%% centering
 a = imgobj.Ang_dir(k);
+b = imgobj.Ang_ori0(k);
 
 if ismember(k, imgobj.roi_ori_sel) && ismember(k, imgobj.roi_dir_sel) %both selective
     x_c = a - pi/2;
@@ -47,11 +48,15 @@ if ismember(k, imgobj.roi_ori_sel) && ismember(k, imgobj.roi_dir_sel) %both sele
 elseif ismember(k, imgobj.roi_dir_sel) %direction only
     x_c = a - pi/2;
     
-elseif ismember(k, imgobj.roi_ori_sel)%orientation only
-    if imgobj.Ang_ori0(k) < a
-        x_c = imgobj.Ang_ori0(k);
+elseif ismember(k, imgobj.roi_ori_sel) %orientation only
+    b2 = wrapTo2Pi(b - pi); % clockwise
+    i1 = find(d > b & b2 >= d);
+    i2 = setdiff(1:12, i1);
+    
+    if max(nanmax(imgobj.dFF_s_each(:,i1,k))) >= max(nanmax(imgobj.dFF_s_each(:,i2,k)))
+        x_c = b;
     else
-        x_c = imgobj.Ang_ori0(k) - pi;
+        x_c = b - pi;
     end
     
 else %non-selective
@@ -67,7 +72,7 @@ x_me = wrapTo2Pi(x_me);
 
 %%%%%%%%%%%
 % find params for fit
-[b_g, resnorm, ~, exitflag, output] = lsqcurvefit(fit_g, b0_g, x, y, lb_g, ub_g);
+[b_g, resnorm, ~, exitflag, output] = lsqcurvefit(fit_g, b0_g, x_me, y_me, lb_g, ub_g);
 disp(['roi=#', num2str(k)])
 disp(['Amp1 = ', num2str(b_g(1))])
 disp(['SD1 = ', num2str(b_g(2))])

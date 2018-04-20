@@ -7,6 +7,9 @@
 % chelc selectivity
 
 %DS is more than 0.2
+%find(imgobj.L_dir > 0.5)
+%find(imgobj.L_dir > 0.4 & imgobj.L_dir <= 0.5)
+%find(imgobj.L_dir > 0.3 & imgobj.L_dir <= 0.4)
 %find(imgobj.L_dir > 0.2 & imgobj.L_dir <= 0.3)
 
 %OS is more than 0.15
@@ -17,7 +20,7 @@
 % copy data
 data = imgobj.dFF_s_each;
 %roi 
-i = 119% 150
+i = 44;
 
 
 %% check dFF_s_each (peak values of individual trials)
@@ -28,7 +31,7 @@ disp(data(:,:,i))
 %% Edit data
 % if the strange data points were found, manually delete the data point
 
-r = 2%[4, 2, 1];
+r = 4%[4, 2, 1];
 c = 2%[4, 7, 9];
 data(r, c, i) = NaN;
 disp(data(:,:,i))
@@ -38,6 +41,23 @@ imgobj.dFF_s_each = data;
 Get_Stim_Tuning(i);
 
 Get_Tuned_ROI;
+
+
+
+
+%% chnage roi_res to roi_non res
+r = imgobj.roi_res;
+r(r==i)= [];
+
+if ismember(i, imgobj.roi_dir_sel)
+    imgobj.roi_dir_sel(imgobj.roi_dir_sel==i) = [];
+end
+
+if ismember(i, imgobj.roi_ori_sel)
+    imgobj.roi_ori_sel(imgobj.roi_ori_sel==i) = [];
+end
+
+imgobj.roi_no_res = [imgobj.roi_no_res; i];
 
 
 
