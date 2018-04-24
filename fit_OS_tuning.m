@@ -1,9 +1,9 @@
-function [x, x_me, y, y_me, fit_g, b_g] = fit_OS_tuning(k, dir)
+function [x, x_me, y, y_me, fit_g, b_g] = fit_OS_tuning(k, d)
 %%%%%%%%%%
 %
 % fit single Gaussian funtion for orientation selective responses
 % k =: selected roi
-% dir =: directions vector
+% d =: directions vector
 %
 %%%%%%%%%%
 
@@ -16,7 +16,7 @@ x_me = [];
 y_me = [];
 
 %dir to ori
-o = wrapTo2Pi(dir*2)/2;
+o = wrapTo2Pi(d*2)/2;
 
 for i = 1:length(o)/2
     y_i2 = [];

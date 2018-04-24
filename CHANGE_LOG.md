@@ -1,4 +1,20 @@
 # Change_log
+
+##... 180424
+fit_DS_tuning.m での OS での centering を修正．
+max(nanmax(dFF_s_each)) を基準にしていたが， max(max(dFF_s_ave)) の方が良さそう．
+
+##... 180423
+Edit_tuning で dFF_s_ave と dFF_s_each も編集するようにした．
+DS cell の場合は， Pref direction を基準に fitting するけど
+Pref orientation を基準にした方が double gaussian の fit が
+良い場合もあるのは，どうするべきか？
+
+Mod_Trial_Averages で tuning 編集する時
+dFF_ext から読み込むので安全ではあるのだけど編集後に posi-nega が反転する場合は
+ループになってしまう．．．ex) SC3, roi 20
+
+
 ##... 180420
 Orientation を double gaussian fit する時 の centering を変更
 

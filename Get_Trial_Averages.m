@@ -1,4 +1,4 @@
-function Get_Trial_Averages(~, ~)
+function Get_Trial_Averages(~, ~, j)
 %%%%%%%%%%%%%%%%%%%%
 % Get traial averages for each stimulus
 % Do I need over-sampling?
@@ -8,6 +8,7 @@ function Get_Trial_Averages(~, ~)
 % imgobj.dFF_s_mean :: mean values from dFF_s_each
 %
 % Separate plot part (180406)
+% To modulate each roi, add, specifying roi number.
 %
 %%%%%%%%%%
 
@@ -17,6 +18,11 @@ global recobj
 global ParamsSave
 
 %%%%%%%%%%
+
+if nargin == 2
+    j = 0;
+end
+%
 
 %% ini: stim-ON frame number
 frame_stimON = nan(size(ParamsSave, 2) - recobj.prestim, 1);
@@ -130,7 +136,15 @@ roi_p = [];
 roi_n = [];
 
 %%
-for i = 1:imgobj.maxROIs %%%%% i for each ROI
+
+%%
+if j == 0
+    rois = 1:imgobj.maxROIs;
+else
+    rois = j;
+end
+
+for i = rois %%%%% i for each ROI
     if isnan(imgobj.dFF(1, i))
         %skip no-data ROIs
         continue;
@@ -147,12 +161,12 @@ for i = 1:imgobj.maxROIs %%%%% i for each ROI
             %%%% raw data
             if max(ext_fs) <= size(imgobj.dFF, 1)
                 dFF_ext(:, i3) = imgobj.dFF(ext_fs, i);
+                
+                R_each_pos(i3, i2, i) = max(dFF_ext(:,i3)) - mean(dFF_ext(1:2, i3));
+                R_each_neg(i3, i2, i) = min(dFF_ext(:,i3)) - mean(dFF_ext(1:2, i3));
             else
                 dFF_ext = dFF_ext(:, 1:i3-1);
             end
-            
-            R_each_pos(i3, i2, i) = max(dFF_ext(:,i3)) - mean(dFF_ext(1:2, i3));
-            R_each_neg(i3, i2, i) = min(dFF_ext(:,i3)) - mean(dFF_ext(1:2, i3));
         end
         
         %%%% mean traces for each stimulus, each ROI

@@ -1,11 +1,11 @@
 function [x, x_me, y, y_me, fit_g, b_g] = fit_DS_tuning(k, d)
 %%%%%%%%%%
 %
-%fit double Gaussians to dection slective response
+% fit double Gaussians to dection slective response
 % to compare ROIs, centering by preferred direction
 %
 % k =: selected roi
-% dr =: dection vector
+% d =: dection vector
 %
 %%%%%%%%%%
 
@@ -53,7 +53,8 @@ elseif ismember(k, imgobj.roi_ori_sel) %orientation only
     i1 = find(d > b & b2 >= d);
     i2 = setdiff(1:12, i1);
     
-    if max(nanmax(imgobj.dFF_s_each(:,i1,k))) >= max(nanmax(imgobj.dFF_s_each(:,i2,k)))
+    %if max(nanmax(imgobj.dFF_s_each(:,i1,k))) >= max(nanmax(imgobj.dFF_s_each(:,i2,k)))
+    if max(max(imgobj.dFF_s_ave(:,i1,k))) >= max(max(imgobj.dFF_s_ave(:,i2, k)))
         x_c = b;
     else
         x_c = b - pi;
