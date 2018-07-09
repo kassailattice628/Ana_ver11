@@ -51,8 +51,9 @@ elseif ismember(k, imgobj.roi_dir_sel) %direction only
 elseif ismember(k, imgobj.roi_ori_sel) %orientation only
     b2 = wrapTo2Pi(b - pi); % clockwise
     i1 = find(d > b & b2 >= d);
-    i2 = setdiff(1:12, i1);
-    
+    num_ang = size(imgobj.dFF_s_ave, 2);
+    %num_ang = 16;%12
+    i2 = setdiff(1:num_ang, i1);
     %if max(nanmax(imgobj.dFF_s_each(:,i1,k))) >= max(nanmax(imgobj.dFF_s_each(:,i2,k)))
     if max(max(imgobj.dFF_s_ave(:,i1,k))) >= max(max(imgobj.dFF_s_ave(:,i2, k)))
         x_c = b;

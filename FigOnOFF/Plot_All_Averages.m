@@ -27,9 +27,10 @@ imgobj.mat2D = reshape(mat, [], imgobj.maxROIs);
 switch sobj.pattern
     case 'Size_rand'
         %use 1:5 (0.5d. 1d, 3d, 5d, 10d)
-        
-        imgobj.mat2D = imgobj.mat2D(:, 1:5*(5+datap));
-        mat2D  = imgobj.mat2D;
+        imgobj.mat2D = imgobj.mat2D(1:5*(5+datap), :);
+        %sort was done in GetTuned_ROI.m, MoveBar Get_Tuned_ROI ‚Å sort
+        %‚µ‚½•û‚ª‚¢‚¢‚©‚à
+        mat2D = imgobj.mat2D(:, imgobj.mat2D_i_sort );
         
     case 'MoveBar'
         [mat2D, imgobj.mat2D_i_sort] = sort_mat(imgobj.mat2D);

@@ -1,4 +1,13 @@
 # Change_log
+##... 180628 to do
+Green と Pink で表示している Excitatory/ Inhitiory cell map と
+Direction/Orientation selective map を比べると位置がおかしい？？？ 
+cell map にないのに， selective map にある．みたいな．要チェック．
+と思ったけど，response map は non-selective cell を色分けしてるだけか．．．
+
+Eye velocity の縦軸を変更する？
+時間軸を color gradation に対応させているけど，必要ないか（表示が軽くできるかも？）
+
 
 ##... 180424
 fit_DS_tuning.m での OS での centering を修正．

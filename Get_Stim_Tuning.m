@@ -28,13 +28,14 @@ switch sobj.pattern
         imgobj.R_size = zeros(nstim, imgobj.maxROIs, 3);
         for i = roi
             base = mean(s_ave(1:2, :, i));
-            
+            %base = 0;
             %ON reponse
             imgobj.R_size(:, i, 1) = max(s_ave(p_on:p_off, :, i) - base)';
             %OFF response
             imgobj.R_size(:, i, 2) = max(s_ave(p_off:end, :, i) - base)';
             %All
             imgobj.R_size(:, i, 3) = max(s_ave(:, :, i) - base)';
+
         end
         
     case {'Sin', 'Rect', 'Gabor', 'MoveBar'}

@@ -12,6 +12,13 @@ addpath('/Users/lattice/Dropbox/TwoPhoton_Analysis/NoRMCorre/');
 
 %%%%%%%%%% modify info %%%%%%%%%%
 % a vector of file number to be processed, and thouse f0 frame numbers.
+n_img = 6:9;
+f0_frames = [76, 76, 76, 76];
+
+
+%180507, VT73
+%n_img = 1:5;
+%f0_frames = [76, 76, 76, 76, 76];
 
 
 %180111, VT33
@@ -97,8 +104,6 @@ addpath('/Users/lattice/Dropbox/TwoPhoton_Analysis/NoRMCorre/');
 %n_img = 1:18;
 %f0_frames = [41, 76, 76, 76, 76, 27, 76, 76, 76, 76, 76, 76, 76, 34, 76, 76, 76, 76];
 
-n_img = 3;
-f0_frames = 30;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % dFF are save as MAT or TIFF
 i_save = input('Save dFF as Tiff? [Y/N] or both Tiff & Mat [W] >> ', 's');

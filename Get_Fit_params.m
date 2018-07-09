@@ -31,8 +31,8 @@ end
 if ~isfield(imgobj, 'tuning_params')
     switch sobj.pattern
         case 'MoveBar'
-            imgobj.tuning_params = zeros(6, length(imgobj.roi_res));
-            imgobj.tuning_params_ori = zeros(3, length(imgobj.roi_res));
+            imgobj.tuning_params = zeros(6, imgobj.maxROIs);
+            imgobj.tuning_params_ori = zeros(3, imgobj.maxROIs);
             imgobj.hmfw = zeros(1, length(imgobj.roi_dir_sel));
             imgobj.hmfw_ori = imgobj.hmfw;
             
@@ -49,20 +49,25 @@ end
 
 Plot_fits;
 
-
 %%
     function Plot_fits
         %% double goussian plot orientation selectivity
         figure
         hold on
-        me_F_norm = zeros(1, length(xp));
+        %me_F_norm = zeros(1, length(xp));
+        me_F_norm = zeros(length(xp), length(imgobj.roi_ori_sel));
+        
         for i = imgobj.roi_ori_sel
             F_fit = F(imgobj.tuning_params(:,i), xp);
             F_norm = F_fit/max(F_fit);
-            me_F_norm = me_F_norm + F_norm;
+            %me_F_norm = me_F_norm + F_norm;
+            me_F_norm(:, imgobj.roi_ori_sel==i) = F_norm;
             plot(xp, F_norm)
         end
-        plot(xp, me_F_norm/length(imgobj.roi_ori_sel), 'k-', 'LineWidth', 2)
+        
+        %plot(xp, me_F_norm/length(imgobj.roi_ori_sel), 'k-', 'LineWidth', 2)
+
+        plot(xp, mean(me_F_norm, 2), 'k-', 'LineWidth', 2)
         hold off
         
         xlabel('Orientation (centerd at Pref. Ori)')
@@ -75,15 +80,23 @@ Plot_fits;
         figure
         hold on
         me_F_norm = zeros(1, length(xp_ori));
+        
         for i = imgobj.roi_ori_sel
-            F_fit_ori = F_ori(imgobj.tuning_params_ori(:,i), xp_ori);
+            F_fit_ori = F_ori(imgobj.tuning_params_ori(:, i), xp_ori);
+            
+            % normalize
             F_norm = F_fit_ori/max(F_fit_ori);
             % HMFW
             x1 = find(F_norm > 0.5, 1, 'first');
             x2 = find(F_norm > 0.5, 1, 'last');
+            if isempty(x1)
+                break
+            end
             imgobj.hmfw_ori(i) = xp_ori(x2) - xp_ori(x1);
             
             me_F_norm = me_F_norm + F_norm;
+            
+            %single trace
             plot(xp_ori, F_norm)
         end
         plot(xp_ori, me_F_norm/length(imgobj.roi_ori_sel), 'k-', 'LineWidth', 2)
@@ -100,12 +113,15 @@ Plot_fits;
         hold on
         me_F_norm = zeros(1, length(xp));
         for i = imgobj.roi_dir_sel
-            F_fit = F(imgobj.tuning_params(:,i), xp);
+            F_fit = F(imgobj.tuning_params(:, i), xp);
             % normalize F_fit
             F_norm = F_fit/max(F_fit);
             % HMFW
             x1 = find(F_norm > 0.5, 1, 'first');
             x2 = find(F_norm > 0.5, 1, 'last');
+            if isempty(x1)
+                break
+            end
             imgobj.hmfw(i) = xp(x2) - xp(x1);
             
             me_F_norm = me_F_norm + F_norm;
@@ -123,11 +139,11 @@ Plot_fits;
         
         %%
         % tuning widht (Half maximum full width)
-        hmfw_me = mean(imgobj.hmfw > 0);
-        hmfw_std = std(imgobj.hmfw > 0);
+        hmfw_me = mean(imgobj.hmfw(imgobj.hmfw > 0));
+        hmfw_std = std(imgobj.hmfw(imgobj.hmfw > 0));
         
-        hmfw_ori_me = mean(imgobj.hmfw_ori > 0);
-        hmfw_ori_std = std(imgobj.hmfw_ori > 0);
+        hmfw_ori_me = mean(imgobj.hmfw_ori(imgobj.hmfw_ori > 0));
+        hmfw_ori_std = std(imgobj.hmfw_ori(imgobj.hmfw_ori > 0));
         
         disp(['DS:: HMFW = ', num2str(hmfw_me), ' } ', num2str(hmfw_std), ' (rad)'])
         

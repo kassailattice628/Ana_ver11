@@ -9,6 +9,7 @@ global imgobj
 global mainvar
 
 addpath('FigOnOFF');
+
 %% 
 if exist('DataSave', 'var') == 0
     %select file

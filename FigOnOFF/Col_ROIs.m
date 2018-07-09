@@ -129,7 +129,7 @@ end
         %type:: directino or orientation
         
         switch type
-            case 0 %for directino
+            case 0 %for direction selective
                 n = 36;
                 h_list = linspace(0, 1, n);
                 angle_list = linspace(0, 2*pi, n);
@@ -138,7 +138,7 @@ end
                 
                 rois = imgobj.roi_dir_sel;
                 
-            case 1 %for orientation
+            case 1 %for orientation selective
                 n = 9;
                 h_list = linspace(0, 1, n);
                 angle_list = linspace(-pi/2, pi/2, n);
@@ -159,6 +159,7 @@ end
         %%
         function set_col(type)
             switch type
+                % direction, orientation map
                 case {0, 1}
                     for i2 = rois
                         %set HSV
@@ -181,22 +182,22 @@ end
                         imgBG(imgobj.Mask_rois(:,i2),2) = RGB(2);
                         imgBG(imgobj.Mask_rois(:,i2),3) = RGB(3);
                     end
-                    
+                
+                % non-selective map
                 case 2
-                    
                     for i2 = rois_n
                         if ismember(i2, imgobj.roi_nega_R)
-                            % rois with negative response are gray color;
+                            % negative response
                             imgBG(imgobj.Mask_rois(:,i2),1) =  1;%imgobj.R_max(i2);
                             imgBG(imgobj.Mask_rois(:,i2),2) =  0;
                             imgBG(imgobj.Mask_rois(:,i2),3) =  1;
                             
                         elseif ismember(i2, imgobj.roi_pos_R)
-                            % rois with positive non-selective are white....
-                            % is this good??
+                            % non-selective positive response
                             imgBG(imgobj.Mask_rois(:,i2),1) =  0.4;%imgobj.R_max(i2);
                             imgBG(imgobj.Mask_rois(:,i2),2) =  1;
                             imgBG(imgobj.Mask_rois(:,i2),3) =  0.6;
+                            
                         end
                     end
             end

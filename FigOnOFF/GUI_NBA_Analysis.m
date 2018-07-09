@@ -1,5 +1,7 @@
 function h = GUI_NBA_Analysis(data, p, r, sobj, fname)
 global imgobj
+warning('off', 'signal:findpeaks:largeMinPeakHeight')
+
 %open fig
 h.fig1 = figure('Position', [10, 20, 1000, 800], 'Name', ['Analayse DATA for NBA ver:', num2str(r.NBAver)],...
     'NumberTitle', 'off','Resize', 'off',... %'Menubar', 'none', 
@@ -53,9 +55,11 @@ h.axes2 = axes('Units', 'Pixels', 'Position', [axes_left, axes2_h_base, axes_wid
 h.area2 = area([NaN, NaN], [NaN, NaN], 'FaceColor', 'k', 'LineStyle', 'none', 'ShowBaseLine', 'off');
 alpha(0.1);
 hold on
-patch_x = 1:size(data,1)-1;
-h.plot2_1 = patch(patch_x, patch_x, patch_x,...
-    'EdgeColor', 'interp', 'Marker', '.', 'MarkerFaceColor','flat');
+%patch_x = 1:size(data,1)-1;
+%h.plot2_1 = patch(patch_x, patch_x, patch_x,...
+%    'EdgeColor', 'interp', 'Marker', '.', 'MarkerFaceColor','flat');
+h.plot2_1 = plot(NaN, NaN);
+
 h.plot2_2 = plot(NaN, NaN, '*m');
 hold off
 set(h.axes2, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-2, 50]);
@@ -224,7 +228,9 @@ set(h.fig1, 'KeyPressFcn', @callback_keypress);
     function Update_FVsampt(hobj,~)
         imgobj.FVsampt = str2double(get(hobj, 'string'));
     end
-% end of GUI_Analysis
+
+
+%% end of GUI_Analysis
 end
 
 %% subfunction

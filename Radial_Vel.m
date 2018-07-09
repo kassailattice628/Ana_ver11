@@ -32,11 +32,7 @@ d_filt_eye = designfilt('lowpassiir', ...        % Response type
        'DesignMethod','butter', ...      % Design method
        'MatchExactly','stopband', ...   % Design method options
        'SampleRate',r.sampf) ;              % Sample rate   
- 
-
-
-
-
+   
 data1_filt = filter(d_filt_eye ,data1_offset);
 data2_filt = filter(d_filt_eye ,data2_offset);
 

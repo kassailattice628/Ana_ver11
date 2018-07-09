@@ -20,18 +20,32 @@ switch sobj.pattern
         r_o = imgobj.roi_ori_sel;
         r_d = imgobj.roi_dir_sel;
         
+        %
         figure
-        subplot(2, 2, 1)
+        subplot(2, 3, 1)
         dot_plot(imgobj.L_ori(r_o));
         
-        subplot(2, 2, 2)
+        subplot(2, 3, 2)
         histo_plot(imgobj.Ang_ori(r_o), 1);
         
-        subplot(2, 2, 3)
+        
+        subplot(2, 3, 3)
+        plot(imgobj.Ang_ori(r_o), imgobj.L_ori(r_o), 'bo')
+        title('And-ori vs L-ori')
+        xlim([-pi/2, pi/2])
+        
+        
+        subplot(2, 3, 4)
         dot_plot(imgobj.L_dir(r_d));
         
-        subplot(2, 2, 4)
+        subplot(2, 3, 5)
         histo_plot(imgobj.Ang_dir(r_d), 0);
+        
+        subplot(2, 3, 6)
+        plot(imgobj.Ang_dir(r_d), imgobj.L_dir(r_d), 'bo')
+        title('And-dir vs L-dir')
+        xlim([0, 2*pi])
+        
 end
 
 

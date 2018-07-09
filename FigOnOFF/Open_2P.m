@@ -368,7 +368,11 @@ end
 %% LowCutFilter
 if get(h2, 'value')
     lowcutfreq = str2double(get(h_freq, 'string'));
-    [dFF_mod, ~, ~] = filtbutter(2, lowcutfreq, 'high', 1/imgobj.FVsampt, dFF_mod);
+    Fs = 1/imgobj.FVsampt;
+    Fc = lowcutfreq;
+    [b, a] = butter(2, Fc/Fs*2, 'high');
+    dFF_mod = filtfilt(b, a, dFF_mod);
+    %[dFF_mod, ~, ~] = filtbutter(2, lowcutfreq, 'high', 1/imgobj.FVsampt, dFF_mod);
 end
 
 %% Offset

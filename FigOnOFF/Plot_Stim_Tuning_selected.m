@@ -23,10 +23,14 @@ switch sobj.pattern
         
         for i = imgobj.selectROI
             figure
-            plot(stim_list, imgobj.R_size(:, i, 1), 'go-')
+            plot(stim_list, imgobj.R_size(:, i, 1), 'bo-', 'LineWidth', 2);
             hold on
-            plot(stim_list, imgobj.R_size(:, i, 2), 'ror')
+            plot(stim_list, imgobj.R_size(:, i, 2), 'ro-', 'LineWidth', 2);
+            hold on 
+            plot(stim_list, imgobj.R_size(:, i, 3), 'k*--')
             set(gca, 'xtick', stim_list)
+                        
+            legend({'ON', 'OFF', ' ALL'})
         end
         
         

@@ -1,4 +1,4 @@
-function Get_Trial_Averages(~, ~, j)
+ function Get_Trial_Averages(~, ~, j)
 %%%%%%%%%%%%%%%%%%%%
 % Get traial averages for each stimulus
 % Do I need over-sampling?
@@ -86,38 +86,10 @@ for i = (recobj.prestim + 1) : size(ParamsSave, 2)
 end
 
 %%
-[prep, postp, p_on, p_off, datap] = Def_len_datap;
-%{
-%set time point for stimulus average
-%pre stimulus time befor 1 sec from stim ON
-pret = 1; %sec
-prep = ceil(pret/imgobj.FVsampt); %point
-
-%Not use >> post stimulus time after *** sec from stim ON
-%postt = recobj.rect/1000 + recobj.interval - 2; %sec
-%postp = ceil(postt/imgobj.FVsampt); %
-
-% stim duration
-if strcmp(sobj.pattern, 'MoveBar')
-    duration = max(sobj.moveDuration);
-else
-    duration = sobj.duration;
-end
-
-% to capture off reponse;
-postp2 = round( (duration + 2) / imgobj.FVsampt);
-
-% compare postp and postp2
-% Use postp2
-p_on = prep + 1;
-p_off = p_on + postp2;
-
-%data points for plot
-datap = p_on + p_off;
-%}
+%[prep, postp, p_on, p_off, datap] = Def_len_datap;
+[prep, ~, ~, p_off, datap] = Def_len_datap;
 
 %%
-
 stim_list = unique(stim, 'rows');
 stim_list(isnan(stim_list)) = [];
 nstim = size(stim_list, 1); %the number of stimuli
@@ -128,7 +100,7 @@ nstim = size(stim_list, 1); %the number of stimuli
 s_ave = zeros(datap, nstim, imgobj.maxROIs);
 
 % prepare matrix for max value for each trials of each stimuluss
-s_each = NaN([15, nstim, imgobj.maxROIs]);
+s_each = NaN([30, nstim, imgobj.maxROIs]);
 R_each_pos = s_each;
 R_each_neg = s_each;
 
@@ -153,21 +125,28 @@ for i = rois %%%%% i for each ROI
     for i2 = 1:nstim %%%% i2 for each stimulus
         i_list = ismember(stim, stim_list(i2, :), 'rows');
         i_ext_stim = find(i_list);
-        
         dFF_ext = zeros(datap, length(i_ext_stim));
         %%%%%%%%%%
+        skip_i = [];
         for i3 = 1:length(i_ext_stim) %%%% i3 for each trial
             ext_fs = frame_stimON(i_ext_stim(i3)) -(prep) : frame_stimON(i_ext_stim(i3)) + p_off;
+            
             %%%% raw data
-            if max(ext_fs) <= size(imgobj.dFF, 1)
+            if min(ext_fs) <= 0
+                skip_i = [skip_i, i3];
+                
+            elseif max(ext_fs) <= size(imgobj.dFF, 1)
+                %disp(ext_fs)
                 dFF_ext(:, i3) = imgobj.dFF(ext_fs, i);
                 
                 R_each_pos(i3, i2, i) = max(dFF_ext(:,i3)) - mean(dFF_ext(1:2, i3));
                 R_each_neg(i3, i2, i) = min(dFF_ext(:,i3)) - mean(dFF_ext(1:2, i3));
             else
                 dFF_ext = dFF_ext(:, 1:i3-1);
+                break;
             end
         end
+        dFF_ext(:, skip_i) = [];
         
         %%%% mean traces for each stimulus, each ROI
         a = mean(dFF_ext, 2);
