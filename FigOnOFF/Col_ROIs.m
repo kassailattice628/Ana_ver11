@@ -4,7 +4,11 @@ global imgobj
 global mainvar
 global sobj
 
-img_sz = 320;
+if ~isfield(imgobj, 'img_sz')
+    img_sz = 320;
+else
+    img_sz = imgobj.img_sz;
+end
 
 %% make ROI MASK for response map
 if ~isfield(imgobj, 'Mask_rois')
@@ -173,6 +177,7 @@ end
                         
                         h = h_list(ang);
                         
+                        L(i2) = L(i2)*1.5;
                         if L(i2) > 1, v = 1; else, v = L(i2)  ; end
                         
                         HSV_roi = [h, 1, v];
@@ -249,6 +254,19 @@ end
         %blightness value -> along row (=horizontal position)
         v_list = linspace(0.2, 1, div+1);
         
+        %stim position
+        RGB_stim = zeros(div, div, 3);
+        H = repmat(h_list(1:div)', 1, div);
+        V = repmat(v_list(1:div), div, 1);
+        for n1 = 1:div
+            for n2 = 1:div
+                RGB_stim(n1, n2, :) = hsv2rgb([H(n1, n2), 1, V(n1, n2)]);
+            end
+        end
+        
+        figure
+        imagesc(RGB_stim)
+        
         %roiごとに best position を出す．
         %best positionごとに，hue と value を与えて
         %roiを色付けする
@@ -256,10 +274,13 @@ end
         
         for i2 = 1:imgobj.maxROIs
             %h(=hue) for vertical position
-            h = h_list(ceil(ind(i2)/div));
+            %h = h_list(ceil(ind(:,:,i2)/div));
+            h = H(ind(:,:,i2));
             
             %v(=blightness value) for horizontal position
-            v_res = rem(ind(i2), div);
+            %v_res = rem(ind(:,:,i2), div);
+            v_res = V(ind(:,:,i2));
+            
             if v_res == 0
                 v = v_list(end);
             else
@@ -288,18 +309,7 @@ end
         %colormap(hsv(div))
         
         
-        %stim position
-        RGB_stim = zeros(div, div, 3);
-        H = repmat(h_list(1:div)', 1, div);
-        V = repmat(v_list(1:div), div, 1);
-        for n1 = 1:div
-            for n2 = 1:div
-                RGB_stim(n1, n2, :) = hsv2rgb([H(n1, n2), 1, V(n1, n2)]);
-            end
-        end
         
-        figure
-        imagesc(RGB_stim)
         
     end
 
