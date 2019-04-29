@@ -50,6 +50,10 @@ for i = 1:imgobj.maxROIs
         end
         
         f_ds(i) = f_ds_;
+        
+        %Update L_dir, Ang_dir
+        imgobj.Ldir(i) = median(P_boot(:, 1, i));
+        imgobj.Ang_dir(i) = median(P_boot(:, 2, i)); 
     end
     
     %orientation
@@ -58,6 +62,10 @@ for i = 1:imgobj.maxROIs
         [b_os(i,:), Ci_os(i,:), f_os_, R_boot_med_] =...
             Fit_vonMises2(x_boot, dir, median(P(:,4)), 2, i);
         f_os(i) = f_os_;
+        
+        %Update L_ori, Ang_ori
+        imgobj.Lori(i) = median(P_boot(:, 3, i));
+        imgobj.Ang_ori(i) = median(P_boot(:, 2, i)); 
     end
     
     if ~ds && ~os

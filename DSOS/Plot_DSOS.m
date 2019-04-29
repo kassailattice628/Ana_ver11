@@ -29,34 +29,33 @@ end
 %Set color
 plot_fit = 0;
 
-switch type
-    case []
+if isempty(type)
+    
+    if ismember(roin, imgobj.roi_no_res)
+        txt2 = 'No Responding';
+        color = 'k';
+        plot_fit = 0;
         
-        if ismember(roin, imgobj.roi_no_res)
-            txt2 = 'No Responding';
-            color = 'k';
-            plot_fit = 0;
-            
-        elseif ismember(roin, imgobj.roi_nega_R)
-            txt2 = 'Negative Response';
-            color = 'r';
-            plot_fit = 0;
-            
-        else
-            color = 'm';
-            txt2 = 'Non selective';
-            plot_fit = 0;
-        end
+    elseif ismember(roin, imgobj.roi_nega_R)
+        txt2 = 'Negative Response';
+        color = 'r';
+        plot_fit = 0;
         
-    case 1
-        color = 'b';
-        txt2 = 'Polar Distribution (DS)';
-        plot_fit = 1;
-        
-    case 2
-        color = 'g';
-        txt2 = 'Polar Distribution (OS)';
-        plot_fit = 1;
+    else
+        color = 'm';
+        txt2 = 'Non selective';
+        plot_fit = 0;
+    end
+    
+elseif type == 1
+    color = 'b';
+    txt2 = 'Polar Distribution (DS)';
+    plot_fit = 1;
+    
+elseif type == 2
+    color = 'g';
+    txt2 = 'Polar Distribution (OS)';
+    plot_fit = 1;
 end
 
 

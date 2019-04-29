@@ -42,18 +42,26 @@ show_mat(mat2D)
 
 switch sobj.pattern
     case {'MoveBar', 'Rect'}
-        xlabelpos = (5+datap) * (1:12) - round((5+datap)/2);
+        xlabelpos = (5+datap) * (1:length(imgobj.directions)) - round((5+datap)/2);
         xticks(xlabelpos);
         xticklabels({'0', 'pi/6', 'pi/3', 'pi/2','2pi.3', '5pi/6', 'pi', '7pi/6', '4pi/3',...
             '3pi/2', '5pi/3', '11pi/6'})
-        dir = (0:pi/6: 11*pi/6)';
+        
         hold on
         
         
-        for i = imgobj.roi_dir_sel
+        for i = imgobj.roi_ds  %imgobj.roi_dir_sel
             ypos = find(imgobj.mat2D_i_sort == i);
-            xpos = xlabelpos(knnsearch(dir, imgobj.Ang_dir(i)));
-            plot(xpos, ypos, 'ro') 
+            xpos = xlabelpos(knnsearch(imgobj.directions', imgobj.Ang_dir(i)));
+            disp(xpos)
+            plot(xpos, ypos, 'bo')
+        end
+        
+        for i = imgobj.roi_os
+            ypos = find(imgobj.mat2D_i_sort == i);
+            xpos = xlabelpos(knnsearch(imgobj.directions', imgobj.Ang_ori(i)));
+            disp(xpos)
+            plot(xpos, ypos, 'go')
         end
         hold off
 end
@@ -69,18 +77,44 @@ end
 
 %% sort by pref direction
     function [mat2, i] = sort_mat(mat)
-        %positive or negative roi
-        rois_max = max(nanmean(imgobj.dFF_s_each));
-        rois_valid = find(rois_max > 0.15);
+        if ~isfield(imgobj, 'P_boot')
+            %positive or negative roi
+            rois_max = max(nanmean(imgobj.dFF_s_each));
+            rois_valid = find(rois_max > 0.15);
+            
+            rois_n = intersect(rois_valid, imgobj.roi_nega_R);
+            rois_p = intersect(rois_valid, imgobj.roi_pos_R);
+            rois_nores = setdiff(rois_valid, 1:imgobj.maxROIs);
+            %
+            
+            %find pref direction
+            [~, i_sort] = sort(imgobj.Ang_dir(rois_p));
+            i = [rois_p(i_sort); rois_n; rois_nores];
+            mat2 = mat(:, i);
+            
+        else
+            %sort order
+            %1:DS -> Pref.Direction
+            %2:OS -> Pref.Orientation
+            %3:Non-selective (àÍâû Tuning Angle èáÇ…ÅHÅj
+            %4:Negative
+            %5:No respondink
+            roi_ds = imgobj.roi_ds;
+            
+            [~, i_ds_sort] = sort(imgobj.Ang_dir(roi_ds));
+            
+            roi_os = setdiff(imgobj.roi_os, imgobj.roi_ds);
+            [~, i_os_sort] = sort(imgobj.Ang_ori(roi_os));
+            
+            roi_non_sel = setdiff(imgobj.roi_res, roi_ds);
+            roi_non_sel = setdiff(roi_non_sel, roi_os);
+            roi_non_sel = setdiff(roi_non_sel, imgobj.roi_nega_R);
+            
+            
+            i = [roi_ds(i_ds_sort), roi_os(i_os_sort), roi_non_sel,...
+                imgobj.roi_nega_R, imgobj.roi_no_res'];
+            mat2 = mat(:, i);
+        end
         
-        rois_n = intersect(rois_valid, imgobj.roi_nega_R);
-        rois_p = intersect(rois_valid, imgobj.roi_pos_R);
-        rois_nores = setdiff(rois_valid, 1:imgobj.maxROIs);
-        %
-        
-        %find pref direction
-        [~, i_sort] = sort(imgobj.Ang_dir(rois_p));
-        i = [rois_p(i_sort); rois_n; rois_nores];
-        mat2 = mat(:, i);
     end
 end

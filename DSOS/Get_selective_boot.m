@@ -19,7 +19,7 @@ parfor i = 1:n_boot
     P(i, :) = [dsi, ang_dir, osi, ang_ori];
 end
 
-%if 5% border is higher than the threshold, the cell was defined to have a
+%if 10% border is higher than the threshold, the cell was defined to have a
 %selectivity for direction, or orientation
 %direction
 if prctile(P(:,1), 10) > 0.2
