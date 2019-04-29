@@ -130,7 +130,6 @@ end
 
 %% %%%%%%%%%%%%%%%%%%%% %%
     function map_angler(type, imgBG)
-        %type:: directino or orientation
         
         switch type
             case 0 %for direction selective
@@ -140,7 +139,11 @@ end
                 L = imgobj.L_dir;
                 Ang = imgobj.Ang_dir;
                 
-                rois = imgobj.roi_dir_sel;
+                if isfield(imgobj, 'roi_ds')
+                    rois = imgobj.roi_ds;
+                else
+                    rois = imgobj.roi_dir_sel;
+                end
                 
             case 1 %for orientation selective
                 n = 9;
@@ -149,22 +152,26 @@ end
                 L = imgobj.L_ori;
                 Ang = imgobj.Ang_ori;
                 
-                rois = imgobj.roi_ori_sel;
+                if isfield(imgobj, 'roi_os')
+                    rois = imgobj.roi_os;
+                else
+                    rois = imgobj.roi_ori_sel;
+                end
                 
             case 2 %for non-selective cell
                 rois_n = imgobj.roi_non_sel;
                 
         end
-        set_col(type);
+        [RGB] = set_col(type);
         
-        show_map(type);
+        show_map(type, RGB);
         %%%%%%%%%%
         
         %%
-        function set_col(type)
+        function [RGB] = set_col(type)
             switch type
-                % direction, orientation map
-                case {0, 1}
+                % direction
+                case 0 %{0, 1}
                     for i2 = rois
                         %set HSV
                         ang1 = find(angle_list > Ang(i2), 1, 'first');
@@ -188,8 +195,32 @@ end
                         imgBG(imgobj.Mask_rois(:,i2),3) = RGB(3);
                     end
                 
+                case 1 %Orentation shown in bar form
+                    RGB =  zeros(length(rois), 3);
+                    for i2 = rois
+                        %set HSV
+                        ang1 = find(angle_list > Ang(i2), 1, 'first');
+                        ang2 = find(angle_list <= Ang(i2), 1, 'last');
+                        
+                        if abs(Ang(i2) - angle_list(ang1)) <...
+                                abs(Ang(i2) - angle_list(ang2))
+                            
+                            ang = ang1;
+                        else
+                            ang = ang2;
+                        end
+                        
+                        h = h_list(ang);
+                        L(i2) = L(i2) + 1.5;
+                        if L(i2) > 1, v = 1; else, v = L(i2); end
+                        
+                        HSV_roi = [h, 1, v];
+                        RGB(rois == i2, :) = hsv2rgb(HSV_roi);
+                        
+                    end
                 % non-selective map
                 case 2
+                    RGB=[];
                     for i2 = rois_n
                         if ismember(i2, imgobj.roi_nega_R)
                             % negative response
@@ -209,9 +240,9 @@ end
         end
         
         %%
-        function show_map(type)
+        function show_map(type, RGB)
             switch type
-                case {0,1}
+                case 0
                     imgBG = reshape(imgBG,[img_sz, img_sz, 3]);
                     figure
                     imshow(imgBG)
@@ -225,6 +256,17 @@ end
                     hold off
                     
                     colormap(hsv(n));
+                    
+                case 1
+                    imgBG = zeros(img_sz, img_sz);
+                    figure
+                    imshow(imgBG)
+                    hold on
+                    for i2 = rois
+                        Put_template_bar(i2, imgobj.centroid, RGB(rois==i2, :), Ang);
+                    end
+                    hold off
+                    
                 case 2
                     
                     imgBG = reshape(imgBG,[img_sz, img_sz, 3]);

@@ -17,8 +17,17 @@ switch sobj.pattern
         %nbins = 24;
         %roi = imgobj.roi_res;
         
-        r_o = imgobj.roi_ori_sel;
-        r_d = imgobj.roi_dir_sel;
+        if isfield(imgobj, 'roi_ds')
+            r_d = imgobj.roi_ds;
+        else
+            r_d = imgobj.roi_dir_sel;
+        end
+        
+        if isfield(imgobj, 'roi_os')
+            r_o = imgobj.roi_os;
+        else
+            r_o = imgobj.roi_ori_sel;
+        end
         
         %
         figure
