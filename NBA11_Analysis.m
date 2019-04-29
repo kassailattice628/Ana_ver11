@@ -9,12 +9,13 @@ global imgobj
 global mainvar
 
 addpath('FigOnOFF');
+addpath('DSOS');
 
-%% 
+%%
 if exist('DataSave', 'var') == 0
     %select file
     [mainvar.fname, mainvar.dirname] = uigetfile({'*.mat'});
-
+    
     load([mainvar.dirname, mainvar.fname]);
     
     while isempty(DataSave)
@@ -56,7 +57,7 @@ end
 
 %%
 % open GUI
-hfig = GUI_NBA_Analysis(DataSave, ParamsSave, recobj, sobj, mainvar.fname); 
+hfig = GUI_NBA_Analysis(DataSave, ParamsSave, recobj, sobj, mainvar.fname);
 n = 0;
 Plot_next([], [], DataSave, 0, ParamsSave, recobj)
 

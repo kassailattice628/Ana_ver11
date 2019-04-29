@@ -309,7 +309,7 @@ uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Apply Mod to dFF'
     'Callback', {@Apply_change_dFF, h_Detrend, h_LowCut, h_LowCutFrq,...
     h_Offset, h_OffsetFrame, h_Norm});
 
-%% Calculat trial average
+%% Calculat trial f
 uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Average by Stim', 'Position', [210, 255, 140, 30], 'FontSize', 14,...
     'Callback', @Get_Trial_Averages, 'BackGroundColor', 'g')
 
@@ -337,7 +337,7 @@ uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', text_tuning, 'Posi
     'Callback', @Plot_Stim_Tuning_selected, 'Visible', visible)
 
 uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show Fits', 'Position', [210, 185, 140, 30], 'FontSize', 14,...
-    'Callback', @Get_Fit_params, 'BackGroundColor', 'g')
+    'Callback', @Get_Fit_params2, 'BackGroundColor', 'g')
 
 uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show tuning Map', 'Position', [5, 150, 200, 30], 'FontSize', 14,...
     'Callback', {@Plot_Tuning_Distributions})
@@ -410,10 +410,16 @@ global sobj
 
 global mainvar
 
+
+if ~exist(mainvar.dirname, 'dir')
+    mainvar.dirname = uigetdir;
+    mainvar.dirname = [mainvar.dirname, '/'];
+end
 suf = get(h, 'string');
 [~, name, ext] = fileparts(mainvar.fname);
 save_name = [mainvar.dirname, name, suf, ext];
 %update parameters
+
 save(save_name, 'DataSave', 'imgobj', 'mainvar', 'ParamsSave', 'recobj', 'sobj');
 %save save_name DataSave imgobj mainvar ParamsSave recobj sobj;
 

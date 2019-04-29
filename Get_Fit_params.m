@@ -15,14 +15,13 @@ end
 
 %%
 switch sobj.pattern
-    case 'MoveBar'
+    case {'MoveBar', 'Rect'}
         d = size(imgobj.dFF_s_each,2);
         dir = linspace(0, (2*pi - 2*pi/d), d);
         F = @(b, x) b(1)*exp((-(x-(pi/2)).^2)/(2*b(2)^2)) +...
             b(3)*exp((-(x-b(4)-(pi/2)).^2 )/(2*b(5)^2)) + b(6);
         xp = -pi/2: 0.01: 5*pi/2;
         
-        ori = linspace(-pi, (pi - 2*pi/d) , d/2);
         F_ori = @(b, x) b(1)*exp((-x.^2)/(2*b(2)^2)) + b(3);
         xp_ori = -pi:0.01:pi;
 end
@@ -30,7 +29,7 @@ end
 %%
 if ~isfield(imgobj, 'tuning_params')
     switch sobj.pattern
-        case 'MoveBar'
+        case {'MoveBar', 'Rect'}
             imgobj.tuning_params = zeros(6, imgobj.maxROIs);
             imgobj.tuning_params_ori = zeros(3, imgobj.maxROIs);
             imgobj.hmfw = zeros(1, length(imgobj.roi_dir_sel));
@@ -40,7 +39,7 @@ if ~isfield(imgobj, 'tuning_params')
                 [~, ~, ~, ~, ~, imgobj.tuning_params(:, k)] = fit_DS_tuning(k, dir);
                 
                 if ismember(k, imgobj.roi_ori_sel)
-                    [~, ~, ~, ~, ~, imgobj.tuning_params_ori(:, k)] = fit_OS_tuning(k, ori);
+                    [~, ~, ~, ~, ~, imgobj.tuning_params_ori(:, k)] = fit_OS_tuning(k, dir);
                 end
                 
             end
@@ -51,7 +50,7 @@ Plot_fits;
 
 %%
     function Plot_fits
-        %% double goussian plot orientation selectivity
+        %% double gaussian plot orientation selectivity
         figure
         hold on
         %me_F_norm = zeros(1, length(xp));
@@ -87,8 +86,9 @@ Plot_fits;
             % normalize
             F_norm = F_fit_ori/max(F_fit_ori);
             % HMFW
-            x1 = find(F_norm > 0.5, 1, 'first');
-            x2 = find(F_norm > 0.5, 1, 'last');
+            hm = (1 - min(F_fit_ori))/2; %half maximum
+            x1 = find(F_norm > hm, 1, 'first');
+            x2 = find(F_norm > hm, 1, 'last');
             if isempty(x1)
                 break
             end
@@ -117,8 +117,10 @@ Plot_fits;
             % normalize F_fit
             F_norm = F_fit/max(F_fit);
             % HMFW
-            x1 = find(F_norm > 0.5, 1, 'first');
-            x2 = find(F_norm > 0.5, 1, 'last');
+            hm = (1 - min(F_fit))/2; %half maximum
+            x1 = find(F_norm > hm, 1, 'first');
+            x2 = find(F_norm > hm, 1, 'last');
+            
             if isempty(x1)
                 break
             end

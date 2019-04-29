@@ -31,8 +31,9 @@ switch sobj.pattern
         
         subplot(2, 3, 3)
         plot(imgobj.Ang_ori(r_o), imgobj.L_ori(r_o), 'bo')
-        title('And-ori vs L-ori')
+        title('Angle-ori vs L-ori')
         xlim([-pi/2, pi/2])
+        
         
         
         subplot(2, 3, 4)
@@ -43,7 +44,7 @@ switch sobj.pattern
         
         subplot(2, 3, 6)
         plot(imgobj.Ang_dir(r_d), imgobj.L_dir(r_d), 'bo')
-        title('And-dir vs L-dir')
+        title('Angle-dir vs L-dir')
         xlim([0, 2*pi])
         
 end

@@ -1,10 +1,10 @@
-function [x, x_me, y, y_me, fit_g, b_g] = fit_DS_tuning(k, d)
+ function [x, x_me, y, y_me, fit_g, b_g] = fit_DS_tuning(k, d)
 %%%%%%%%%%
 %
 % fit double Gaussians to dection slective response
 % to compare ROIs, centering by preferred direction
 %
-% k =: selected roi
+ % k =: selected roi
 % d =: dection vector
 %
 %%%%%%%%%%
@@ -27,14 +27,15 @@ for k2 = 1:length(d)
     x_me = [x_me; d(k2)];
     y_me = [y_me; mean(y_s)];
 end
+
 %%
 %%%%%%%%%% fit function and parameters
 
 fit_g = @(b, x) b(1)*exp((-(x-(pi/2)).^2)/(2*b(2)^2)) +...
     b(3)*exp((-(x-b(4)-(pi/2)).^2 )/(2*b(5)^2)) + b(6);
 
-lb_g = [0.15; 0.01; 0; 2*pi/3; pi/2; 0];
-ub_g = [max(y); pi/2; max(y); 4*pi/3; pi; min(y)];
+lb_g = [0.15; 0.01; 0; 2*pi/3; 0; 0];
+ub_g = [max(y); pi/2; max(y); 4*pi/3; pi/2; min(y)];
 b0_g = [0.5; 1; 0.5; pi; 1; 0];
 
 %%
@@ -69,12 +70,25 @@ end
 x = x - x_c;
 x = wrapTo2Pi(x);
 
+
 x_me = x_me - x_c;
 x_me = wrapTo2Pi(x_me);
 
 %%%%%%%%%%%
 % find params for fit
-[b_g, resnorm, ~, exitflag, output] = lsqcurvefit(fit_g, b0_g, x_me, y_me, lb_g, ub_g);
+b_g = lsqcurvefit(fit_g, b0_g, x_me, y_me, lb_g, ub_g);
+%[b_g, resnorm, ~, exitflag, output] = lsqcurvefit(fit_g, b0_g, x_me, y_me, lb_g, ub_g);
+
+%{
+if b_g(1) < b_g(3)
+    x = x + pi;
+    x = wrapTo2Pi(x);
+    
+    x_me = x_me + x_c;
+    x_me = wrapTo2Pi(x_me);
+    b_g = lsqcurvefit(fit_g, b0_g, x_me, y_me, lb_g, ub_g);
+end
+%}
 disp(['roi=#', num2str(k)])
 disp(['Amp1 = ', num2str(b_g(1))])
 disp(['SD1 = ', num2str(b_g(2))])

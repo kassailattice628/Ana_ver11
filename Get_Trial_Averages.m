@@ -1,4 +1,4 @@
- function Get_Trial_Averages(~, ~, j)
+function Get_Trial_Averages(~, ~, j)
 %%%%%%%%%%%%%%%%%%%%
 % Get traial averages for each stimulus
 % Do I need over-sampling?
@@ -155,14 +155,14 @@ for i = rois %%%%% i for each ROI
     
     R_max = max(max(s_ave(:,:,i)));
     R_min = min(min(s_ave(:,:,i)));
-   % ‚±‚Ì  ROI ‚ª excitation ‚© inhibition ‚©”»’è‚·‚é
-   if abs(R_max) >= abs(R_min)
-       roi_p = [roi_p, i];
-       s_each(:,:,i) = R_each_pos(:,:,i);
-   else
-       roi_n = [roi_n, i];
-       s_each(:,:,i) = -R_each_neg(:,:,i);
-   end
+    % ‚±‚Ì  ROI ‚ª excitation ‚© inhibition ‚©”»’è‚·‚é
+    if abs(R_max) >= abs(R_min)
+        roi_p = [roi_p, i];
+        s_each(:,:,i) = R_each_pos(:,:,i);
+    else
+        roi_n = [roi_n, i];
+        s_each(:,:,i) = -R_each_neg(:,:,i);
+    end
 end
 
 %% delete motion? artifact or non reproducible event?
@@ -172,6 +172,8 @@ s_each = Delete_event(s_each);
 %% Set imgobj params
 imgobj.dFF_s_ave = s_ave;
 imgobj.dFF_s_each = s_each;
+imgobj.dFF_each_pos = R_each_pos;
+imgobj.dFF_each_neg = R_each_neg;
 
 imgobj.roi_pos_R = roi_p;
 imgobj.roi_nega_R = roi_n;
@@ -194,7 +196,7 @@ switch sobj.pattern
             imgobj.R_size(:, i, 1) = max(s_ave(p_on:p_off, :, i) - base)';
             %OFF response
             imgobj.R_size(:, i, 2) = max(s_ave(p_off:end, :, i) - base)';
-            %All 
+            %All
             imgobj.R_size(:, i, 3) = max(s_ave(:, :, i) - base)';
         end
         

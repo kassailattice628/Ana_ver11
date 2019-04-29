@@ -49,7 +49,7 @@ switch sobj.pattern
 
         imgobj.mat2D_i_sort = i_sort;
         
-    case 'MoveBar'
+    case {'MoveBar', 'Rect'}
         % find orientation, direction selective cell
         
         roi_ori = intersect(roi_res, find(imgobj.L_ori >= th_ori));

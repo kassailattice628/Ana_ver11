@@ -5,6 +5,7 @@ function Plot_All_Averages(~,~, cmin, cmax)
 
 global imgobj
 global sobj
+
 %%%%%%%%%%
 
 %%
@@ -32,13 +33,30 @@ switch sobj.pattern
         %‚µ‚½•û‚ª‚¢‚¢‚©‚à
         mat2D = imgobj.mat2D(:, imgobj.mat2D_i_sort );
         
-    case 'MoveBar'
+    case {'MoveBar', 'Rect'}
         [mat2D, imgobj.mat2D_i_sort] = sort_mat(imgobj.mat2D);
         
 end
 
 show_mat(mat2D)
 
+switch sobj.pattern
+    case {'MoveBar', 'Rect'}
+        xlabelpos = (5+datap) * (1:12) - round((5+datap)/2);
+        xticks(xlabelpos);
+        xticklabels({'0', 'pi/6', 'pi/3', 'pi/2','2pi.3', '5pi/6', 'pi', '7pi/6', '4pi/3',...
+            '3pi/2', '5pi/3', '11pi/6'})
+        dir = (0:pi/6: 11*pi/6)';
+        hold on
+        
+        
+        for i = imgobj.roi_dir_sel
+            ypos = find(imgobj.mat2D_i_sort == i);
+            xpos = xlabelpos(knnsearch(dir, imgobj.Ang_dir(i)));
+            plot(xpos, ypos, 'ro') 
+        end
+        hold off
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% subfunctions plot %%
     function show_mat(mat)

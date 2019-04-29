@@ -62,7 +62,7 @@ h.plot2_1 = plot(NaN, NaN);
 
 h.plot2_2 = plot(NaN, NaN, '*m');
 hold off
-set(h.axes2, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-2, 50]);
+set(h.axes2, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-2, 15]);
 title('Radial-Velocity', 'FontSize', 14);
 ylabel(h.axes2, 'Pix/sec');
 
@@ -75,11 +75,19 @@ hold on
 %h.plot3 = plot(NaN, NaN, 'LineWidth', 2);
 %(1) for rotary vel
 %(2) for pupil size
-[h.axes3, h.line1, h.line2] = plotyy(NaN, NaN, NaN, NaN);
+%[h.axes3, h.line1, h.line2] = plotyy(NaN, NaN, NaN, NaN);
+yyaxis(h.axes3, 'left')
+h.plot3_1 = plot(NaN, NaN);
+set(h.axes3, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'YLim', [0, 20]);
+
+yyaxis(h.axes3, 'right')
+h.plot3_2 = plot(NaN, NaN);
+set(h.axes3, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-4.6, -4.3]);
+
 hold off
 %set(h.axes3, 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-0.02, 30]);
-set(h.axes3(1), 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [0, 20]);
-set(h.axes3(2), 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-5, -4]);
+%set(h.axes3(1), 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-1, 20], 'yticklabel', []);%, 'YLim', [0, 20]);
+%set(h.axes3(2), 'XLimMode', 'manual', 'XLim', [-inf, inf], 'xticklabel', [], 'YLim', [-10, 10], 'yticklabel', []);%, 'YLim', [-5, -4]);
 title('Locomotion Velocity, Eye Open Ratio', 'FontSize', 14)
 %ylabel(h.axes3, 'cm/sec');
     

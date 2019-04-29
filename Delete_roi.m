@@ -16,7 +16,7 @@ end
 
 for i = 1:length(roi)
     %% add into the roi_no_res list
-    if ismember(roi(i), imgobj.roi_no_res)
+    if ~ismember(roi(i), imgobj.roi_no_res)
         imgobj.roi_no_res = [imgobj.roi_no_res; roi(i)];
     end
     

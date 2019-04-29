@@ -47,6 +47,8 @@ switch sobj.pattern
         end
         
         dir = linspace(0, (2*pi - 2*pi/nstim), nstim);
+        imgobj.directions = dir;
+        
         for i = roi
             R_all_dir = nanmean(s_each(:, :, i));
             R_all_dir(R_all_dir < 0) = 0;

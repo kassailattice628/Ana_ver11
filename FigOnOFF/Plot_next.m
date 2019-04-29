@@ -56,12 +56,13 @@ if size(data,2) == 4
 elseif size(data,2) == 5
     ch_rot = 5;
     %eye_open_ratio
-    Update_plot(hfig.line2, recTime(1:end-1), data(1:end-1, 4, n));
+    %Update_plot(hfig.line2, recTime(1:end-1), data(1:end-1, 4, n));
+    Update_plot(hfig.plot3_2, recTime(1:end-1), data(1:end-1, 4, n));
 end
 
 [~, rotVel] = DecodeRot(data(:, ch_rot, n), n, p, r);%
-%Update_plot(hfig.plot3, recTime(1:end-1), rotVel);
-Update_plot(hfig.line1, recTime(1:end-1), rotVel);
+Update_plot(hfig.plot3_1, recTime(1:end-1), rotVel);
+%Update_plot(hfig.line1, recTime(1:end-1), rotVel);
 
 % photo sensor
 Update_plot(hfig.plot4, recTime, data(:, 3, n));
