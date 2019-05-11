@@ -211,7 +211,7 @@ end
                         end
                         
                         h = h_list(ang);
-                        L(i2) = L(i2) + 1.5;
+                        L(i2) = L(i2) * 1.5;
                         if L(i2) > 1, v = 1; else, v = L(i2); end
                         
                         HSV_roi = [h, 1, v];

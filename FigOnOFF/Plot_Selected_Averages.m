@@ -8,7 +8,7 @@ global sobj
 
 %%
 if ~isfield(imgobj, 'dFF_s_ave')
-    errordlg(' Get Trial AveragesA!!')
+    errordlg(' Get Trial Averages!!')
 end
 
 %%

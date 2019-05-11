@@ -10,6 +10,7 @@ global mainvar
 
 addpath('FigOnOFF');
 addpath('DSOS');
+addpath('RF');
 
 %%
 if exist('DataSave', 'var') == 0

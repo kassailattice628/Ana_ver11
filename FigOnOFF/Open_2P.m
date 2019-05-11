@@ -322,11 +322,17 @@ uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show All', 'Posit
 
 %%
 visible = 'on';
+visible2 = 'off';
+
 switch sobj.pattern
+    case {'Uni', 'FineMap'}
+        text_tuning = 'RF Tuning';
+        visible2 = 'on';
     case 'Size_rand'
         text_tuning = 'Size Tuning';
     case {'Sin', 'Rect', 'Gabor', 'MoveBar'}
         text_tuning = 'Show Tuning(Dir/Ori)';
+        visible2 = 'on';
     case {'Images'}
         text_tuning = 'Image selectivity';
     otherwise
@@ -337,7 +343,7 @@ uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', text_tuning, 'Posi
     'Callback', @Plot_Stim_Tuning_selected, 'Visible', visible)
 
 uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show Fits', 'Position', [210, 185, 140, 30], 'FontSize', 14,...
-    'Callback', @Get_Fit_params2, 'BackGroundColor', 'g')
+    'Callback', @Get_Fit_params2, 'BackGroundColor', 'g', 'Visible', visible2)
 
 uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show tuning Map', 'Position', [5, 150, 200, 30], 'FontSize', 14,...
     'Callback', {@Plot_Tuning_Distributions})

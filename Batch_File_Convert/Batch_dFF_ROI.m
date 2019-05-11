@@ -18,7 +18,6 @@ switch ext
         files = dir(fullfile(dirname, '*.tif'));
 end
 
-
 for n = 1:size(files, 1)
     if files(n).bytes > 0
         i1 = regexp(files(n).name,'\d*');

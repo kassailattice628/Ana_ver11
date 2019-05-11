@@ -12,8 +12,7 @@ if ~isfield(imgobj, 'P_boot')
 else
     
     for i = imgobj.selectROI
-        
-        %Set color
+        %Colore is set acoording to the tuning properties.
         if ismember(i, imgobj.roi_no_res)
             Plot_DSOS([],[], imgobj.directions, imgobj.dFF_boot_med(:,i)', i, [])
             

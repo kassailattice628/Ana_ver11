@@ -10,6 +10,10 @@ stim_list = 1:size(imgobj.dFF_s_ave, 2);
 
 %%
 switch sobj.pattern
+    case {'Uni', 'FineMap'}
+        Plot_RF_selected(imgobj.selectROI);
+        
+        
     case 'Size_rand'
         %%%%%%%%%%
         if length(stim_list) == 5

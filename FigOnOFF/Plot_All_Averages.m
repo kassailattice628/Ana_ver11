@@ -49,18 +49,23 @@ switch sobj.pattern
         
         hold on
         
+        if isfield(imgobj, 'roi_ds')
+            roi_ds = imgobj.roi_ds;
+            roi_os =  imgobj.roi_os;
+        else
+            roi_ds = imgobj.roi_dir_sel;
+            roi_os = imgobj.roi_ori_sel;
+        end
         
-        for i = imgobj.roi_ds  %imgobj.roi_dir_sel
+        for i = roi_ds  %imgobj.roi_dir_sel
             ypos = find(imgobj.mat2D_i_sort == i);
             xpos = xlabelpos(knnsearch(imgobj.directions', imgobj.Ang_dir(i)));
-            disp(xpos)
             plot(xpos, ypos, 'bo')
         end
         
-        for i = imgobj.roi_os
+        for i = roi_os
             ypos = find(imgobj.mat2D_i_sort == i);
             xpos = xlabelpos(knnsearch(imgobj.directions', imgobj.Ang_ori(i)));
-            disp(xpos)
             plot(xpos, ypos, 'go')
         end
         hold off
