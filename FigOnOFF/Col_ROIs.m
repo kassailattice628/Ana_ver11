@@ -46,7 +46,7 @@ imgBG = zeros(img_sz * img_sz, 3);
 %% make color map
 switch sobj.pattern
     case 'Size_rand'
-        map_size
+        map_size;
         
     case {'Sin', 'Rect', 'Gabor'}
         map_angler(0, imgBG);
@@ -59,8 +59,19 @@ switch sobj.pattern
     case {'Uni'}
         map_nxn(1);
         
+        if isfield(imgobj, 'b_GaRot2D')
+            imgBG = zeros(img_sz * img_sz, 3);
+            map_nxn_use_fitdata;
+        end
+        
     case 'FineMap'
-        map_nxn(2)
+        map_nxn(2);
+        if isfield(imgobj, 'b_GaRot2D')
+            
+            
+            imgBG = zeros(img_sz * img_sz, 3);
+            map_nxn_use_fitdata;
+        end
         
     otherwise
 end
@@ -162,6 +173,7 @@ end
                 rois_n = imgobj.roi_non_sel;
                 
         end
+        
         [RGB] = set_col(type);
         
         show_map(type, RGB);
@@ -172,68 +184,77 @@ end
             switch type
                 % direction
                 case 0 %{0, 1}
-                    for i2 = rois
-                        %set HSV
-                        ang1 = find(angle_list > Ang(i2), 1, 'first');
-                        ang2 = find(angle_list <= Ang(i2), 1, 'last');
-                        if abs(Ang(i2) - angle_list(ang1)) < abs(Ang(i2) - angle_list(ang2))
-                            ang = ang1;
-                        else
-                            ang = ang2;
+                    RGB = [];
+                    if ~isempty(rois)
+                        
+                        for i2 = rois
+                            %set HSV
+                            ang1 = find(angle_list > Ang(i2), 1, 'first');
+                            ang2 = find(angle_list <= Ang(i2), 1, 'last');
+                            if abs(Ang(i2) - angle_list(ang1)) < abs(Ang(i2) - angle_list(ang2))
+                                ang = ang1;
+                            else
+                                ang = ang2;
+                            end
+                            
+                            h = h_list(ang);
+                            
+                            L(i2) = L(i2)*1.5;
+                            if L(i2) > 1, v = 1; else, v = L(i2)  ; end
+                            
+                            HSV_roi = [h, 1, v];
+                            RGB = hsv2rgb(HSV_roi);
+                            
+                            imgBG(imgobj.Mask_rois(:,i2),1) = RGB(1);
+                            imgBG(imgobj.Mask_rois(:,i2),2) = RGB(2);
+                            imgBG(imgobj.Mask_rois(:,i2),3) = RGB(3);
                         end
-                        
-                        h = h_list(ang);
-                        
-                        L(i2) = L(i2)*1.5;
-                        if L(i2) > 1, v = 1; else, v = L(i2)  ; end
-                        
-                        HSV_roi = [h, 1, v];
-                        RGB = hsv2rgb(HSV_roi);
-                        
-                        imgBG(imgobj.Mask_rois(:,i2),1) = RGB(1);
-                        imgBG(imgobj.Mask_rois(:,i2),2) = RGB(2);
-                        imgBG(imgobj.Mask_rois(:,i2),3) = RGB(3);
                     end
-                
+                    
                 case 1 %Orentation shown in bar form
                     RGB =  zeros(length(rois), 3);
-                    for i2 = rois
-                        %set HSV
-                        ang1 = find(angle_list > Ang(i2), 1, 'first');
-                        ang2 = find(angle_list <= Ang(i2), 1, 'last');
-                        
-                        if abs(Ang(i2) - angle_list(ang1)) <...
-                                abs(Ang(i2) - angle_list(ang2))
+                    if ~isempty(rois)
+                        for i2 = rois
+                            %set HSV
+                            ang1 = find(angle_list > Ang(i2), 1, 'first');
+                            ang2 = find(angle_list <= Ang(i2), 1, 'last');
                             
-                            ang = ang1;
-                        else
-                            ang = ang2;
+                            if abs(Ang(i2) - angle_list(ang1)) <...
+                                    abs(Ang(i2) - angle_list(ang2))
+                                
+                                ang = ang1;
+                            else
+                                ang = ang2;
+                            end
+                            
+                            h = h_list(ang);
+                            L(i2) = L(i2) * 1.5;
+                            if L(i2) > 1, v = 1; else, v = L(i2); end
+                            
+                            HSV_roi = [h, 1, v];
+                            RGB(rois == i2, :) = hsv2rgb(HSV_roi);
+                            
                         end
                         
-                        h = h_list(ang);
-                        L(i2) = L(i2) * 1.5;
-                        if L(i2) > 1, v = 1; else, v = L(i2); end
-                        
-                        HSV_roi = [h, 1, v];
-                        RGB(rois == i2, :) = hsv2rgb(HSV_roi);
-                        
                     end
-                % non-selective map
+                    % non-selective map
                 case 2
                     RGB=[];
-                    for i2 = rois_n
-                        if ismember(i2, imgobj.roi_nega_R)
-                            % negative response
-                            imgBG(imgobj.Mask_rois(:,i2),1) =  1;%imgobj.R_max(i2);
-                            imgBG(imgobj.Mask_rois(:,i2),2) =  0;
-                            imgBG(imgobj.Mask_rois(:,i2),3) =  1;
-                            
-                        elseif ismember(i2, imgobj.roi_pos_R)
-                            % non-selective positive response
-                            imgBG(imgobj.Mask_rois(:,i2),1) =  0.4;%imgobj.R_max(i2);
-                            imgBG(imgobj.Mask_rois(:,i2),2) =  1;
-                            imgBG(imgobj.Mask_rois(:,i2),3) =  0.6;
-                            
+                    if ~isempty(rois_n)
+                        for i2 = rois_n
+                            if ismember(i2, imgobj.roi_nega_R)
+                                % negative response
+                                imgBG(imgobj.Mask_rois(:,i2),1) =  1;%imgobj.R_max(i2);
+                                imgBG(imgobj.Mask_rois(:,i2),2) =  0;
+                                imgBG(imgobj.Mask_rois(:,i2),3) =  1;
+                                
+                            elseif ismember(i2, imgobj.roi_pos_R)
+                                % non-selective positive response
+                                imgBG(imgobj.Mask_rois(:,i2),1) =  0.4;%imgobj.R_max(i2);
+                                imgBG(imgobj.Mask_rois(:,i2),2) =  1;
+                                imgBG(imgobj.Mask_rois(:,i2),3) =  0.6;
+                                
+                            end
                         end
                     end
             end
@@ -275,7 +296,7 @@ end
             end
         end
         
-    %% end of map_angler
+        %% end of map_angler
     end
 
 
@@ -292,14 +313,14 @@ end
         % Colorize ROI along with stimulus positions (N x N divisions).
         
         %hue -> along column (=vertical position)
-        h_list = linspace(0, 1, div+1);
+        h_list = linspace(0, 0.9, div);
         %blightness value -> along row (=horizontal position)
-        v_list = linspace(0.2, 1, div+1);
+        v_list = linspace(0.4, 1, div);
         
         %stim position
-        RGB_stim = zeros(div, div, 3);
-        H = repmat(h_list(1:div)', 1, div);
-        V = repmat(v_list(1:div), div, 1);
+        
+        H = repmat(h_list', 1, div);
+        V = repmat(v_list, div, 1);
         for n1 = 1:div
             for n2 = 1:div
                 RGB_stim(n1, n2, :) = hsv2rgb([H(n1, n2), 1, V(n1, n2)]);
@@ -323,15 +344,11 @@ end
             %v_res = rem(ind(:,:,i2), div);
             v_res = V(ind(:,:,i2));
             
-            if v_res == 0
-                v = v_list(end);
-            else
-                v_res = div;
-                v = v_list(v_res);
-            end
-            
             if val <= 0.15
+                %no res cell is not colorized (blightness = 0)
                 v = 0;
+            else
+                v = v_res;
             end
             
             HSV_roi = [h, 1, v];
@@ -349,12 +366,66 @@ end
         axis ij
         axis([0, 320, 0, 320])
         %colormap(hsv(div))
-        
-        
-        
-        
     end
 
 
+%% %%%%%%%%%%%%%%%%%%%% %%
+    function map_nxn_use_fitdata
+        
+        color_div = 100;
+        %hue -> along column (vertical position)
+        h_list = linspace(0, 0.9, color_div);
+        %blightness
+        v_list = linspace(0.4, 1, color_div);
+        
+        %stim position
+        RGB_stim = zeros(color_div, color_div, 3);
+        H = repmat(h_list', 1, color_div);
+        V = repmat(v_list, color_div, 1);
+        
+        for n1 = 1:color_div
+            for n2 = 1:color_div
+                RGB_stim(n1, n2, :) = hsv2rgb([H(n1, n2), 1, V(n1, n2)]);
+            end
+        end
+        
+        figure,
+        imagesc(RGB_stim);
+        
+        % Fit ÇµÇΩ center (x, y) Ç hue Ç∆ value Ç…ìñÇƒÇÕÇﬂÇÈ
+        % Fit params Ç∑ÇÈÇ∆Ç´ÇÃ -3 ~ 13 ÇÃîÕàÕÇ≈ íÜêSÇï]âøÇ∑ÇÈÇÃÇ≈ÇªÇÃï‚ê≥
+        pos_x = (imgobj.b_GaRot2D(:,2) + 3)/16;
+        pos_y = (imgobj.b_GaRot2D(:,4) + 3)/16;
+        
+        
+        for n = 1:imgobj.maxROIs
+            
+            %h for verticak position
+            i_h = knnsearch(h_list', pos_y(n));
+            h = h_list(i_h);
+            %v for horizontal position
+            i_v = knnsearch(v_list', pos_x(n));
+            v = v_list(i_v);
+            
+            if ismember(n, imgobj.roi_no_res)...
+                    || imgobj.b_GaRot2D(n,1) < 0.15
+                v = 0;
+            end
+            
+            HSV_roi = [h, 1, v];
+            RGB = hsv2rgb(HSV_roi);
+            imgBG(imgobj.Mask_rois(:,n), 1) = RGB(1);
+            imgBG(imgobj.Mask_rois(:,n), 2) = RGB(2);
+            imgBG(imgobj.Mask_rois(:,n), 3) = RGB(3);
+        end
+        imgBG = reshape(imgBG, [img_sz, img_sz, 3]);
+        
+        %plot
+        figure
+        imshow(imgBG)
+        axis ij
+        axis([0, 320, 0, 320])
+        
+    end
 
 end %End of Col_ROIs

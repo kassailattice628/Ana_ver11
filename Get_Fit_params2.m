@@ -1,4 +1,4 @@
-function Get_Fit_params2(~, ~)
+function Get_Fit_params2(~, ~, check_box)
 %%%%%%%%%%
 %
 % Detect DS/OS selective cells by bootstrap
@@ -30,14 +30,17 @@ else
                 %Plot only
                 i_roi = 1:imgobj.maxROIs;
                 i_roi = i_roi(imgobj.b_GaRot2D(:,1) >= 0.15);
-                Plot_RF_selected(i_roi);
+                if get(check_box, 'Value')
+                    Plot_RF_selected(i_roi);
+                end
             end
             
         case {'MoveBar', 'Rect'}
             if ~isfield(imgobj, 'P_boot')
+                disp('Bootstrapping...')
                 
                 [R_boot_med, P_boot, roi_ds, roi_os, b_ds, b_os, Ci_ds, Ci_os, f_ds, f_os]...
-                    = Get_Boot_DOSI(imgobj);
+                    = Get_Boot_DOSI(imgobj, check_box);
                 
                 imgobj.dFF_boot_med = R_boot_med;
                 imgobj.P_boot = P_boot;
@@ -50,7 +53,8 @@ else
                 imgobj.Ci_ds = Ci_ds;
                 imgobj.Ci_os = Ci_os;
             else
-                errordlg('...')
+                %Plot only
+                errordlg('Already calculated.')
             end
     end
 end
