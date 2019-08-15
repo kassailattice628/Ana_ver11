@@ -7,6 +7,11 @@ x_boot = zeros(n_boot, n_data);
 %remove NaN resample data
 parfor i = 1:n_data
     x = rmmissing(data(:,i));
-    x_boot_ = bootstrp(n_boot, @mean, x);
+    if length(x) >= 2
+        x_boot_ = bootstrp(n_boot, @mean, x);
+    else
+        x_boot_ = repmat(max(x), n_boot, 1);
+    end
+    
     x_boot(:,i) = x_boot_;
 end

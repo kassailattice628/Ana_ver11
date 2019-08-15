@@ -10,7 +10,7 @@ if ~isfield(imgobj, 'b_GaRot2D')
     errordlg('Get RF(boot) first!');
 else
     %stim_position
-    if isfield(sobj, 'center_pos_list_FineMap')
+    if isfield(sobj, 'center_pos_list_FineMap') && strcmp(sobj.pattern, 'FineMap')
         %Fine map mode
         pos =  sqrt(size(sobj.center_pos_list_FineMap, 1));
     else

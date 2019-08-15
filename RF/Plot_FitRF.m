@@ -1,33 +1,49 @@
 function [b_e, x_edge, y_edge] = Plot_FitRF(beta, data, i)
 %%%%%%%%%%%
+% beta(1) = Amp(amplitude)
+% beta(2) = x0 (x center)
+% beta(3) = xsd (x SD)
+% beta(4) = y0 (y center)
+% beta(5) = ysd (y SD)
+% beta(6) = theta(rotation angle)
+
+% data => neural responses along stim position matrix
+
+% i => selected ROI
+%%%%%%%%%%
 global sobj
 
+%%%%%%%%%%
+
+%define output
 b_e = zeros(1,5);
 x_edge = [];
 y_edge = [];
+
 %%%%%%%%%%
-figure;
-data_ = data;
-im = imagesc(data_);
-caxis([0.1,1])
-im.AlphaData = .8;
-title(['ROI#: ', num2str(i), ', ', sobj.pattern]);
-hold on
-
-% contour
-x = -20:0.1:20;
-[X, Y] = meshgrid(x);
-d = zeros(length(x), length(x),2);
-d(:,:,1) = X;
-d(:,:,2) = Y;
-G_fit = GaussianRot2D(beta, d);
-contour(X, Y, G_fit);
-
-%G_fit の値を使って，Xsd から Z > 0.15 の値を（Yも同様）を取得
 if beta(1) < 0.15
     disp(['Peak Amplitude of ROI#', num2str(i), ' is too weak']);
     
 else
+    % Show plot
+    figure;
+    data_ = data;
+    im = imagesc(data_);
+    caxis([0.1,1])
+    im.AlphaData = .5;
+    title(['ROI#: ', num2str(i), ', ', sobj.pattern]);
+    hold on
+    
+    % contour
+    x = -20:0.1:20;
+    [X, Y] = meshgrid(x);
+    d = zeros(length(x), length(x),2);
+    d(:,:,1) = X;
+    d(:,:,2) = Y;
+    G_fit = GaussianRot2D(beta, d);
+    contour(X, Y, G_fit);
+    
+    %G_fit の値を使って，Xsd から Z > 0.15 の値を（Yも同様）を取得
     % the points over the threshold along the long and short axis
     fcn_gauss = @(b, x) b(1) .* exp(-((x)./b(2)).^2);
     x =  0:0.01:20;
@@ -48,14 +64,17 @@ else
     %plot Elipse
     
     b_e = [beta(2), x_edge, beta(4), y_edge, beta(6)];
-    %b_e = beta(2:6);
     FE_ = ElipseRot(b_e);
     plot(FE_(1,:), FE_(2,:), 'r-', 'LineWidth', 2);
     
     %%%%%%%%%%
-    %Plot RF center
+    %plot RF center
+    
     plot(beta(2), beta(4), 'ro');
-    %plot Line
+    
+    %%%%%%%%%%
+    %plot Line along the long axis ot
+    
     %LineRot(beta);
     
 end
@@ -108,11 +127,14 @@ end
 
 %%
 function LineRot(beta)
+
 if beta(5) <= beta(3)
     theta = pi - beta(6);
 else
     theta = -beta(6);
 end
+
+
 x =  -20:0.1:20;
 y = zeros(1, length(x));
 x = -20:0.1:20;

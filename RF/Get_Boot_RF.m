@@ -12,7 +12,7 @@ global sobj
 %%%%%%%%%%
 
 %stim_position
-if isfield(sobj, 'center_pos_list_FineMap')
+if isfield(sobj, 'center_pos_list_FineMap') && strcmp(sobj.pattern, 'FineMap')
     %Fine map mode
     pos =  sqrt(size(sobj.center_pos_list_FineMap, 1));
 else
@@ -38,12 +38,15 @@ b_Ellipse = zeros(imgobj.maxROIs, 5);
 
 %%%%%%%%%%
 for i = 1:imgobj.maxROIs
-    
-    if isempty(rmmissing(imgobj.dFF_s_each(:,:,i)))
-        break
+    s_each = imgobj.dFF_s_each(:,:,i);
+    s_each = s_each(any(s_each,2),:);
+    %if isempty(rmmissing(imgobj.dFF_s_each(:,:,i)))
+    if isempty(s_each)
+        disp(['Data missing in roi#', num2str(i)])
+        continue
     end
     
-    x_boot = Get_boot(imgobj.dFF_s_each(:,:,i), n_boot);
+    x_boot = Get_boot(s_each, n_boot);
     data = median(x_boot);
     R_boot_med(:,i) = data;
     
