@@ -1,6 +1,6 @@
 function [R_boot_med, P_boot,...
     roi_ds, roi_os, b_ds, b_os,...
-    Ci_ds, Ci_os, f_ds, f_os] = Get_Boot_DOSI(imgobj, cb)
+    Ci_ds, Ci_os, f_ds, f_os] = Get_Boot_DOSI(imgobj)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Resample data by bootstrap
 % Calc bootstrapped mean of the data and median of each conditions
@@ -40,7 +40,7 @@ for i = 1:imgobj.maxROIs
     %direction
     if ds
         roi_ds = [roi_ds, i];
-        [b_ds_, Ci_ds_, f_ds_, R_boot_med_] = Fit_vonMises2(x_boot, dir, median(P(:,2)),1, i, cb);
+        [b_ds_, Ci_ds_, f_ds_, R_boot_med_] = Fit_vonMises2(x_boot, dir, median(P(:,2)),1, i);
         if length(b_ds_) == length(b_ds)
             b_ds(i,:) = b_ds_;
             Ci_ds(i,:) = Ci_ds_;
@@ -60,7 +60,7 @@ for i = 1:imgobj.maxROIs
     if os
         roi_os = [roi_os, i];
         [b_os(i,:), Ci_os(i,:), f_os_, R_boot_med_] =...
-            Fit_vonMises2(x_boot, dir, median(P(:,4)), 2, i, cb);
+            Fit_vonMises2(x_boot, dir, median(P(:,4)), 2, i);
         f_os(i) = f_os_;
         
         %Update L_ori, Ang_ori

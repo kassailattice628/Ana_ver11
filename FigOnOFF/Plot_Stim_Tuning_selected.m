@@ -3,7 +3,6 @@ function Plot_Stim_Tuning_selected(~, ~)
 %%%%%%%%%%
 global imgobj
 global sobj
-
 %%%%%%%%%%
 stim_list = 1:size(imgobj.dFF_s_ave, 2);
 
@@ -11,6 +10,7 @@ stim_list = 1:size(imgobj.dFF_s_ave, 2);
 %%
 switch sobj.pattern
     case {'Uni', 'FineMap'}
+        
         Plot_RF_selected(imgobj.selectROI);
         
         

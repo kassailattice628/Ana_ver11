@@ -280,7 +280,9 @@ end
 
 
 %% panel2
-function OpenPanel2(hfig, imgobj, sobj)
+function OpenPanel2(~, imgobj, sobj)
+global hfig
+
 p_funcs = uipanel('Parent', hfig.two_photon, 'Title', 'Ctr', 'FontSize', 12, 'Position', [0.63 0.05 0.36 0.83]);
 h_Detrend = uicontrol('Parent', p_funcs, 'Style', 'togglebutton', 'String', 'Detrend', 'Position', [5, 360, 100, 30], 'FontSize', 14);
 
@@ -342,9 +344,9 @@ end
 uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', text_tuning, 'Position', [5, 185, 200, 30], 'FontSize', 14,...
     'Callback', @Plot_Stim_Tuning_selected, 'Visible', visible)
 
-h_CB = uicontrol('Parent', p_funcs, 'Style', 'checkbox', 'String', 'plot', 'Position', [335, 185, 50, 30], 'FontSize', 12, 'Visible', visible2);
+hfig.h_CB = uicontrol('Parent', p_funcs, 'Style', 'checkbox', 'String', 'plot', 'Position', [335, 185, 50, 30], 'FontSize', 12, 'Visible', visible2);
 uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show Fits', 'Position', [210, 185, 120, 30], 'FontSize', 14,...
-    'Callback', {@Get_Fit_params2, h_CB}, 'BackGroundColor', 'g', 'Visible', visible2)
+    'Callback', {@Get_Fit_params2, hfig.h_CB}, 'BackGroundColor', 'g', 'Visible', visible2)
 
 
 uicontrol('Parent', p_funcs, 'Style', 'pushbutton', 'String', 'Show tuning Map', 'Position', [5, 150, 200, 30], 'FontSize', 14,...

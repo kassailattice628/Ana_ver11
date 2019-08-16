@@ -1,4 +1,5 @@
-function [b_e, x_edge, y_edge] = Plot_FitRF(beta, data, i)
+function [b_e, x_edge, y_edge] = Plot_FitRF(beta, data, i, f_plot)
+
 %%%%%%%%%%%
 % beta(1) = Amp(amplitude)
 % beta(2) = x0 (x center)
@@ -13,6 +14,7 @@ function [b_e, x_edge, y_edge] = Plot_FitRF(beta, data, i)
 %%%%%%%%%%
 global sobj
 
+
 %%%%%%%%%%
 
 %define output
@@ -25,14 +27,6 @@ if beta(1) < 0.15
     disp(['Peak Amplitude of ROI#', num2str(i), ' is too weak']);
     
 else
-    % Show plot
-    figure;
-    data_ = data;
-    im = imagesc(data_);
-    caxis([0.1,1])
-    im.AlphaData = .5;
-    title(['ROI#: ', num2str(i), ', ', sobj.pattern]);
-    hold on
     
     % contour
     x = -20:0.1:20;
@@ -41,7 +35,6 @@ else
     d(:,:,1) = X;
     d(:,:,2) = Y;
     G_fit = GaussianRot2D(beta, d);
-    contour(X, Y, G_fit);
     
     %G_fit の値を使って，Xsd から Z > 0.15 の値を（Yも同様）を取得
     % the points over the threshold along the long and short axis
@@ -60,36 +53,37 @@ else
     ind = find(fcn_y >= 0.15, 1, 'last');
     y_edge = x(ind);
     
-    %%%%%%%%%
-    %plot Elipse
+    
     
     b_e = [beta(2), x_edge, beta(4), y_edge, beta(6)];
     FE_ = ElipseRot(b_e);
-    plot(FE_(1,:), FE_(2,:), 'r-', 'LineWidth', 2);
     
-    %%%%%%%%%%
-    %plot RF center
+    %%%%%%%%%
+    %plot map
     
-    plot(beta(2), beta(4), 'ro');
-    
-    %%%%%%%%%%
-    %plot Line along the long axis ot
-    
-    %LineRot(beta);
+    % Show plot
+    if f_plot == 1
+        figure;
+        data_ = data;
+        im = imagesc(data_);
+        caxis([0.1,1])
+        im.AlphaData = .5;
+        title(['ROI#: ', num2str(i), ', ', sobj.pattern]);
+        hold on
+        contour(X, Y, G_fit);
+        %plot Elipse
+        plot(FE_(1,:), FE_(2,:), 'r-', 'LineWidth', 2);
+        
+        %plot RF center
+        plot(beta(2), beta(4), 'ro');
+        
+        %%%%%%%%%%
+        %plot Line along the long axis ot
+        
+        %LineRot(beta);
+    end
     
 end
-%{
-%check edge size
-figure
-plot(x, fcn_x, 'r')
-hold on
-line([x_edge, x_edge],[0, beta(1)], 'Color','red','LineStyle','--')
-
-plot(x, fcn_y, 'b')
-line([y_edge, y_edge],[0, beta(1)], 'Color','blue','LineStyle','--')
-
-line([min(x), max(x)],[0.15, 0.15], 'Color', 'black', 'LineStyle', '--');
-%}
 
 end
 

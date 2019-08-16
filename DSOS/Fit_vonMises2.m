@@ -1,4 +1,6 @@
-function [b_fit, ci, f_select, R_boot_med] = Fit_vonMises2(data_boot, dir, pref, type, roin, cb)
+function [b_fit, ci, f_select, R_boot_med] = Fit_vonMises2(data_boot, dir, pref, type, roin)
+global hfig
+
 % d := direction vector,
 % ex) d = dir = 0:pi/6:23*pi/12;
 
@@ -48,8 +50,6 @@ switch type
         [b_fit, ~, ci] = Exec_Fit(f_vM, b0, bl, bu);
         f_select = 2;
         
-        
-        
     case 3
         %{
         %not use now
@@ -63,7 +63,7 @@ switch type
         %}
 end
 
-if get(cb, 'Value')
+if get(hfig.h_CB, 'Value')
     Plot_DSOS(f_vM, b_fit, dir, R_boot_med, roin, type)
 end
 %%%%%%%%%% %%%%%%%%%% %%%%%%%%%% %%%%%%%%%% %%%%%%%%%% %%%%%%%%%%

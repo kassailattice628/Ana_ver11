@@ -26,6 +26,8 @@ else
                 imgobj.b_GaRot2D = b_GaRot2D;
                 imgobj.Ci_GaRot2D = Ci_GaRot2D;
                 imgobj.b_Ellipse = b_Ellipse;
+                
+                %plot ‚¾‚¯•ª‚¯‚½‚¢‚ª
             else
                 %Plot only
                 i_roi = 1:imgobj.maxROIs;
@@ -40,7 +42,7 @@ else
                 disp('Bootstrapping...')
                 
                 [R_boot_med, P_boot, roi_ds, roi_os, b_ds, b_os, Ci_ds, Ci_os, f_ds, f_os]...
-                    = Get_Boot_DOSI(imgobj, check_box);
+                    = Get_Boot_DOSI(imgobj);
                 
                 imgobj.dFF_boot_med = R_boot_med;
                 imgobj.P_boot = P_boot;
@@ -52,6 +54,11 @@ else
                 imgobj.b_os = b_os;
                 imgobj.Ci_ds = Ci_ds;
                 imgobj.Ci_os = Ci_os;
+                
+                %Reget stim average
+                Get_Trial_Averages([],[],0);
+                Plot_All_Averages([], [], -1, 1);
+                
             else
                 %Plot only
                 errordlg('Already calculated.')

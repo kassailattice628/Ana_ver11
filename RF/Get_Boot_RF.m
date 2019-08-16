@@ -7,7 +7,8 @@ function [R_boot_med, b_GaRot2D, Ci_GaRot2D, b_Ellipse] = Get_Boot_RF(imgobj)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %addpath('/Users/lattice/Dropbox/None_But_Air/Ana_ver11/RF/')
 global sobj
-
+global hfig
+cb = get(hfig.h_CB, 'Value');
 
 %%%%%%%%%%
 
@@ -56,7 +57,7 @@ for i = 1:imgobj.maxROIs
         b_GaRot2D(i,:) = b_fit;
         Ci_GaRot2D(i,:) = ci;
         
-        b_e = Plot_FitRF(b_fit, data, i);
+        b_e = Plot_FitRF(b_fit, data, i, cb);
         b_Ellipse(i, :) =  b_e;
     end
 end
