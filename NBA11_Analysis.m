@@ -11,6 +11,7 @@ global mainvar
 addpath('FigOnOFF');
 addpath('DSOS');
 addpath('RF');
+addpath('Mosaic');
 
 %%
 if exist('DataSave', 'var') == 0

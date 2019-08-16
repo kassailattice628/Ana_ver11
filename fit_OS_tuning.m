@@ -38,15 +38,15 @@ end
 
 fit_g = @(b, x) b(1)*exp((-x.^2)/(2*b(2)^2)) + b(3);
 
-lb_g = [0.15; 0.01; 0];
-ub_g = [max(y); pi; min(y)];
-b0_g = [0.5; 1; 0];
+lb_g = [min(y); 0.01; 0];
+ub_g = [max(y); 2*pi; min(y)];
+b0_g = [max(y); 1; 0];
 
 %%
 %%%%%%%%%% centering
 
 if ismember(k, imgobj.roi_ori_sel)
-    x_c = imgobj.Ang_ori(k) + pi/2;
+    x_c = imgobj.Ang_ori0(k) - pi/2;
 end
 
 x = x - x_c;
@@ -56,7 +56,8 @@ x_me(x_me>pi/2) = x_me(x_me>pi/2) - pi;
 
 %%%%%%%%%%
 % find params for fit
-[b_g, resnorm, ~, exitflag, output] = lsqcurvefit(fit_g, b0_g, x, y, lb_g, ub_g);
+b_g = lsqcurvefit(fit_g, b0_g, x, y, lb_g, ub_g);
+%[b_g, resnorm, ~, exitflag, output] = lsqcurvefit(fit_g, b0_g, x, y, lb_g, ub_g);
 disp(['roi=#', num2str(k)])
 disp(['Amp1 = ', num2str(b_g(1))])
 disp(['SD1 = ', num2str(b_g(2))])
@@ -64,15 +65,20 @@ disp(['SD1 = ', num2str(b_g(2))])
 
 %% test plot
 %{
-xp_ori = -pi:0.01:pi;
-F_ori = @(b, x) b(1)*exp((-x.^2)/(2*b(2)^2)) + b(3);
-fit = F_ori(b_g, xp_ori);
+xp_ori = -pi/2:0.01:pi/2;
+fit = fit_g(b_g, xp_ori);
 
 figure
-scatter(x, y, 'b*')
+subplot(2, 2, 3)
+scatter(x, y, 'g*')
+xlim([-pi/2, pi/2])
 hold on
-scatter(x_me, y_me, 'ro');
-plot(xp_ori, fit);
+scatter(x_me, y_me, 'mo');
+plot(xp_ori, fit, 'LineWidth', 2);
+title('Single Gaussian Fit for Orientation')
+
+set(gca, 'xtick', [-pi/2, 0, pi/2],...
+    'xticklabel', {'-pi/2', 'Pref. - pi/2', 'pi/2'})
 hold off
 %}
 %%

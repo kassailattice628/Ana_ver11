@@ -67,7 +67,6 @@ xp = 0:0.01:2*pi;
 
 
 figure
-
 %Raw plot
 subplot(1,2,1)
 hold on
@@ -83,7 +82,7 @@ end
 xlim([-0.1, 2*pi+0.1])
 title(['ROI# = ', num2str(roin)])
 set(gca, 'xtick', [0, pi/2, pi, 3*pi/2, 2*pi],...
-    'xticklabel', {'0', 'pi/2', 'pi', '3pi/2', '2ƒÎ'})
+    'xticklabel', {'0', '\pi/2', '\pi', '3\pi/2', '2\pi'})
 xlabel('Move Angle (deg)');
 
 %Polar plot

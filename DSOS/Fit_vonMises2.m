@@ -1,4 +1,4 @@
-function [b_fit, ci, f_select, R_boot_med] = Fit_vonMises2(data_boot, dir, pref, type, roin)
+function [b_fit, ci, f_select, R_boot_med] = Fit_vonMises2(data_boot, dir, pref, type, roin, cb)
 % d := direction vector,
 % ex) d = dir = 0:pi/6:23*pi/12;
 
@@ -63,8 +63,9 @@ switch type
         %}
 end
 
-Plot_DSOS(f_vM, b_fit, dir, R_boot_med, roin, type)
-
+if get(cb, 'Value')
+    Plot_DSOS(f_vM, b_fit, dir, R_boot_med, roin, type)
+end
 %%%%%%%%%% %%%%%%%%%% %%%%%%%%%% %%%%%%%%%% %%%%%%%%%% %%%%%%%%%%
 
     function [f_vM, b0, bl, bu] = Set_FitFc(select)
@@ -99,8 +100,8 @@ Plot_DSOS(f_vM, b_fit, dir, R_boot_med, roin, type)
             bl = [0.001, 0.01, 0.01, 0, 0, -pi];
             bu = [5, 5, 5, 5, 2*pi, pi];
             
-%             f_vM = @(b, x) b(1) * exp(b(2) * cos(x - b(5))) .*...
-%                 exp(b(3) * cos(2*x - 2*(b(5)+b(6)))) + b(4);
+            %             f_vM = @(b, x) b(1) * exp(b(2) * cos(x - b(5))) .*...
+            %                 exp(b(3) * cos(2*x - 2*(b(5)+b(6)))) + b(4);
             f_vM = Select_vonMises(select);
             
         end
