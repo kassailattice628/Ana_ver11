@@ -50,7 +50,7 @@ for i = (recobj.prestim + 1) : size(ParamsSave, 2)
                 end
                 
             case '1P_Conc'
-                if i == recobj.preztim + 1
+                if i == recobj.prestim + 1
                     stim = zeros(size(ParamsSave, 2) - recobj.prestim, 2);
                 end
                 stim(i - recobj.prestim, 1) = ParamsSave{1, i}.stim1.dist_deg;
@@ -64,6 +64,7 @@ for i = (recobj.prestim + 1) : size(ParamsSave, 2)
                 
             case 'MoveBar'
                 stim(i - recobj.prestim) = ParamsSave{1, i}.stim1.MovebarDir_angle_deg;
+            
                 
             case 'Images'
                 stim(i - recobj.prestim) = ParamsSave{1, i}.stim1.Image_index;
@@ -73,11 +74,19 @@ for i = (recobj.prestim + 1) : size(ParamsSave, 2)
                 
             case 'BW'
                 if i == recobj.prestim + 1
-                    stim = zeros(size(ParamsSave, 2) - revobj.prestim, 3 );
+                    stim = zeros(size(ParamsSave, 2) - recobj.prestim, 3 );
                 end
                 stim(i - recobj.prestim, 1) = ParamsSave{1, i}.stim1.color;
                 stim(i - recobj.prestim, 2) = ParamsSave{1, i}.stim1.dist_deg;
                 stim(i - recobj.prestim, 3) = ParamsSave{1, i}.stim1.angle_deg;
+                
+            case 'Mosaic'
+                if i == recobj.prestim + 1
+                    stim = zeros(size(ParamsSave, 2) - recobj.prestim, 2);
+                end
+                stim(i - recobj.prestim, 1) = ParamsSave{1, i}.stim1.RandPosition_seed;
+                stim(i - recobj.prestim, 2) = ParamsSave{1, i}.stim1.RandSize_seed;
+                
         end %switch
     else
         frame_stimON(i - recobj.prestim) = nan;
@@ -90,7 +99,9 @@ end
 [prep, ~, ~, p_off, datap] = Def_len_datap;
 
 %%
-stim_list = unique(stim, 'rows');
+[stim_list, ~, ic] = unique(stim, 'rows');
+imgobj.Mosaic_i = ic;
+
 stim_list(isnan(stim_list)) = [];
 nstim = size(stim_list, 1); %the number of stimuli
 
@@ -100,7 +111,7 @@ nstim = size(stim_list, 1); %the number of stimuli
 s_ave = zeros(datap, nstim, imgobj.maxROIs);
 
 % prepare matrix for max value for each trials of each stimuluss
-s_each = NaN([30, nstim, imgobj.maxROIs]);
+s_each = NaN([35, nstim, imgobj.maxROIs]);
 R_each_pos = s_each;
 R_each_neg = s_each;
 
@@ -119,6 +130,7 @@ end
 for i = rois %%%%% i for each ROI
     if isnan(imgobj.dFF(1, i))
         %skip no-data ROIs
+        disp(['ROI# ', num2str(i), ' has no data.'])
         continue;
     end
     
@@ -182,57 +194,7 @@ imgobj.roi_nega_R = roi_n;
 %% Get stimulus specific tuning properties
 
 Get_Stim_Tuning;
-%{
-switch sobj.pattern
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%
-    case 'Size_rand'
-        % Best Size (for ON and OFF)
-        imgobj.R_size = zeros(nstim, imgobj.maxROIs, 3);
-        for i = 1:imgobj.maxROIs
-            base = mean(s_ave(1:2, :, i));
-            
-            %ON reponse
-            imgobj.R_size(:, i, 1) = max(s_ave(p_on:p_off, :, i) - base)';
-            %OFF response
-            imgobj.R_size(:, i, 2) = max(s_ave(p_off:end, :, i) - base)';
-            %All
-            imgobj.R_size(:, i, 3) = max(s_ave(:, :, i) - base)';
-        end
-        
-    case {'Sin', 'Rect', 'Gabor', 'MoveBar'}
-        % Distribution of direction selectivity
-        imgobj.Ang_ori0 = zeros(1, imgobj.maxROIs);
-        imgobj.L_ori = zeros(1, imgobj.maxROIs);
-        imgobj.L_dir = zeros(1, imgobj.maxROIs);
-        dir = linspace(0, (2*pi - 2*pi/nstim), nstim);
-        
-        for i = 1:imgobj.maxROIs
-            
-            R_all_dir = nanmean(s_each(:, :, i));
-            R_all_dir(R_all_dir < 0) = 0;
-            %%%%%%%%%%
-            % vector average for orientation
-            %%%%%%%%%%
-            Z = sum(R_all_dir .* exp(2*1i*dir))/sum(R_all_dir);
-            imgobj.L_ori(i) = abs(Z);
-                
-            a = angle(Z)/2 + pi/2;
-            imgobj.Ang_ori0(i) = a;
-            
-            if a > pi/2 && 3*pi/2 > a
-                a = a - pi;
-            end
-            imgobj.Ang_ori(i) = a;
-            
-            %%%%%%%%%%
-            % vector average for direction
-            %%%%%%%%%%
-            Z = sum(R_all_dir .* exp(1i*dir))/sum(R_all_dir);
-            imgobj.L_dir(i) = abs(Z);
-            imgobj.Ang_dir(i) = wrapTo2Pi(angle(Z));
-        end
-end
+
 %}
 
 %% Get tuning parameters
@@ -241,5 +203,12 @@ Get_Tuned_ROI;
 
 %%
 disp('Trial averages and individual peak values are extracted.')
+
+%%
+% for orientation
+switch sobj.pattern
+    case {'MoveBar', 'Rect'}
+        Get_Trial_Averages_orientation; 
+end
 %% end of this function
 end
