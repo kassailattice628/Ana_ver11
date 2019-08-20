@@ -6,26 +6,22 @@ global ParamsSave
 
 %% % prep data % 
 if isfield(hfig, 'offsetV')
-    off1 = str2double(get(hfig.offsetV, 'string'));
-    off2 = str2double(get(hfig.offsetH, 'string'));
+    if isfield(hfig.offsetV, 'string')
+        off1 = str2double(get(hfig.offsetV, 'string'));
+        off2 = str2double(get(hfig.offsetH, 'string'));
+    end
 else
     off1 = 0;
     off2 = 0;
 end
 
 % offset data
-data1_offset = shift_data(data(:, 1, n) - data(1, 1, n), off1);
-data2_offset = shift_data(data(:, 2, n) - data(1, 2, n), off2);
+data1_offset = OFFSET(data(:, 1, n) - data(1, 1, n), off1);
+data2_offset = OFFSET(data(:, 2, n) - data(1, 2, n), off2);
 
-%d_filt_eye = designfilt('lowpassfir', 'FilterOrder', 10,...
-%    'CutoffFrequency', 20, 'SampleRate', r.sampf);
-
-d_filt_vel = designfilt('bandpassfir', 'FilterOrder', 10,...
-    'CutoffFrequency1',100, 'CutoffFrequency2', 200,...
-    'SampleRate', r.sampf);
-
+%% low-pass for eye traces
 d_filt_eye = designfilt('lowpassiir', ...        % Response type
-       'PassbandFrequency',20, ...     % Frequency constraints
+       'PassbandFrequency',10, ...     % Frequency constraints
        'StopbandFrequency',200, ...
        'PassbandRipple',4, ...          % Magnitude constraints
        'StopbandAttenuation',55, ...
@@ -41,11 +37,17 @@ data1_diff = diff(data1_filt);
 data2_diff = diff(data2_filt);
 [~, r_amp] = cart2pol(data2_diff, -data1_diff);
 velocity_pre = r_amp * r.sampf;
-%low-pass filt
+
+%% low-pass filt for eye velocity
+d_filt_vel = designfilt('bandpassfir', 'FilterOrder', 10,...
+    'CutoffFrequency1',50, 'CutoffFrequency2', 100,...
+    'SampleRate', r.sampf);
+
 velocity = filter(d_filt_vel, velocity_pre);
 %offset
-velocity = velocity - mean(velocity(1:100)); 
+%velocity = velocity - mean(velocity(1:100)); 
 
+%%
 if isfield(ParamsSave{1,n}, 'sac_t')
     sac_t = ParamsSave{1,n}.sac_t;
     locs = zeros(1, length(sac_t));
@@ -57,9 +59,16 @@ if isfield(ParamsSave{1,n}, 'sac_t')
 else
     th = str2double(get(hfig.vel_th, 'String'));
     %disp(max(velocity))
-    [pks,locs] = findpeaks(velocity, 'MinPeakHeight', th,...
-        'MinPeakDistance', 200);%200
+    [pks_in, locs_in] = findpeaks(velocity, 'MinPeakHeight', th,...
+        'MinPeakDistance', 200);
+
+    [pks_over,locs_over] = findpeaks(velocity, 'MinPeakHeight', 15,...
+        'MinPeakDistance', 200);
+
+    locs = setdiff(locs_in, locs_over);
     locs =  locs - 10;
+    
+    pks = setdiff(pks_in, pks_over);
     
     %pks_threshold =  250;%default 250
     %pks = pks(pks < pks_threshold);
@@ -120,9 +129,11 @@ data1_offset(end) = NaN;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 end
+
+
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function data_out = shift_data(data_in, offset)
+function data_out = OFFSET(data_in, offset)
 if offset == 0
     data_out = data_in - data_in(1);
 else

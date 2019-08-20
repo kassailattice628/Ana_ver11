@@ -22,7 +22,7 @@ else
     for i = i_roi%imgobj.selectROI
         %Set color acording to RF center position
         data = reshape(imgobj.dFF_boot_med(:,i), pos, pos);
-        Plot_FitRF(imgobj.b_GaRot2D(i,:), data, i, 1);
+        Plot_FitRF(imgobj.b_GaRot2D(i,:), data, i);
     end
     
 end

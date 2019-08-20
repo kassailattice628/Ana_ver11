@@ -182,11 +182,15 @@ ylim([0, 15])
                         ', Ang:', angle, 'deg'];
                     set(hfig.stim2_info, 'String', stim2_info_txt);
                     
-                case {'MoveBar'}
+                case {'MoveBar', 'MoveSpot'}
                     angle=num2str(stim.MovebarDir_angle_deg);
                     spd = num2str(stim.MovebarSpd_deg_s);
                     stim1_info_txt = ['Width:', sz, 'deg', ', Spd:', spd,...
                         'deg/s', ', Ang:', angle, 'deg'];
+                    
+                case 'StaticBar'
+                    angle = num2str(stim.BarOri_angle_deg);
+                    stim1_info_txt = ['Width:', sz, 'deg', ', Ang:', angle, 'deg'];
                     
                 case {'Images'}
                     ImgNum = stim.Image_index;
