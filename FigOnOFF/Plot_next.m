@@ -205,7 +205,7 @@ ylim([0, 15])
                     pos = num2str(stim.center_position);
                     fine_pos =  num2str(stim.center_position_FineMap);
                     stim1_info_txt = ['Center:', pos, ', Size:', sz, 'deg'];
-                    stim2_info_txt = ['Center Fine Map:', fine_pos,...
+                    stim2_info_txt = ['Fine Map:', fine_pos,...
                         ', Div:', num2str(sobj.div_zoom), ', Dist: ', num2str(sobj.dist), 'deg'];
                     set(hfig.stim2_info, 'String', stim2_info_txt);
                     
