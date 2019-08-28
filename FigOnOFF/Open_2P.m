@@ -333,10 +333,16 @@ switch sobj.pattern
     case 'Size_rand'
         text_tuning = 'Size Tuning';
     case {'Sin', 'Rect', 'Gabor', 'MoveBar'}
-        text_tuning = 'Show Tuning(Dir/Ori)';
+        text_tuning = 'Show Tuning (Dir/Ori)';
         visible2 = 'on';
+        
+    case 'StaticBar'
+        text_tuning = 'Show Tuning (Ori)';
+        visible2 = 'on';
+        
     case {'Images'}
         text_tuning = 'Image selectivity';
+        
     otherwise
         text_tuning = '';
         visible = 'off';

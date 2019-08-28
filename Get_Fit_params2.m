@@ -63,6 +63,25 @@ else
                 %Plot only
                 errordlg('Already calculated.')
             end
+            
+        case 'StaticBar'
+            if ~isfield(imgobj, 'P_boot')
+                disp('Bootstrapping...')
+                
+                [R_boot_med, P_boot, roi_os, b_os, Ci_os, f_os] =...
+                    Get_Boot_BarOS(imgobj);
+                
+                imgobj.dFF_boot_med = R_boot_med;
+                imgobj.P_boot = P_boot;
+                imgobj.f_os = f_os;
+                imgobj.roi_os = roi_os;
+                imgobj.b_os = b_os;
+                imgobj.Ci_os = Ci_os;
+                
+            else
+                %Plot only
+                errordlg('Already calculated.')
+            end
     end
 end
 

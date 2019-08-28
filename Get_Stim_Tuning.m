@@ -73,6 +73,27 @@ switch sobj.pattern
             imgobj.L_dir(i) = abs(Z);
             imgobj.Ang_dir(i) = wrapTo2Pi(angle(Z));
         end
+        
+    case {'StaticBar'}
+        if length(roi) == imgobj.maxROIs
+            imgobj.Ang_ori = zeros(1, imgobj.maxROIs);
+            imgobj.L_ori = zeros(1, imgobj.maxROIs);
+        end
+ 
+        ori = linspace(0, (pi - pi/nstim), nstim);
+        imgobj.orientations = ori;
+        
+        for i = roi
+            R_all_ori = nanmean(s_each(:,:,i));
+            R_all_ori(R_all_ori < 0) = 0;
+            
+            Z = sum(R_all_ori .* exp(1i*ori))/sum(R_all_ori);
+            imgobj.L_ori(i) = abs(Z);
+            
+            %a = angle(Z)/2 + pi/2;
+            imgobj.Ang_ori(i) = angle(Z);
+            
+        end
 end
 
 %%

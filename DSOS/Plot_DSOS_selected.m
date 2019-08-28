@@ -7,7 +7,7 @@ global imgobj
 %%%%%%%%%% %%%%%%%%%% %%%%%%%%%% %%%%%%%%%%
 
 if ~isfield(imgobj, 'P_boot')
-    errordlg('Please Get DS/OS first!')
+    errordlg('Get boot DS/OS first!')
     
 else
     

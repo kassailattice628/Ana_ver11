@@ -62,9 +62,11 @@ for i = (recobj.prestim + 1) : size(ParamsSave, 2)
             case 'FineMap'
                 stim(i - recobj.prestim) = ParamsSave{1, i}.stim1.center_position_FineMap;
                 
-            case 'MoveBar'
+            case {'MoveBar'}
                 stim(i - recobj.prestim) = ParamsSave{1, i}.stim1.MovebarDir_angle_deg;
             
+            case 'StaticBar'
+                stim(i - recobj.prestim) = ParamsSave{1, i}.stim1.BarOri_angle_deg;
                 
             case 'Images'
                 stim(i - recobj.prestim) = ParamsSave{1, i}.stim1.Image_index;
@@ -99,6 +101,10 @@ end
 [prep, ~, ~, p_off, datap] = Def_len_datap;
 
 %%
+if strcmp(sobj.pattern, 'StaticBar')
+    stim(stim == 180) = 0;
+end
+
 [stim_list, ~, ic] = unique(stim, 'rows');
 imgobj.Mosaic_i = ic;
 
@@ -150,7 +156,6 @@ for i = rois %%%%% i for each ROI
             elseif max(ext_fs) <= size(imgobj.dFF, 1)
                 %disp(ext_fs)
                 dFF_ext(:, i3) = imgobj.dFF(ext_fs, i);
-                
                 R_each_pos(i3, i2, i) = max(dFF_ext(:,i3)) - mean(dFF_ext(1:2, i3));
                 R_each_neg(i3, i2, i) = min(dFF_ext(:,i3)) - mean(dFF_ext(1:2, i3));
             else
@@ -178,8 +183,9 @@ for i = rois %%%%% i for each ROI
 end
 
 %% delete motion? artifact or non reproducible event?
-
-s_each = Delete_event(s_each);
+if ~isempty(s_each)
+    s_each = Delete_event(s_each);
+end
 
 %% Set imgobj params
 imgobj.dFF_s_ave = s_ave;
@@ -207,7 +213,7 @@ disp('Trial averages and individual peak values are extracted.')
 %%
 % for orientation
 switch sobj.pattern
-    case {'MoveBar', 'Rect'}
+    case {'MoveBar', 'Rect', 'StaticBar'}
         Get_Trial_Averages_orientation; 
 end
 %% end of this function

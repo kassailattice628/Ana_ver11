@@ -44,7 +44,7 @@ switch sobj.pattern
         
     case 'Size_rand'
         %use 1:5 (0.5d. 1d, 3d, 5d, 10d)
-        imgobj.mat2D = imgobj.mat2D(1:5*(5+datap), :);
+        imgobj.mat2D = imgobj.mat2D(1:7*(5+datap), :);
         %sort was done in GetTuned_ROI.m, MoveBar Get_Tuned_ROI ‚Å sort
         %‚µ‚½•û‚ª‚¢‚¢‚©‚à
         mat2D = imgobj.mat2D(:, imgobj.mat2D_i_sort );
@@ -54,18 +54,28 @@ switch sobj.pattern
         [mat2D, imgobj.mat2D_i_sort] = sort_mat(imgobj.mat2D);
         xlab = 'Move Direction';
         
+    case {'StaticBar'}
+        mat2D=[];
+        %[mat2D, imgobj.mat2Dori_i_sort] = sort_matori(imgobj.mat2D);
+        %xlab = 'Bar Orientation';
+        
 end
 
-show_mat(mat2D, xlab)
+if ~isempty(mat2D)
+    show_mat(mat2D, xlab)
+    addplot_selectivity
+end
 
 %% show OS average
 switch sobj.pattern
     
-    case {'MoveBar', 'Rect'}
-        addplot_selectivity
-        [mat2Dori, imgobj.mat2Dori_i_sort] = sort_matori(imgobj.mat2Dori);
-        
-        
+    case {'MoveBar', 'Rect', 'StaticBar'}
+        %addplot_selectivity
+        if ~isempty(imgobj.mat2Dori)
+            [mat2Dori, imgobj.mat2Dori_i_sort] = sort_matori(imgobj.mat2Dori);
+        else
+            [mat2Dori, imgobj.mat2Dori_i_sort] = sort_matori(imgobj.mat2D);
+        end
         show_mat(mat2Dori, 'Bar Orientation')
         addplot_selectivity_ori
 end
@@ -83,9 +93,10 @@ end
 
 %% add plot DS
     function addplot_selectivity
-        xlabelpos = (5+datap) * (1:length(imgobj.directions)) - round((5+datap)/2);
+        nstim = length(imgobj.directions);
+        xlabelpos = (5+datap) * (1:nstim) - round((5+datap)/2);
         xticks(xlabelpos);
-        xt = Xt_lab(imgobj, 0);
+        xt = Xt_lab(nstim, 0);
         xticklabels(xt)
         
         hold on
@@ -110,9 +121,18 @@ end
 
 %% add plot OS
     function addplot_selectivity_ori
-        xlabelpos = (5+datap) * (1:length(imgobj.directions)/2) - round((5+datap)/2);
+        if isfield(imgobj, 'directions')
+            nstim = length(imgobj.directions)/2;
+            orientations = imgobj.directions(1:nstim/2);
+        elseif isfield(imgobj, 'orientations')
+            nstim = length(imgobj.orientations);
+            orientations = imgobj.orientations;
+        end
+        
+        xlabelpos = (5+datap) * (1:nstim) - round((5+datap)/2);
+            
         xticks(xlabelpos);
-        xt = Xt_lab(imgobj, 1);
+        xt = Xt_lab(nstim, 1);
         xticklabels(xt)
         
         hold on
@@ -126,7 +146,6 @@ end
         if ~isempty(roi_os)
             for i = roi_os  %imgobj.roi_dir_sel
                 ypos = find(imgobj.mat2Dori_i_sort == i);
-                orientations = imgobj.directions(1: length(imgobj.directions)/2);
                 Ang_ori = imgobj.Ang_ori(i);
                 if Ang_ori < 0
                     Ang_ori = Ang_ori + pi;
@@ -186,8 +205,12 @@ end
 
 %% sort by pref orientation
     function [mat2, i] = sort_matori(mat)
-        Ang_ori = imgobj.Ang_ori;
-        Ang_ori(Ang_ori < 0) = Ang_ori(Ang_ori < 0) + pi;
+        if isfield(imgobj, 'Ang_ori')
+            Ang_ori = imgobj.Ang_ori;
+            Ang_ori(Ang_ori < 0) = Ang_ori(Ang_ori < 0) + pi;
+        else
+            Ang_ori = wrapTo2Pi(deg2rad(sobj.concentric_angle_deg_list) * 2)/2;
+        end
         
         if ~isfield(imgobj, 'P_boot')
             %positive or negative roi

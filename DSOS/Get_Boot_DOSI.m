@@ -10,10 +10,10 @@ function [R_boot_med, P_boot,...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %get stim direction vector
-dir = imgobj.directions;
+direction = imgobj.directions;
 n_boot = 5000;
 
-R_boot_med = zeros(length(dir), imgobj.maxROIs);
+R_boot_med = zeros(length(direction), imgobj.maxROIs);
 P_boot = zeros(n_boot, 4, imgobj.maxROIs);
 roi_ds = [];
 roi_os = [];
@@ -32,7 +32,7 @@ for i = 1:imgobj.maxROIs
     if isempty(rmmissing(imgobj.dFF_s_each(:,:,i)))
         continue
     end
-    [P, x_boot, ds, os] = Get_selective_boot(imgobj.dFF_s_each(:,:,i), dir, n_boot);
+    [P, x_boot, ds, os] = Get_selective_boot(imgobj.dFF_s_each(:,:,i), direction, n_boot);
     P_boot(:,:,i) = P;
     
     R_boot_med_ = [];
@@ -40,7 +40,7 @@ for i = 1:imgobj.maxROIs
     %direction
     if ds
         roi_ds = [roi_ds, i];
-        [b_ds_, Ci_ds_, f_ds_, R_boot_med_] = Fit_vonMises2(x_boot, dir, median(P(:,2)),1, i);
+        [b_ds_, Ci_ds_, f_ds_, R_boot_med_] = Fit_vonMises2(x_boot, direction, median(P(:,2)),1, i);
         if length(b_ds_) == length(b_ds)
             b_ds(i,:) = b_ds_;
             Ci_ds(i,:) = Ci_ds_;
@@ -60,7 +60,7 @@ for i = 1:imgobj.maxROIs
     if os
         roi_os = [roi_os, i];
         [b_os(i,:), Ci_os(i,:), f_os_, R_boot_med_] =...
-            Fit_vonMises2(x_boot, dir, median(P(:,4)), 2, i);
+            Fit_vonMises2(x_boot, direction, median(P(:,4)), 2, i);
         f_os(i) = f_os_;
         
         %Update L_ori, Ang_ori

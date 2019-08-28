@@ -59,6 +59,11 @@ switch sobj.pattern
         imgobj.roi_dir_sel = roi_dir;
         imgobj.roi_non_sel = setdiff(roi_res, union(roi_ori, roi_dir));
         
+    case 'StaticBar'
+        roi_ori = intersect(roi_res, find(imgobj.L_ori >= th_ori));
+        imgobj.roi_ori_sel = roi_ori;
+        imgobj.roi_non_sel = setdiff(roi_res, roi_ori);
+        
 end
 
 %% update imgobj

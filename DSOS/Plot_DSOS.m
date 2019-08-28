@@ -14,6 +14,7 @@ global imgobj
 %remove NaN from recorded data point
 x = [];
 y = [];
+
 for j = 1:length(d_vec)
     for i = 1:size(imgobj.dFF_s_each(:, j, roin), 1)
         y_ = imgobj.dFF_s_each(i, j, roin);

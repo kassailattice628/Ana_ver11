@@ -1,4 +1,18 @@
 # Change_log
+
+##... 190828
+Static Bar の応答を Fitting, Plot
+
+
+##... 190511
+DS/OS の判定に，bootstrap で resampling したデータで DSI, OSI を計算し
+bootstrapped DSI/OSI の 5% border が 0.2, 0.15 以上のものを selective な cell として定義し直す．
+
+9x9 uni や FineMap から retinotoic organization を可視化するコードを整備．
+各細胞の RF についても描画できるようにした．
+
+
+
 ##... 180628 to do
 Green と Pink で表示している Excitatory/ Inhitiory cell map と
 Direction/Orientation selective map を比べると位置がおかしい？？？ 

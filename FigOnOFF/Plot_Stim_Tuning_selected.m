@@ -39,6 +39,10 @@ switch sobj.pattern
         
         
     case {'Sin', 'Rect', 'Gabor', 'MoveBar'}
+        
+        Plot_DSOS_selected
+        
+        %{
         %%%%%%%%%%
         if length(stim_list) == 8
             stim_txt = {'0:2\pi', '1/4', '1/2', '3/4', '\pi', '5/4', '3/2', '7/4'};
@@ -155,11 +159,11 @@ switch sobj.pattern
         elseif flag == 2
             
             Plot_DSOS_selected
-            
-            
         end
+        %}
         
-        
+    case 'StaticBar'
+        Plot_OS_selected
 end
 
 %%
