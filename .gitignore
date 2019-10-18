@@ -1,3 +1,8 @@
 #使わなくなったファイルを貯めるフォルダは管理対象外にする
 old/
 others/
+Merge_Exp/
+
+#設定ファイル
+.python-version
+.vscode/settings.json

@@ -42,6 +42,10 @@ switch sobj.pattern
         mat2D = imgobj.mat2D;
         xlab = 'data point';
         
+    case {'1P_Conc', '2P'}
+        mat2D = imgobj.mat2D;
+        xlab = 'data point';
+        
     case 'Size_rand'
         %use 1:5 (0.5d. 1d, 3d, 5d, 10d)
         imgobj.mat2D = imgobj.mat2D(1:7*(5+datap), :);
@@ -50,7 +54,7 @@ switch sobj.pattern
         mat2D = imgobj.mat2D(:, imgobj.mat2D_i_sort );
         xlab = 'data point';
         
-    case {'MoveBar', 'Rect'}
+    case {'MoveBar', 'Rect', 'MoveSpot'}
         [mat2D, imgobj.mat2D_i_sort] = sort_mat(imgobj.mat2D);
         xlab = 'Move Direction';
         
@@ -63,15 +67,18 @@ end
 
 if ~isempty(mat2D)
     show_mat(mat2D, xlab)
-    addplot_selectivity
 end
 
 %% show OS average
 switch sobj.pattern
     
-    case {'MoveBar', 'Rect', 'StaticBar'}
-        %addplot_selectivity
-        if ~isempty(imgobj.mat2Dori)
+    case {'MoveBar', 'Rect', 'StaticBar', 'MoveSpot'}
+        if isfield(imgobj, 'directions')
+            addplot_selectivity
+        end
+        
+        %if ~isempty(imgobj.mat2Dori)
+        if isfield(imgobj, 'mat2Dori')
             [mat2Dori, imgobj.mat2Dori_i_sort] = sort_matori(imgobj.mat2Dori);
         else
             [mat2Dori, imgobj.mat2Dori_i_sort] = sort_matori(imgobj.mat2D);
@@ -123,7 +130,7 @@ end
     function addplot_selectivity_ori
         if isfield(imgobj, 'directions')
             nstim = length(imgobj.directions)/2;
-            orientations = imgobj.directions(1:nstim/2);
+            orientations = imgobj.directions(1:nstim);
         elseif isfield(imgobj, 'orientations')
             nstim = length(imgobj.orientations);
             orientations = imgobj.orientations;
@@ -229,15 +236,18 @@ end
             
         else
             %sort order
-            %1:OS -> Pref.Orientation
+            %1:OS -> Pref.Orientationd
             %2:Non-selective (àÍâû Tuning Angle èáÇ…ÅHÅj
             %3:Negative
             %4:No respondink
             roi_os = imgobj.roi_os;
             
             [~, i_os_sort] = sort(Ang_ori(roi_os));
-            
-            roi_ds = setdiff(imgobj.roi_ds, imgobj.roi_os);
+            if isfield(imgobj, 'roi_ds')
+                roi_ds = setdiff(imgobj.roi_ds, imgobj.roi_os);
+            else
+                roi_ds = [];
+            end
             %            [~, i_os_sort] = sort(imgobj.Ang_ori(roi_os));
             
             roi_non_sel = setdiff(imgobj.roi_res, roi_os);

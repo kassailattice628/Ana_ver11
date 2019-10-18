@@ -8,6 +8,7 @@ global n
 global imgobj
 global mainvar
 
+cd('/Users/lattice/Dropbox/None_But_Air/Ana_ver11/')
 addpath('FigOnOFF');
 addpath('DSOS');
 addpath('RF');

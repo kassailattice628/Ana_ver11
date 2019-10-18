@@ -332,7 +332,8 @@ switch sobj.pattern
         visible2 = 'on';
     case 'Size_rand'
         text_tuning = 'Size Tuning';
-    case {'Sin', 'Rect', 'Gabor', 'MoveBar'}
+        
+    case {'Sin', 'Rect', 'Gabor', 'MoveBar', 'MoveSpot'}
         text_tuning = 'Show Tuning (Dir/Ori)';
         visible2 = 'on';
         

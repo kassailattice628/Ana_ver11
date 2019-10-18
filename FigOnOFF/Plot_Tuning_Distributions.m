@@ -13,7 +13,7 @@ Col_ROIs;
 
 %% histogram of tuning properties
 switch sobj.pattern
-    case 'MoveBar'
+    case {'MoveBar', 'MoveSpot'}
         %nbins = 24;
         %roi = imgobj.roi_res;
         

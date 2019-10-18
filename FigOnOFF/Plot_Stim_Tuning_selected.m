@@ -38,7 +38,7 @@ switch sobj.pattern
         end
         
         
-    case {'Sin', 'Rect', 'Gabor', 'MoveBar'}
+    case {'Sin', 'Rect', 'Gabor', 'MoveBar', 'MoveSpot'}
         
         Plot_DSOS_selected
         

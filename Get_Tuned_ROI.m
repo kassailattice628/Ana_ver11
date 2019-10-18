@@ -34,6 +34,9 @@ roi_res = setdiff(all, roi_nores);
 
 %% selective roi
 switch sobj.pattern
+    case '2P'
+        disp('2P')
+        
     case 'Size_rand'
         
         [val, ps] = max(imgobj.R_size(:,:,3));
@@ -49,7 +52,7 @@ switch sobj.pattern
 
         imgobj.mat2D_i_sort = i_sort;
         
-    case {'MoveBar', 'Rect'}
+    case {'MoveBar', 'Rect', 'MoveSpot'}
         % find orientation, direction selective cell
         
         roi_ori = intersect(roi_res, find(imgobj.L_ori >= th_ori));

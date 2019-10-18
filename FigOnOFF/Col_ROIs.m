@@ -51,7 +51,7 @@ switch sobj.pattern
     case {'Sin', 'Rect', 'Gabor'}
         map_angler(0, imgBG);
         
-    case 'MoveBar'
+    case {'MoveBar', 'MoveSpot'}
         map_angler(0, imgBG);
         map_angler(1, imgBG);
         map_angler(2, imgBG);
@@ -73,6 +73,8 @@ switch sobj.pattern
             map_nxn_use_fitdata;
         end
         
+    case 'StaticBar'
+        map_angler(1, imgBG);
     otherwise
 end
 
