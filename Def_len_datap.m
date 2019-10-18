@@ -20,7 +20,16 @@ else
 end
 
 % to capture off reponse;
-postp = round( (duration + 2) / imgobj.FVsampt);
+if strcmp(sobj.pattern, 'FineMap')
+    n = 4;
+    %if duration + 4 is longer than recording time, reset n = 2.
+elseif strcmp(sobj.pattern, 'Uni')
+    n = 1;
+else
+    n = 5;
+end
+
+postp = round( (duration + n) / imgobj.FVsampt);
 
 p_on = prep + 1;
 p_off = p_on + postp;

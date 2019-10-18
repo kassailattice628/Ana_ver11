@@ -65,8 +65,6 @@ end
 
 xp = 0:0.01:2*pi;
 
-
-
 figure
 %Raw plot
 subplot(1,2,1)
@@ -75,9 +73,54 @@ hold on
 plot(x, y, [color, '.']);
 %bootstrapped median
 plot(d_vec, R_boot_med, [color, 'o'], 'MarkerSize', 7)
+
 %fit
 if plot_fit == 1
-    plot(xp, f_vM(b_fit, xp), [color, '-'], 'LineWidth', 2)
+    
+    plot_PredInt = 3;
+    
+    if plot_PredInt ==  1
+        if type == 1 %DS
+            [Ypred, delta] = nlpredci(f_vM, xp, b_fit, imgobj.R_ds{roin}, 'Jacobian', imgobj.J_ds{roin});
+            
+        elseif type == 2 %OS
+            [Ypred, delta] = nlpredci(f_vM, xp, b_fit, imgobj.R_os{roin}, 'Jacobian', imgobj.J_os{roin});
+        end
+        
+        boundedline(xp, Ypred, delta, 'alpha');
+        
+    elseif plot_PredInt == 2 %Plot Confidence Interval
+        if type == 1
+            if imgobj.Ci_ds(roin, end) == 0
+                nb = 8;
+            else
+                nb = 12;
+            end
+            b_u = imgobj.Ci_ds(roin, 1:2:nb);
+            b_l = imgobj.Ci_ds(roin, 2:2:nb);
+            y_u = f_vM(b_u, xp);
+            y_l = f_vM(b_l, xp);
+            
+        elseif type == 2
+            b_u = imgobj.Ci_os(roin, 1:2:end);
+            b_l = imgobj.Ci_os(roin, 2:2:end);
+            y_u = f_vM(b_u, xp);
+            y_l = f_vM(b_l, xp);
+        end
+        
+        plot(xp, f_vM(b_fit, xp), [color, '-'], 'LineWidth', 2);
+        plot(xp, y_u, [color, '--'], 'LineWidth', 1);
+        plot(xp, y_l, [color, '--'], 'LineWidth', 1);
+        
+    elseif plot_PredInt == 3
+        if type == 1
+            plot(imgobj.FR_ds{roin}, 'predobs' );
+        elseif type == 2
+            plot(imgobj.FR_os{roin}, 'predobs' );
+        end
+    end
+    
+    
 end
 
 xlim([-0.1, 2*pi+0.1])

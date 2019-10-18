@@ -23,6 +23,10 @@ nstim = size(s_each, 2);
 switch sobj.pattern
     
     %%%%%%%%%%%%%%%%%%%%%%%%
+    case 'Uni'
+        
+    case '2P'
+        
     case 'Size_rand'
         % Best Size (for ON and OFF)
         imgobj.R_size = zeros(nstim, imgobj.maxROIs, 3);
@@ -38,7 +42,7 @@ switch sobj.pattern
 
         end
         
-    case {'Sin', 'Rect', 'Gabor', 'MoveBar'}
+    case {'Sin', 'Rect', 'Gabor', 'MoveBar', 'MoveSpot'}
         % Distribution of direction selectivity
         if length(roi) == imgobj.maxROIs
             imgobj.Ang_ori0 = zeros(1, imgobj.maxROIs);

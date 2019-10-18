@@ -1,7 +1,7 @@
 %Calc dFF, Batch
 
 % Read a motion-corrected tif file
-% Make F0 image
+% Make F0 image from different file.
 % Calc (F-F0)/F0
 % Save multi-tif image
 
@@ -13,8 +13,16 @@ addpath('/Users/lattice/Dropbox/TwoPhoton_Analysis/NoRMCorre/');
 %%%%%%%%%% modify info %%%%%%%%%%
 % a vector of file number to be processed, and thouse f0 frame numbers.
 
-n_img = [1:6];
-f0_frames = [76, 76, 76, 76, 78, 78];
+n_img = 1:8;
+
+%[f0_name, f0_dir] = uigetfile({'*.tif';'*.oib';'*.oif';},'Select F0');
+[f0_name, f0_dir] = uigetfile([dirname,'/','*.tif'],'Select F0');
+f0_frames = 342;
+F0 = read_file([f0_dir, f0_name]);
+F0 = double(F0);
+F0 = mean(F0(:,:, 1:f0_frames), 3);
+
+%}  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % dFF are save as MAT or TIFF
 i_save = input('Save dFF as Tiff? [Y/N] or both Tiff & Mat [W] >> ', 's');
@@ -24,7 +32,7 @@ i_save = input('Save dFF as Tiff? [Y/N] or both Tiff & Mat [W] >> ', 's');
 nn = 0;
 for n = n_img
     clear F
-    clear F0
+    %clear F0
     clear dFF
     
     nn = nn + 1; %counter
@@ -46,9 +54,7 @@ for n = n_img
         case {'.mat'}
             load(name);
     end
-    F0 = mean(F(:,:, 1:f0_frames(nn)), 3);
-    %x = [5:36, 42:110, 115:150];
-    %F0 = mean(F(:,:, x), 3);
+    %F0 = mean(F(:,:, 1:f0_frames(nn)), 3);
     dFF = F;
     for n3 = 1:size(F,3)
         dFF(:,:,n3) = (F(:,:, n3) - F0)./F0;
@@ -72,7 +78,6 @@ for n = n_img
             disp(['Saving Tiff File as ', out_name]);
             options.append = true;
             saveastiff(F, out_name, options);
-            
         case {'N', 'n', 'No', 'NO'}
             % Save as mat
             out_name = [dirname, 'dFF/', fsuf, fn, psuf, '_dFF.mat'];

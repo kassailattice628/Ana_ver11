@@ -11,6 +11,9 @@
 clear;
 gcp;
 tic
+
+num_ch = 1;
+
 % use "read_file" for reading tif"
 addpath(genpath('/Users/lattice/Dropbox/TwoPhoton_Analysis/NoRMCorre/'));
 
@@ -26,7 +29,6 @@ files = subdir(fullfile(dirname,['SC*', ext]));
 %f_nums = 1:15;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %% Batch for multiple files %%
 %for n = f_nums
@@ -48,7 +50,7 @@ for n = 1:size(files,1)
         
         %%%%% File loading %%%%%
         switch ext
-            case {'.tif', 'tiff'}
+            case {'.tif', '.tiff'}
                 % Read Tif File
                 F = read_file(name);
                 F = double(F);
@@ -59,11 +61,14 @@ for n = 1:size(files,1)
                     F = stack_F;
                     clear stack_F
                 end
+            case {'.oif', '.oib'}
+                F = Read_oif(name, num_ch);
         end
         
         %%%%%% Try non-rigid motion correction (in paralle) %%%%%%
         % Set params
         %
+        if size(F,1) == 320
         options_nonrigid = NoRMCorreSetParms...
             ('d1',size(F,1),'d2',size(F,2),...
             'grid_size', [60, 60],...  % size of non-overlapping regions (default: [d1,d2,d3])
@@ -72,8 +77,21 @@ for n = 1:size(files,1)
             'mot_uf' , 4,... % degree of patches upsampling (default: [4,4,1])
             'max_dev', 3,... % maximum deviation of patch shift from rigid shift (default: [3,3,1])
             'max_shift', 30,... % maximum rigid shift in each direction (default: [15,15,5])
-            'bin_width', 100,... % width of each bin (default: 10)  use 40
-            'iter', 1);... % number of data passes (default: 1)
+            'bin_width', 40,... % width of each bin (default: 10)  use 40
+            'iter', 3);... % number of data passes (default: 1)
+            
+        elseif size(F,1) == 256 %Zig-zag
+        options_nonrigid = NoRMCorreSetParms...
+            ('d1',size(F,1),'d2',size(F,2),...
+            'grid_size', [30, 30],...  % size of non-overlapping regions (default: [d1,d2,d3])
+            'overlap_pre', 15,... % size of overlapping region (default: [32,32,16])
+            'us_fac', 20,... % upsampling factor for subpixel registration (default: 20)
+            'mot_uf' , 2,... % degree of patches upsampling (default: [4,4,1])
+            'max_dev', 2,... % maximum deviation of patch shift from rigid shift (default: [3,3,1])
+            'max_shift', 15,... % maximum rigid shift in each direction (default: [15,15,5])
+            'bin_width', 10,... % width of each bin (default: 10)  use 40
+            'iter', 3);... % number of data passes (default: 1)
+        end
             
         
         disp('1st Calculating motion correction...')
@@ -102,7 +120,8 @@ for n = 1:size(files,1)
         %}
         
         %%%%%% Save the result as a multi-Tif %%%%%%
-        out_name = [dirname, fsuf, fn, psuf, '_NoRMC.tif'];
+        new_dir = '1_NoRMC/';
+        out_name = [dirname, new_dir, fsuf, fn, psuf, '_NoRMC.tif'];
         options.append = true;
         saveastiff(uint16(M2), out_name, options);
         disp([fsuf, fn, psuf, '_NoRMC.tif', ' is saved!']);
@@ -110,3 +129,5 @@ for n = 1:size(files,1)
     end
 end
 toc
+
+

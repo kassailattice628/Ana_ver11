@@ -35,7 +35,7 @@ elseif opt == 2
     %disp(th)
     [pks,locs] = findpeaks(vel, 'MinPeakHeight', th,...
         'MinPeakDistance', 200);
-    locs =  locs - 10;
+    locs =  locs - 5;
     
     %
     MaxPeakHeight = 30;

@@ -1,4 +1,4 @@
-function [b_fit, ci, f_select, R_boot_med] = Fit_vonMises2(data_boot, dir, pref, type, roin)
+function [b_fit, ci, f_select, R_boot_med, R, J] = Fit_vonMises3(data_boot, dir, pref, type, roin)
 global hfig
 
 % d := direction vector,
@@ -16,11 +16,11 @@ switch type
     case 1
         %DS �̏ꍇ
         [f_vM1, b0, bl, bu] = Set_FitFc(1);
-        [b_fit1, res1, ci1] = Exec_Fit(f_vM1, b0, bl, bu);
+        [b_fit1, res1, ci1, J1, R1] = Exec_Fit(f_vM1, b0, bl, bu);
         
         
         [f_vM2, b0, bl, bu] = Set_FitFc(2);
-        [b_fit2, res2, ci2] = Exec_Fit(f_vM2, b0, bl, bu);
+        [b_fit2, res2, ci2, J2, R2] = Exec_Fit(f_vM2, b0, bl, bu);
         
         
         if abs(b_fit2(5) - b_fit2(6)) > pi/4
@@ -28,26 +28,31 @@ switch type
             ci = ci1;
             f_vM = f_vM1;
             f_select = 1;
+            J = J1;
+            R = R1;
         else
-            
             if res1 <= res2
                 b_fit = b_fit1;
                 ci = ci1;
                 f_vM = f_vM1;
                 f_select = 1;
+                J = J1;
+                R = R1;
                 
             else
                 b_fit = b_fit2;
                 ci = ci2;
                 f_vM = f_vM2;
                 f_select = 2;
+                J = J2;
+                R = R2;
             end
         end
         
     case 2
         %OS �̏ꍇ
         [f_vM, b0, bl, bu] = Set_FitFc(2);
-        [b_fit, ~, ci] = Exec_Fit(f_vM, b0, bl, bu);
+        [b_fit, ~, ci, J, R] = Exec_Fit(f_vM, b0, bl, bu);
         f_select = 2;
         
     case 3
@@ -115,7 +120,7 @@ end
 
 %%%%%%%%%% %%%%%%%%%%
 
-    function [b_fit, res, ci] = Exec_Fit(f_vM, b0, bl, bu)
+    function [b_fit, res, ci, J, r] = Exec_Fit(f_vM, b0, bl, bu)
         [b_fit, res, r, ~,~,~,J] = lsqcurvefit(f_vM, b0, dir_, data, bl, bu, opts);
         ci = nlparci(b_fit,r,'jacobian',J);
         ci = reshape(ci', 1, []);

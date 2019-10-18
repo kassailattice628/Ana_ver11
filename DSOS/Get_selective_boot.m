@@ -1,6 +1,6 @@
 function [P, x_boot, ds, os] = Get_selective_boot(data, dir, n_boot)
 %data = imgobj.dFF_s_each(:,:,k)
-
+rng(6281980)
 n_data = size(data, 2);
 x_boot = zeros(n_boot, n_data);
 

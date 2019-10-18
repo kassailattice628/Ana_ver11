@@ -19,15 +19,30 @@ end
 data1_offset = OFFSET(data(:, 1, n) - data(1, 1, n), off1);
 data2_offset = OFFSET(data(:, 2, n) - data(1, 2, n), off2);
 
+% offset data
+data1_offset = movmean(data1_offset, 100);
+data2_offset = movmean(data2_offset, 100);
+
+% smoothing
+data1_offset = smoothdata(data1_offset, 'gaussian', 300);
+data2_offset = smoothdata(data2_offset, 'gaussian', 300);
+
+
 %% low-pass for eye traces
-d_filt_eye = designfilt('lowpassiir', ...        % Response type
-       'PassbandFrequency',10, ...     % Frequency constraints
-       'StopbandFrequency',200, ...
-       'PassbandRipple',4, ...          % Magnitude constraints
-       'StopbandAttenuation',55, ...
-       'DesignMethod','butter', ...      % Design method
-       'MatchExactly','stopband', ...   % Design method options
-       'SampleRate',r.sampf) ;              % Sample rate   
+% d_filt_eye = designfilt('lowpassiir', ...        % Response type
+%        'PassbandFrequency',10, ...     % Frequency constraints
+%        'StopbandFrequency',200, ...
+%        'PassbandRipple',4, ...          % Magnitude constraints
+%        'StopbandAttenuation',55, ...
+%        'DesignMethod','butter', ...      % Design method
+%        'MatchExactly','stopband', ...   % Design method options
+%        'SampleRate',r.sampf) ;              % Sample rate
+   
+d_filt_eye = designfilt('bandpassfir',...
+    'FilterOrder', 8,...
+    'CutoffFrequency1',20,...
+    'CutoffFrequency2', 100,...
+    'SampleRate', r.sampf);     
    
 data1_filt = filter(d_filt_eye ,data1_offset);
 data2_filt = filter(d_filt_eye ,data2_offset);
@@ -60,13 +75,14 @@ else
     th = str2double(get(hfig.vel_th, 'String'));
     %disp(max(velocity))
     [pks_in, locs_in] = findpeaks(velocity, 'MinPeakHeight', th,...
-        'MinPeakDistance', 200);
+        'MinPeakDistance', 300);
 
-    [pks_over,locs_over] = findpeaks(velocity, 'MinPeakHeight', 15,...
-        'MinPeakDistance', 200);
+    %remove outlier
+    [pks_over,locs_over] = findpeaks(velocity, 'MinPeakHeight', 10,...
+        'MinPeakDistance', 300);
 
     locs = setdiff(locs_in, locs_over);
-    locs =  locs - 10;
+    locs =  locs - 5;
     
     pks = setdiff(pks_in, pks_over);
     

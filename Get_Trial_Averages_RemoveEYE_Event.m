@@ -1,4 +1,4 @@
-function Get_Trial_Averages(~, ~, j)
+function Get_Trial_Averages_RemoveEYE_Event
 %%%%%%%%%%%%%%%%%%%%
 % Get traial averages for each stimulus
 % Do I need over-sampling?
@@ -19,9 +19,7 @@ global ParamsSave
 
 %%%%%%%%%%
 
-if nargin == 2
-    j = 0;
-end
+j = 0;
 %
 
 %% ini: stim-ON frame number
@@ -117,7 +115,7 @@ nstim = size(stim_list, 1); %the number of stimuli
 s_ave = zeros(datap, nstim, imgobj.maxROIs);
 
 % prepare matrix for max value for each trials of each stimuluss
-s_each = NaN([35, nstim, imgobj.maxROIs]);
+s_each = NaN([20, nstim, imgobj.maxROIs]);
 R_each_pos = s_each;
 R_each_neg = s_each;
 
@@ -126,6 +124,8 @@ roi_n = [];
 
 %%
 
+Remove_trials = Detect_trial_EyeMove(ParamsSave, recobj);
+stim(Remove_trials) = NaN;
 %%
 if j == 0
     rois = 1:imgobj.maxROIs;
@@ -139,6 +139,7 @@ for i = rois %%%%% i for each ROI
         disp(['ROI# ', num2str(i), ' has no data.'])
         continue;
     end
+    
     
     for i2 = 1:nstim %%%% i2 for each stimulus
         i_list = ismember(stim, stim_list(i2, :), 'rows');

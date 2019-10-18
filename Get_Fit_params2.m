@@ -32,17 +32,21 @@ else
                 %Plot only
                 i_roi = 1:imgobj.maxROIs;
                 i_roi = i_roi(imgobj.b_GaRot2D(:,1) >= 0.15);
-                if get(check_box, 'Value')
-                    Plot_RF_selected(i_roi);
+                if ~isempty(check_box)
+                    if get(check_box, 'Value')
+                        Plot_RF_selected(i_roi);
+                    end
                 end
             end
             
-        case {'MoveBar', 'Rect'}
+        case {'MoveBar', 'Rect', 'MoveSpot'}    
             if ~isfield(imgobj, 'P_boot')
                 disp('Bootstrapping...')
                 
-                [R_boot_med, P_boot, roi_ds, roi_os, b_ds, b_os, Ci_ds, Ci_os, f_ds, f_os]...
-                    = Get_Boot_DOSI(imgobj);
+                [R_boot_med, P_boot, roi_ds, roi_os, b_ds, b_os,...
+                    Ci_ds, Ci_os, f_ds, f_os, R_ds, R_os, J_ds, J_os,...
+                    FR_ds, FR_os]...
+                    = Get_Boot_DOSI2(imgobj);
                 
                 imgobj.dFF_boot_med = R_boot_med;
                 imgobj.P_boot = P_boot;
@@ -54,6 +58,13 @@ else
                 imgobj.b_os = b_os;
                 imgobj.Ci_ds = Ci_ds;
                 imgobj.Ci_os = Ci_os;
+                imgobj.R_ds = R_ds;
+                imgobj.R_os = R_os;
+                imgobj.J_ds = J_ds;
+                imgobj.J_os = J_os;
+                imgobj.FR_ds = FR_ds;
+                imgobj.FR_os = FR_os;
+                
                 
                 %Reget stim average
                 Get_Trial_Averages([],[],0);
@@ -84,11 +95,5 @@ else
             end
     end
 end
-
-%%
-
-
-
-
 
 end % END OF "Get_Fit_Params2"
