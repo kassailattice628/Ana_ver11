@@ -1,7 +1,10 @@
 # Change_log
+##... 190929
+２つの imgobj を Merge して bootstrap やり直す（DS/OS用）関数を Merge フォルダに
 
 ##... 190828
 Static Bar の応答を Fitting, Plot
+OS の pref angle 確認しておいたほうが良いかも．
 
 
 ##... 190511
