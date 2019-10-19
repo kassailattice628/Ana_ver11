@@ -7,8 +7,6 @@ dir = repmat(direction, 5000, 1);
 [f_vM, opts] = SelectFitOpt(type, pref);
 
 [fitresult, gof] = fit( xData, yData, f_vM, opts );
-
-f
 end
 
 %%

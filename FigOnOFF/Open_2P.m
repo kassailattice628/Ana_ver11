@@ -1,7 +1,6 @@
 function Open_2P(hfig_handle, p, r, s)
 global hfig
 global imgobj
-
 %%
 h_name = 'two_photon';
 hfig.two_photon = figure('Position', [10, 20, 1100, 500], 'Name', 'Two-photon Traces',...
@@ -154,14 +153,21 @@ OpenPanel2(hfig, imgobj, s)
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function Open_file(d,f)
-        [~,~,f_ext] = fileparts(f);
-        if strcmp(f_ext, '.xls')
-            imgobj.dFF = dlmread([d, f], '\t', 1, 1);
-        elseif strcmp(f_ext, '.csv')
-            imgobj.dFF = csvread([d,f], 1, 1);
-        elseif strcmp(f_ext, '.mat')
-            load([d,f], 'dFF_mat');
-            imgobj.dFF = dFF_mat;
+        
+        if strcmp(f, 'Fall.mat')
+            %data extracted from suite2P
+            [imgobj.dFF, imgobj.Mask_rois, imgobj.centroid] = Load_Fall_suite2p(d,f);
+        else
+            [~,~,f_ext] = fileparts(f);
+            
+            if strcmp(f_ext, '.xls')
+                imgobj.dFF = dlmread([d, f], '\t', 1, 1);
+            elseif strcmp(f_ext, '.csv')
+                imgobj.dFF = csvread([d,f], 1, 1);
+            elseif strcmp(f_ext, '.mat')
+                load([d,f], 'dFF_mat');
+                imgobj.dFF = dFF_mat;
+            end
         end
         imgobj.dFF_raw =  imgobj.dFF;
         [FVflames, imgobj.maxROIs] = size(imgobj.dFF);
@@ -282,7 +288,8 @@ end
 %% panel2
 function OpenPanel2(~, imgobj, sobj)
 global hfig
-
+addpath('FigOnOFF');
+%%
 p_funcs = uipanel('Parent', hfig.two_photon, 'Title', 'Ctr', 'FontSize', 12, 'Position', [0.63 0.05 0.36 0.83]);
 h_Detrend = uicontrol('Parent', p_funcs, 'Style', 'togglebutton', 'String', 'Detrend', 'Position', [5, 360, 100, 30], 'FontSize', 14);
 
