@@ -108,12 +108,22 @@ title('Visual Stimulus', 'FontSize', 14)
 xlabel('Time (s)');
 
 
-%% Controler
+% Controler
+
 slider4_height = axes4_h_base + axes1_height;
 uicontrol('Style', 'text', 'String', 'Threshold', 'Position',[640, slider4_height, 80, 20])
 h.slider4 = uicontrol('Style', 'slider', 'Position', [675, axes4_h_base, 20, axes1_height],...
-    'Min',0, 'Max', 500, 'Value', 85, 'SliderStep',[0.01 0.10], 'Callback', {@Plot_next, data, 0, p, r});
-%Value: 85
+    'Min',0, 'Max', 500, 'Value', 85, 'SliderStep',[0.01 0.10],...
+    'Callback', {@Plot_next, data, 0, p, r});
+
+
+h.set_threshold = uicontrol('Style', 'edit', 'String', '85',...
+    'Position', [700, slider4_height-20, 80, 25], 'FontSize', 14, 'BackGroundColor', 'w',...
+    'Callback', {@Set_threshold, h, data, p, r});
+h.apply_threshold = uicontrol('Style', 'togglebutton','String', 'Apply All',...
+    'Position', [700, slider4_height-50, 90, 30], 'FontSize', 14,...
+    'Callback', {@Apply_threshold_to_all, h.set_threshold, data, r, sobj});
+
 
 
 %% Select NBA DATA file
@@ -136,13 +146,14 @@ uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', '-', 'Position',
 uicontrol('Parent', h.p_trial, 'Style', 'text', 'String', '#: ', 'Position', [120, 2, 20, 25], 'FontSize', 14);
 h.set_n = uicontrol('Parent', h.p_trial, 'Style', 'edit', 'String', 1, 'Position', [140, 7, 50, 25], 'Callback', {@Plot_next, data, 0, p, r}, 'FontSize', 14, 'BackGroundColor', 'w');
 
-uicontrol('Parent', h.p_trial, 'Style', 'text', 'String', 'Threshold:', 'Position', [200, 2, 80, 25], 'FontSize', 14);
+%{
+uicontrol('Parent', h.p_trial, 'Style', 'text', 'String', 'Thr:', 'Position', [200, 2, 30, 25], 'FontSize', 14);
 h.set_threshold = uicontrol('Parent', h.p_trial, 'Style', 'edit', 'String',...
     num2str(get(h.slider4, 'value')),'Position', [285, 7, 50, 25],...
     'Callback', {@Set_threshold, h, data, p, r}, 'FontSize', 14, 'BackGroundColor', 'w');
-%h.apply_threshold = uicontrol('Parent', h.p_trial, 'Style', 'togglebutton',...
-%    'String', 'Apply All', 'Position', [340, 5, 90, 30], 'Callback', {@Apply_threshold_to_all, h.set_threshold, data, r, sobj}, 'FontSize', 14);
-
+h.apply_threshold = uicontrol('Parent', h.p_trial, 'Style', 'togglebutton',...
+    'String', 'Apply All', 'Position', [340, 5, 90, 30], 'Callback', {@Apply_threshold_to_all, h.set_threshold, data, r, sobj}, 'FontSize', 14);
+%}
 uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', 'Get F0#', 'Position', [340, 5, 80, 30], 'FontSize', 14,...
     'Callback', @GetF0);
 

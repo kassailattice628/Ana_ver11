@@ -1,4 +1,4 @@
-function tpf = Get_FVsampt(~, ~)
+function [tpf, imgsz]  = Get_FVsampt(~, ~)
 % Read Time Per Frame from
 % OIF or OIB data
 %
@@ -16,9 +16,14 @@ metadata =  data{1,2};
 %Time Per Frame (us)
 tpf = metadata.get('Global Time Per Frame');
 tpf = str2double(tpf) * 10^-6;
+
+
 if exist('imgobj', 'var')
     imgobj.FVsampt =tpf;
-    imgobj.imgsz = size(data{1,1}{1,1});
+    imgsz = size(data{1,1}{1,1});
+    imgobj.imgsz = imgsz;
+else
+    imgsz = [];
 end
 
 %Update GUI
