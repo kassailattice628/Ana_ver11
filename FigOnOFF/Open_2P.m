@@ -424,7 +424,9 @@ imgobj.dFF = dFF_mod;
 Plot_dFF_next([],[],0);
 end
 
+ 
 %% Update parameters
+%{
 function Update_Params(~,  ~, h)
 global DataSave
 global imgobj
@@ -442,14 +444,15 @@ end
 suf = get(h, 'string');
 [~, name, ext] = fileparts(mainvar.fname);
 save_name = [mainvar.dirname, name, suf, ext];
-%update parameters
+update parameters
 
 save(save_name, 'DataSave', 'imgobj', 'mainvar', 'ParamsSave', 'recobj', 'sobj');
-%save save_name DataSave imgobj mainvar ParamsSave recobj sobj;
+save save_name DataSave imgobj mainvar ParamsSave recobj sobj;
 
 disp(['save as ', save_name]);
 
 end
+%}
 
 %% Use KeyPress
 function callback_keypress(~, eventdata)
