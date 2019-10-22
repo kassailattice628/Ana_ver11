@@ -129,7 +129,7 @@ h.stim2_info = uicontrol('Style', 'text', 'String', '', 'Position', [470, 750, 5
 
 %% trial select
 %main[10, 20, 1000, 800]
-h.p_trial =  uipanel('Title', 'Stim Trial', 'FontSize', 12, 'Position', [0.01 0.88, 0.7, 0.065]);
+h.p_trial =  uipanel('Title', 'Stim Trial', 'FontSize', 12, 'Position', [0.01 0.88, 0.77, 0.065]);
 
 uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', '+', 'Position', [10, 5, 50, 30], 'Callback', {@Plot_next, data, 1, p, r}, 'FontSize', 14);
 uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', '-', 'Position', [65, 5, 50, 30], 'Callback', {@Plot_next, data, -1, p, r}, 'FontSize', 14);
@@ -140,15 +140,18 @@ uicontrol('Parent', h.p_trial, 'Style', 'text', 'String', 'Threshold:', 'Positio
 h.set_threshold = uicontrol('Parent', h.p_trial, 'Style', 'edit', 'String',...
     num2str(get(h.slider4, 'value')),'Position', [285, 7, 50, 25],...
     'Callback', {@Set_threshold, h, data, p, r}, 'FontSize', 14, 'BackGroundColor', 'w');
-h.apply_threshold = uicontrol('Parent', h.p_trial, 'Style', 'togglebutton',...
-    'String', 'Apply All', 'Position', [340, 5, 90, 30], 'Callback', {@Apply_threshold_to_all, h.set_threshold, data, r, sobj}, 'FontSize', 14);
+%h.apply_threshold = uicontrol('Parent', h.p_trial, 'Style', 'togglebutton',...
+%    'String', 'Apply All', 'Position', [340, 5, 90, 30], 'Callback', {@Apply_threshold_to_all, h.set_threshold, data, r, sobj}, 'FontSize', 14);
 
-uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', 'Get F0#', 'Position', [435, 5, 80, 30], 'FontSize', 14,...
+uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', 'Get F0#', 'Position', [340, 5, 80, 30], 'FontSize', 14,...
     'Callback', @GetF0);
 
-uicontrol('Parent', h.p_trial, 'Style', 'text', 'String', 'FVsampt=', 'Position', [515, 2, 80, 25], 'FontSize', 14);
+uicontrol('Parent', h.p_trial, 'Style', 'text', 'String', 'FVsampt=', 'Position', [425, 2, 75, 25], 'FontSize', 14);
 h.FVsampt = uicontrol('Parent', h.p_trial, 'Style', 'edit', 'String', imgobj.FVsampt,...
-    'Position', [595, 5, 100, 30], 'FontSize', 14, 'Callback', @Update_FVsampt);
+    'Position', [505, 5, 90, 30], 'FontSize', 14, 'Callback', @Update_FVsampt);
+
+uicontrol('Parent', h.p_trial, 'Style', 'pushbutton', 'String', 'Get FVsampt','Position', [600, 5, 110, 30], 'FontSize', 14,...
+    'Callback', @Get_FVsampt);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 uicontrol('Units', 'Pixels', 'Style', 'text', 'String', 'P1_1:range', 'FontSize', 14,...
@@ -251,16 +254,4 @@ clear DataSave
 end
 
 
-function GetF0(~,~)
-global ParamsSave
-global recobj
-global imgobj
 
-if isfield(ParamsSave{1,recobj.prestim + 1}.stim1, 'corON')
-    numF0 = floor(ParamsSave{1,recobj.prestim + 1}.stim1.corON / imgobj.FVsampt) - 1;
-    
-    msgbox(['The number of frames for prestimulus is :: ', num2str(numF0)] );
-else
-    warndlg('Onset of the first stimulus timing is not defined !!!')
-end
-end

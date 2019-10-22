@@ -24,35 +24,6 @@ imgobj.maxROIs =  1;
 if ~isfield(imgobj, 'FVsampt')
     imgobj.FVsampt = 0.574616;
 end
-%{
-%%
-imgobj.nROI = 0;
-imgobj.selectROI = 1;
-imgobj.maxROIs =  1;
-
-if ~isfield(imgobj, 'FVsampt')
-    imgobj.FVsampt = 0.574616;
-end
-
-if isfield(imgobj, 'dFF_s_ave')
-   fields = {'dFF_s_ave', 'dFF_s_ave_os', 'dFF_raw', 'FVt'};
-   imgobj = rmfield(imgobj, fields);
-end
-
-if isfield(imgobj, 'L_ori')
-    fields = {'L_ori', 'L_dir', 'Ang_ori', 'Ang_dir',};
-    imgobj = rmfield(imgobj, fields);
-end
-
-if isfield(imgobj, 'Mask_rois')
-    fields = {'Mask_rois', 'centroid'};
-    imgobj = rmfield(imgobj, fields);
-end
-
-if isfield(imgobj, 'dir_sel_rois')
-    imgobj = rmfield(imgobj, 'dir_sel_rois');
-end
-%}
 
 %% Load Data %%
 [fname, dirname] = uigetfile([mainvar.dirname, '*.mat']);
