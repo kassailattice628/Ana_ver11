@@ -19,23 +19,26 @@ setdiff(intersect(find(imgobj.L_ori > 0.15), imgobj.roi_res), find(imgobj.L_dir 
 %Negative response
 disp(imgobj.roi_nega_R)
 
-% Find DS or OS rois
-% Check tuning (from GUI) 
-% If finding abnormal peak values, run following scripts to delete and
-% re-calculate tuning indices.
+% 1: Find DS or OS rois
+% 2: Check tuning (from GUI) 
+% 3: If finding abnormal peak values, run following scripts to delete and
+%    re-calculate tuning indices.
 
-% if you want to change roi from responded into non-responded, run
-% Delete_roi.m
+% 4: if you want to change roi from responded into non-responded
+%    run Delete_roi, or Delete_roi(**)
 %}
 
 %%
 % copy data
 data = imgobj.dFF_s_each;
 %roi 
-i = 45;
-%30 24 6 
+i =21;
+%93 203 
 
-% check dFF_s_each (peak values of individual trials)
+
+% 180910SC2tuning ÇÃéRä¥äoÇ™ã∑Ç¢ÅH156 110 
+
+% check dFF_s_each (peak values of individual trials) 
 Delete_event(data, 1, 1, i);
  
 disp(data(:,:,i))
@@ -43,8 +46,8 @@ disp(data(:,:,i))
 %% Edit data
 % if the strange data points were found, manually delete the data point
 
-r = [4] ;% stim
-c = [2 ] ;% trial 
+r = [5] ;% stim
+c = [9] ;% trial 
 
 [s_ave, s_each] = Mod_Trial_Averages(i, r, c);
 
