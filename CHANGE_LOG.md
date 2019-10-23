@@ -1,4 +1,7 @@
 # Change_log
+## ver11.6_191023
+suite2p で解析した ファイルを読めるように機能追加
+
 ##... 190929
 ２つの imgobj を Merge して bootstrap やり直す（DS/OS用）関数を Merge フォルダに
 
