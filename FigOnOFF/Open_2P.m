@@ -156,7 +156,7 @@ OpenPanel2(hfig, imgobj, s)
         
         if strcmp(f, 'Fall.mat')
             %data extracted from suite2P
-            [imgobj.dFF, imgobj.Mask_rois, imgobj.centroid] = Load_Fall_suite2p(d,f);
+            [imgobj.dFF, imgobj.Mask_rois, imgobj.centroid] = Load_Fall_suite2p(d,f, imgobj);
         else
             [~,~,f_ext] = fileparts(f);
             
