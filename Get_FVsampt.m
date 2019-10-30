@@ -2,25 +2,18 @@ function [tpf, imgsz]  = Get_FVsampt(~, ~)
 % Read Time Per Frame from
 % OIF or OIB data
 %
-
 global imgobj
 global hfig
 
-[f, d] = uigetfile(...
-    {'*.oif; *.oib', 'Olympus'},...
-    'SELECT files');
+key = {'Time Per Frame', '[Axis 0 Parameters Common] MaxSize',...
+    '[Axis 1 Parameters Common] MaxSize'};
+params = Get_metadata([], key);
 
-data = bfopen([d,f]);
-metadata =  data{1,2};
-
-%Time Per Frame (us)
-tpf = metadata.get('Global Time Per Frame');
-tpf = str2double(tpf) * 10^-6;
-
+tpf = params(1) * 10^-6;
+imgsz = [params(2), params(3)];
 
 if exist('imgobj', 'var')
     imgobj.FVsampt =tpf;
-    imgsz = size(data{1,1}{1,1});
     imgobj.imgsz = imgsz;
 else
     imgsz = [];

@@ -210,7 +210,6 @@ end
 function Get_Plot_sac_timing(~, ~, p)
 global hfig
 
-
 sac_t = [];
 for i = 1:size(p,2)
     if isfield(p{i}, 'sac_t')
@@ -218,7 +217,7 @@ for i = 1:size(p,2)
     end
 end
 
-
+disp('plot saccade timing')
 axes(hfig.two_photon_axes1)
 hold on
 for i = 1:length(sac_t)

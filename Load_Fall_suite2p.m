@@ -15,7 +15,7 @@ switch nargin
     case 3
         %varargin{1: dir name, 2: file name, 3:imgobj}
         im = varargin{3};
-        if isfiled(im, 'imgsz')
+        if isfield(im, 'imgsz')
             imgsz = max(im.imgsz);
             f0s = im.f0;
             load([varargin{1}, varargin{2}], 'F', 'Fneu', 'iscell', 'stat');
@@ -37,6 +37,7 @@ dFF_suite2p = dFF_suite2p';
 
 F0 = mean(dFF_suite2p(1:f0s, :));
 
+%dF/F
 dFF_suite2p = (dFF_suite2p - F0)./F0;
 
 %% ROI shape and position (and roi center)
