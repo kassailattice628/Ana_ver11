@@ -1,6 +1,4 @@
 function Divide_Fall(Fall_path, divnum)
-%
-%
 
 %load all data:: 'F', 'Fneu', 'iscell', 'spks', 'ops', 'stat'
 Fall = load(Fall_path);
@@ -10,7 +8,7 @@ Fall = load(Fall_path);
 for i = 1:length(divnum)
     if i == 1
         i1 = 1;
-    else
+    else 
         i1 = divnum(i-1)+1;
     end
     range = i1: i1+ divnum(i) - 1;

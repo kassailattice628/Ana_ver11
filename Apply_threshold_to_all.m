@@ -10,11 +10,11 @@ if get(hGui, 'value')
             recTime = ParamsSave{1,i}.AIStartTime:1/r.sampf:ParamsSave{1,i}.AIEndTime+1/r.sampf;
 
             %corON= recTime(ind_on) - (ParamsSave{1,i}.stim1.centerY_pix - 40)/1024/sobj.flipNum;
-            corON= recTime(ind_on) - (ParamsSave{1,i}.stim1.centerY_pix - 40)/sobj.RECT(4)/sobj.flipNum;
+            corON= recTime(ind_on) - (ParamsSave{1,i}.stim1.centerY_pix - 40)/sobj.RECT(4)/sobj.frameRate;
             ParamsSave{1,i}.stim1.corON =  corON;
             
             %corOFF= recTime(ind_off) - (ParamsSave{1,i}.stim1.centerY_pix - 40)/1024/sobj.flipNum;
-            corOFF= recTime(ind_off) - (ParamsSave{1,i}.stim1.centerY_pix - 40)/sobj.RECT(4)/sobj.flipNum;
+            corOFF= recTime(ind_off) - (ParamsSave{1,i}.stim1.centerY_pix - 40)/sobj.RECT(4)/sobj.frameRate;
             ParamsSave{1,i}.stim1.corOFF =  corOFF;
         end
     end

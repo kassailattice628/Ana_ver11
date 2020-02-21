@@ -25,7 +25,7 @@ if exist('DataSave', 'var') == 0
         
         errordlg('DataSave is missing!')
         % select another file
-        [mainvar.fname, mainvar.dirname] = uigetfile({[dirame, '*.mat']});
+        [mainvar.fname, mainvar.dirname] = uigetfile({[mainvar.dirame, '*.mat']});
         load([mainvar.dirname, mainvar.fname]);
     end
 else
@@ -41,6 +41,7 @@ else
 end
 %%
 if ~isfield(imgobj, 'dFF')
+elseif ~isempty(imgobj.dFF)
     DataSave(:,3,:) =  DataSave(:,3,:)* 1000;
 end
 

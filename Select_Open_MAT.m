@@ -27,6 +27,11 @@ end
 
 %% Load Data %%
 [fname, dirname] = uigetfile([mainvar.dirname, '*.mat']);
+if dirname == 0
+    disp(1)
+    errordlg('No file selected...')
+end
+
 load([dirname, fname]);
 mainvar.dirname = dirname;
 
@@ -51,7 +56,7 @@ if exist('DataSave', 'var')
     
     % check DataSave
     if isempty(imgobj.dFF)
-        DataSave(:,3,:) =  DataSave(:,3,:)* 1000;
+        %DataSave(:,3,:) =  DataSave(:,3,:)* 1000;
     end
     
     % Open GUI

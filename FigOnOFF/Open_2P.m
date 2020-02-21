@@ -154,7 +154,7 @@ OpenPanel2(hfig, imgobj, s)
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function Open_file(d,f)
         
-        if strcmp(f, 'Fall.mat')
+        if contains(f, 'Fall')
             %data extracted from suite2P
             [imgobj.dFF, imgobj.Mask_rois, imgobj.centroid] = Load_Fall_suite2p(d,f, imgobj);
         else
