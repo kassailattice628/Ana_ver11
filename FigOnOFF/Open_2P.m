@@ -121,11 +121,11 @@ imgobj.maxROIs =  1;
 if isfield(imgobj, 'dFF') == 0
     %update mainvar
     if isfield(mainvar, 'dirname2') && isnumeric(mainvar.dirname2) == 0
-        [mainvar.fname2, mainvar.dirname2] = uigetfile({'*.csv; *.mat','Data Files'; '*.*','All Files' },...
-            'Select Data(.csv, .mat)', mainvar.dirname2);
+        [mainvar.fname2, mainvar.dirname2] = uigetfile({'*.csv;*.mat;*.xls' },...
+            'Select Data(.csv, .mat, .xls)', mainvar.dirname2);
     else
-        [mainvar.fname2, mainvar.dirname2] = uigetfile({'*.csv; *.mat','Data Files'; '*.*','All Files' },...
-            'Select Data(.csv, .mat)', mainvar.dirname);
+        [mainvar.fname2, mainvar.dirname2] = uigetfile({'*.csv;*.mat;*.xls'},...
+            'Select Data(.csv, .mat, .xls)', mainvar.dirname);
     end
     
     if mainvar.dirname == 0 %cancel select file
@@ -134,10 +134,10 @@ if isfield(imgobj, 'dFF') == 0
         Open_file(mainvar.dirname2, mainvar.fname2);
     end
 else
-    % 2P.xls is alread loaded the base workspace.
+    % 2Pdata is alread loaded the base workspace.
     % select another file
-    [mainvar.fname2, mainvar.dirname2] = uigetfile({'*.csv; *.mat','Data Files'; '*.*','All Files' },...
-        'Select Data(.csv, .mat)', mainvar.dirname2);
+    [mainvar.fname2, mainvar.dirname2] = uigetfile({'*.csv;*.mat;*.xls'},...
+        'Select Data(.csv, .mat, .xls)', mainvar.dirname2);
     Open_file(mainvar.dirname2, mainvar.fname2);
 end
 

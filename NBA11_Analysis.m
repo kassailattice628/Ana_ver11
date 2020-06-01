@@ -17,7 +17,7 @@ addpath('Mosaic');
 %%
 if exist('DataSave', 'var') == 0
     %select file
-    [mainvar.fname, mainvar.dirname] = uigetfile({'*.mat'});
+    [mainvar.fname, mainvar.dirname] = uigetfile({'*.mat'},"Select .mat file");
     
     load([mainvar.dirname, mainvar.fname]);
     
@@ -25,7 +25,7 @@ if exist('DataSave', 'var') == 0
         
         errordlg('DataSave is missing!')
         % select another file
-        [mainvar.fname, mainvar.dirname] = uigetfile({[mainvar.dirame, '*.mat']});
+        [mainvar.fname, mainvar.dirname] = uigetfile({[mainvar.dirame, '*.mat']},"Select .mat file");
         load([mainvar.dirname, mainvar.fname]);
     end
 else
@@ -34,7 +34,7 @@ else
         while isempty(DataSave)
             errordlg('DataSave is missing!')
             % select another file
-            [mainvar.fname, mainvar.dirname] = uigetfile({[mainvar.dirname, '*.mat']});
+            [mainvar.fname, mainvar.dirname] = uigetfile({[mainvar.dirname, '*.mat']},"Select .mat file");
             load([mainvar.dirname, mainvar.fname]);
         end
     end

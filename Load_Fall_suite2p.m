@@ -67,8 +67,7 @@ end
 %%
 function  [F, Fneu, iscell, stat] = load_Fall
 
-[fname, dirname] = uigetfile('*.mat',...
-    'Select Fall.mat from suit2p)');
+[fname, dirname] = uigetfile('*.mat', 'Select Fall.mat from suit2p)');
 
 load([dirname, fname], 'F', 'Fneu', 'iscell', 'stat');
 

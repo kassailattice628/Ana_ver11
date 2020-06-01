@@ -1,10 +1,7 @@
 function params = Get_metadata(fpath, keylist)
-%ceck input
+%check input
 if isempty(fpath)
-    [f, d] = uigetfile(...
-        {'*.oif; *.oib', 'Olympus';
-        '*bfmeta.txt', 'TxtMetadata'},...
-        'SELECT files');
+    [f, d] = uigetfile({'*.oif;*.oib;*bfmeta.txt'},"Select MetaData");
     fpath = [d, f];
 end
 
@@ -22,6 +19,7 @@ else
 end
 
 params = cellfun(@double, cell(params));
+end
 
 
 %{
@@ -39,8 +37,9 @@ for i = 1:length(keylist)
 end
 
 disp('OK')
-%}
-end
+
+%end
+
 %%
 
 function metadata = load_bf(fpath)
@@ -56,3 +55,4 @@ if isempty(mdata.get(key{1}))
     end
 end
 end
+%}

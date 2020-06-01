@@ -26,7 +26,7 @@ if ~isfield(imgobj, 'FVsampt')
 end
 
 %% Load Data %%
-[fname, dirname] = uigetfile([mainvar.dirname, '*.mat']);
+[fname, dirname] = uigetfile([mainvar.dirname, '*.mat'],"Select .mat file");
 if dirname == 0
     disp(1)
     errordlg('No file selected...')
@@ -38,7 +38,7 @@ mainvar.dirname = dirname;
 %loaded file contains DataSave
 if isempty(DataSave)
     errordlg('DataSave is missing')
-    [fname, dirname] = uigetfile([mainvar.dirname, '*.mat']);
+    [fname, dirname] = uigetfile([mainvar.dirname, '*.mat'],"Select .mat file");;
     load([dirname, fname]) ;
     mainvar.dirname = dirname;
 end
